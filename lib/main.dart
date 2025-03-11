@@ -4,6 +4,7 @@ import 'package:grabto/generated/assets.dart';
 // import 'package:grabto/helper/InAppScreen.dart';
 import 'package:grabto/helper/user_provider.dart';
 import 'package:grabto/theme/theme.dart';
+import 'package:grabto/ui/near_me_screen.dart';
 import 'package:grabto/ui/splash_screen.dart';
 // import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
@@ -208,7 +209,7 @@ class _MyAppState extends State<MyApp> {
         home: SplashScreen(
           token: widget.token,
         ),
-        // home:DemoPage(),
+        // home:NearMeScreen(),
       ),
     );
   }

@@ -2138,6 +2138,9 @@ setState(() {
     setState(() {
       isLoading = true;
     });
+    print(store_id);
+    print(food_type);
+    print("💕💕💕");
     try {
       final body = {"store_id": "$store_id", "food_type": "$food_type"};
       final response = await ApiServices.store_multiple_galleryJson(body);

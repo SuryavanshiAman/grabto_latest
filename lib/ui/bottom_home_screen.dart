@@ -12,6 +12,7 @@ import 'package:grabto/theme/theme.dart';
 import 'package:grabto/ui/all_coupon_screen.dart';
 import 'package:grabto/ui/booked_table_screen.dart';
 import 'package:grabto/ui/coupon_fullview_screen.dart';
+import 'package:grabto/ui/near_me_screen.dart';
 import 'package:grabto/ui/search_screen.dart';
 import 'package:grabto/ui/subcategories_screen.dart';
 import 'package:grabto/ui/top_categories_screen.dart';
@@ -1176,12 +1177,17 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                 //     ),
                 //   ),
                 // ),
-Container(
-  margin: EdgeInsets.all(10),
-  height: heights*0.08,
-  width: widths*0.4,
-  decoration: BoxDecoration(
-      image: DecorationImage(image: AssetImage("assets/images/near_me.png"),fit: BoxFit.fill)),
+InkWell(
+  onTap: (){
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>NearMeScreen()));
+  },
+  child: Container(
+    margin: EdgeInsets.all(10),
+    height: heights*0.08,
+    width: widths*0.4,
+    decoration: BoxDecoration(
+        image: DecorationImage(image: AssetImage("assets/images/near_me.png"),fit: BoxFit.fill)),
+  ),
 ),
                 Container(
                   margin:

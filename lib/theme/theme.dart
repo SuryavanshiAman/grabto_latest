@@ -41,6 +41,7 @@ class MyColors {
   static const Color searchBg = Color(0xFFEEEEEE);
   static const Color backgroundBg = Color(0xFFF9F8F3);
   static const Color green = Colors.green;
+  static const Color darkGreen = Color(0xff063e2a);
 
   static const Color txtTitleColor = Colors.black;
   static const Color txtDescColor = Colors.black54;
