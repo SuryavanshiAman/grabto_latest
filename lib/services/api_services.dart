@@ -24,6 +24,8 @@ import 'package:grabto/services/api.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
+import '../model/book_table_model.dart';
+
 class ApiServices {
   //================================================
   static Future<Map<String, dynamic>?> user_signup(
@@ -304,6 +306,69 @@ class ApiServices {
         return null;
       }
     } else {
+      return null;
+    }
+  }
+//   static Future<List<bookTableModel>?>timeSlot(Map body) async {
+//     const url = '$BASE_URL/get-store-time-list';
+//     final uri = Uri.parse(url);
+//     final response = await http.post(uri, body: body);
+// print(url);
+//     if (response.statusCode == 200) {
+//       // Parse the JSON response
+//       print("🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️");
+//       final jsonResponse = json.decode(response.body) as Map;
+//       print(jsonResponse);
+//       print("🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️");
+//       final res = jsonResponse['error']as bool;
+//       if (res == false) {
+//         print('api_show_subcategory: $jsonResponse');
+//         final data = jsonResponse['data'] as List<dynamic>;
+//
+//         final timeSlot = data.map((e) {
+//           return bookTableModel.fromJson(e);
+//         }).toList();
+//
+//         return timeSlot;
+//       } else {
+//         print("TimeSlot: $res");
+//         return null;
+//       }
+//     } else {
+//       return null;
+//     }
+//   }
+  static Future<List<bookTableModel>?> timeSlot(Map<String, dynamic> body) async {
+    const url = '$BASE_URL/get-store-time-list';
+    final uri = Uri.parse(url);
+    final response = await http.post(uri, body: body);
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body) as Map<String, dynamic>;
+      print("API Response: $jsonResponse");
+
+      final bool res = jsonResponse['error'] as bool;
+      if (!res) {
+        print('API Response Data: ${jsonResponse['data']}');
+
+        if (jsonResponse['data'] is List) {
+          return (jsonResponse['data'] as List)
+              .map((e) => bookTableModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else if (jsonResponse['data'] is Map) {
+          return [
+            bookTableModel.fromJson(jsonResponse['data'] as Map<String, dynamic>)
+          ];
+        } else {
+          print("Unexpected data format");
+          return null;
+        }
+      } else {
+        print("TimeSlot API Error: $res");
+        return null;
+      }
+    } else {
+      print("HTTP Error: ${response.statusCode}");
       return null;
     }
   }

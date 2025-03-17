@@ -1,3 +1,5 @@
+import 'package:grabto/main.dart';
+import 'package:grabto/model/book_table_model.dart';
 import 'package:grabto/model/pre_book_table_model.dart';
 import 'package:grabto/model/user_model.dart';
 import 'package:grabto/services/api_services.dart';
@@ -42,6 +44,7 @@ class _BookTableScreenState extends State<BookTableScreen> {
   late List<String> timeSlotsDinner = [];
   String? selectedTimeSlot, timetype; // Track the single selected time slot
   List<PreBookTable> prebookofferlist = [];
+  List<bookTableModel> bookModel = [];
   bool isLoading = true;
   PreBookTable? selectedPreBookOffer;
   List<TermConditionModel> termConditionList = [];
@@ -71,7 +74,7 @@ class _BookTableScreenState extends State<BookTableScreen> {
       if (response['error'] == false) {
         final data = response['data'];
         setState(() {
-          availableSeat = response['data'];
+          // availableSeat = response['data'];
         });
       } else {
         String msg = response['message'];
@@ -164,7 +167,7 @@ class _BookTableScreenState extends State<BookTableScreen> {
     super.initState();
     startLunch = widget.startTime ?? "10:00 AM";
     endDinner = widget.endTime ?? "10:00 PM";
-
+    timeSlot(widget.store_id);
     DateTime now = DateTime.now();
     DateTime endDinnerTime = DateFormat("hhh:mm a").parse(endDinner);
     print("💕💕💕💕$now");
@@ -353,7 +356,8 @@ class _BookTableScreenState extends State<BookTableScreen> {
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
-                            children: List.generate(30, (index) {
+                            children: List.generate(bookModel.length, (index) {
+                              final data= bookModel[index].weekday?[index];
                               String endTime = "11:19 PM";
                               DateTime now = DateTime.now();
                               DateTime todayEndTime =
@@ -415,7 +419,9 @@ class _BookTableScreenState extends State<BookTableScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        dayString,
+                                        data?.t05Date.toString()!=null?DateFormat('EEE').format(DateTime.parse(data?.t05Date.toString()??"2025-01-25")):"",
+                                        // data?.t04Weekday.toString()??"",
+                                        // dayString,
                                         style: TextStyle(
                                           fontSize: 15,
                                           color: _selectedDate.year ==
@@ -428,7 +434,8 @@ class _BookTableScreenState extends State<BookTableScreen> {
                                         ),
                                       ),
                                       Text(
-                                        dateString,
+                                        // dateString,
+                                          data?.t05Date.toString()!=null? DateFormat('dd MMM').format(DateTime.parse(data?.t05Date.toString()??"2025-01-25")):"",
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -457,13 +464,18 @@ class _BookTableScreenState extends State<BookTableScreen> {
                                 fontSize: 14, fontWeight: FontWeight.w500),
                           ),
                         ),
-                        if (timeSlotsLunch.isNotEmpty)
-                          Container(
+                        bookModel.isNotEmpty&&bookModel.toString()!=""?  ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                            itemCount: bookModel[0].weekday![0].meals!.length,
+                            itemBuilder: (ctx,int mealIndex){
+                            final mealData =  bookModel[0].weekday![0].meals![mealIndex];
+                          return Container(
                             margin: EdgeInsets.only(
                                 left: 16, right: 16, top: 0, bottom: 16),
                             decoration: BoxDecoration(
                               border:
-                                  Border.all(color: Colors.grey, width: 1.0),
+                              Border.all(color: Colors.grey, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             padding: const EdgeInsets.only(
@@ -473,31 +485,35 @@ class _BookTableScreenState extends State<BookTableScreen> {
                                 Center(
                                   child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    CrossAxisAlignment.center,
                                     children: [
                                       Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.start,
+                                        MainAxisAlignment.start,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                         children: [
-                                          Image.asset(
+                                          mealData.t03FoodType=="Breakfast"||mealData.t03FoodType=="Lunch"
+                                              ? Image.asset(
                                             'assets/images/lunch.png',
                                             width: 40,
                                             height: 40,
                                             // color: const Color.fromARGB(255, 250, 167, 0), // Optional: Apply tint color
-                                          ),
+                                          ):Image.asset(
+                                          'assets/images/dinner.png',
+                                          width: 40,
+                                          height: 40,
+                                          // color: const Color.fromARGB(255, 250, 167, 0), // Optional: Apply tint color
+                                        ),
                                           SizedBox(width: 10),
                                           Column(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                widget.category_name == "Salon"
-                                                    ? 'Day'
-                                                    : "Lunch", // Title
+                                                mealData.t03FoodType??"", // Title
                                                 style: TextStyle(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold,
@@ -525,14 +541,14 @@ class _BookTableScreenState extends State<BookTableScreen> {
                                             shape: BoxShape.circle,
                                             color: Colors.white,
                                             border:
-                                                Border.all(color: Colors.grey),
+                                            Border.all(color: Colors.grey),
                                           ),
                                           child: Icon(
                                             isLunchTimeSlotsVisible
                                                 ? Icons
-                                                    .keyboard_arrow_up_outlined
+                                                .keyboard_arrow_up_outlined
                                                 : Icons
-                                                    .keyboard_arrow_down_outlined,
+                                                .keyboard_arrow_down_outlined,
                                             size: 20,
                                             color: Colors.black,
                                           ),
@@ -542,141 +558,364 @@ class _BookTableScreenState extends State<BookTableScreen> {
                                   ),
                                 ),
                                 if (isLunchTimeSlotsVisible) // Show lunch time slots if visible
-                                  SizedBox(height: 20),
-                                if (isLunchTimeSlotsVisible)
-                                  Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Wrap(
-                                      spacing: 10.0,
-                                      runSpacing: 10.0,
-                                      children: timeSlotsLunch
-                                          .map((slot) => TimeSlotCard(
-                                                timeSlot: slot,
-                                                isSelected:
-                                                    selectedTimeSlot == slot,
-                                                onTap: () => selectTimeSlot(
-                                                    slot,
-                                                    widget.category_name ==
-                                                            "Salon"
-                                                        ? 'Day'
-                                                        : "Lunch"),
-                                              ))
-                                          .toList(),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        if (timeSlotsDinner.isNotEmpty)
-                          Container(
-                            margin: EdgeInsets.only(
-                                left: 16, right: 16, top: 0, bottom: 16),
-                            decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: Colors.grey, width: 1.0),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: const EdgeInsets.only(
-                                left: 16, right: 16, top: 10, bottom: 26),
-                            child: Column(
-                              children: [
-                                Center(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Image.asset(
-                                            'assets/images/dinner.png',
-                                            width: 40,
-                                            height: 40,
-                                            // color: const Color.fromARGB(255, 250, 167, 0), // Optional: Apply tint color
-                                          ),
-                                          SizedBox(width: 10),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                widget.category_name == "Salon"
-                                                    ? 'Night'
-                                                    : "Dinner",
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              Text(
-                                                timeSlotsDinner.isNotEmpty
-                                                    ? '${timeSlotsDinner.first} to $endDinner'
-                                                    : "$startDinner to $endDinner",
-                                                // Time
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.grey[600],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      GestureDetector(
-                                        onTap: toggleTimeSlotsVisibility,
-                                        // Toggle time slots on click
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.white,
-                                            border:
-                                                Border.all(color: Colors.grey),
-                                          ),
-                                          child: Icon(
-                                            isDinnerTimeSlotsVisible
-                                                ? Icons
-                                                    .keyboard_arrow_up_outlined
-                                                : Icons
-                                                    .keyboard_arrow_down_outlined,
-                                            size: 20,
-                                            color: Colors.black,
-                                          ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top:18.0),
+                                    child: SizedBox(
+                                      // height: heights*0.3,
+                                      child: GridView.builder(
+                                        physics: NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemCount: mealData.time?.length??0,
+                                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 3,
+                                          crossAxisSpacing: 10,
+                                          mainAxisSpacing: 10,
+                                          childAspectRatio: 8/4,
                                         ),
+                                        itemBuilder: (BuildContext context, int timeIndex) {
+                                          final data =mealData.time![timeIndex];
+                                          return TimeSlotCard(
+                                            timeSlot: data.t01Time.toString()??"",
+                                            isSelected:
+                                            selectedTimeSlot ==  data.t01Time,
+                                            onTap: (){
+                                              setState(() {
+                                                availableSeat=data.t02Noofseats??0;
+                                              });
+                                              selectTimeSlot(
+
+                                                data.t01Time.toString()??"",
+                                                widget.category_name ==
+                                                    "Salon"
+                                                    ? 'Day'
+                                                    : "Lunch");}
+                                          );
+                                        },
                                       ),
-                                    ],
-                                  ),
-                                ),
-                                if (isDinnerTimeSlotsVisible) // Show time slots if visible
-                                  SizedBox(height: 20),
-                                if (isDinnerTimeSlotsVisible)
-                                  Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Wrap(
-                                      spacing: 10.0,
-                                      runSpacing: 10.0,
-                                      children: timeSlotsDinner
-                                          .map((slot) => TimeSlotCard(
-                                                timeSlot: slot,
-                                                isSelected:
-                                                    selectedTimeSlot == slot,
-                                                onTap: () => selectTimeSlot(
-                                                    slot,
-                                                    widget.category_name ==
-                                                            "Salon"
-                                                        ? 'Night'
-                                                        : "Dinner"),
-                                              ))
-                                          .toList(),
                                     ),
                                   ),
+                                // Align(
+                                //   alignment: Alignment.topLeft,
+                                //   child: Wrap(
+                                //     spacing: 10.0,
+                                //     runSpacing: 10.0,
+                                //     children: timeSlotsLunch
+                                //         .map((slot) => TimeSlotCard(
+                                //       timeSlot: slot,
+                                //       isSelected:
+                                //       selectedTimeSlot == slot,
+                                //       onTap: () => selectTimeSlot(
+                                //           slot,
+                                //           widget.category_name ==
+                                //               "Salon"
+                                //               ? 'Day'
+                                //               : "Lunch"),
+                                //     ))
+                                //         .toList(),
+                                //   ),
+                                // ),
+                                //   SizedBox(height: 20),
+                                // if (isLunchTimeSlotsVisible)
+                                //   Container(
+                                //     height: heights*0.3,
+                                //     child: GridView.builder(
+                                //       shrinkWrap: true,
+                                //       itemCount: bookModel[0].weekday?[0].meals![0].time!.length,
+                                //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                //         crossAxisCount: 3,
+                                //         crossAxisSpacing: 0,
+                                //         mainAxisSpacing: 0,
+                                //         childAspectRatio: 8.5/4,
+                                //       ),
+                                //       itemBuilder: (BuildContext context, int index) {
+                                //         print(bookModel[0].weekday?[0].meals?[index].time?.length);
+                                //         final data =bookModel[0].weekday?[0].meals![0].time![index];
+                                //         return TimeSlotCard(
+                                //           timeSlot: data!.t01Time.toString()??"",
+                                //           isSelected:
+                                //           selectedTimeSlot ==  data.t01Time,
+                                //           onTap: () => selectTimeSlot(
+                                //               data.t01Time.toString()??"",
+                                //               widget.category_name ==
+                                //                   "Salon"
+                                //                   ? 'Day'
+                                //                   : "Lunch"),
+                                //         );
+                                //       },
+                                //     ),
+                                //   ),
+                                // Align(
+                                //   alignment: Alignment.topLeft,
+                                //   child: Wrap(
+                                //     spacing: 10.0,
+                                //     runSpacing: 10.0,
+                                //     children: timeSlotsLunch
+                                //         .map((slot) => TimeSlotCard(
+                                //               timeSlot: slot,
+                                //               isSelected:
+                                //                   selectedTimeSlot == slot,
+                                //               onTap: () => selectTimeSlot(
+                                //                   slot,
+                                //                   widget.category_name ==
+                                //                           "Salon"
+                                //                       ? 'Day'
+                                //                       : "Lunch"),
+                                //             ))
+                                //         .toList(),
+                                //   ),
+                                // ),
                               ],
                             ),
-                          ),
+                          );
+                        }):Center(child: Text("No Data")),
+                        // if (timeSlotsLunch.isNotEmpty)
+                        //   Container(
+                        //     margin: EdgeInsets.only(
+                        //         left: 16, right: 16, top: 0, bottom: 16),
+                        //     decoration: BoxDecoration(
+                        //       border:
+                        //           Border.all(color: Colors.grey, width: 1.0),
+                        //       borderRadius: BorderRadius.circular(10),
+                        //     ),
+                        //     padding: const EdgeInsets.only(
+                        //         left: 16, right: 16, top: 10, bottom: 26),
+                        //     child: Column(
+                        //       children: [
+                        //         Center(
+                        //           child: Row(
+                        //             mainAxisAlignment:
+                        //                 MainAxisAlignment.spaceBetween,
+                        //             crossAxisAlignment:
+                        //                 CrossAxisAlignment.center,
+                        //             children: [
+                        //               Row(
+                        //                 mainAxisAlignment:
+                        //                     MainAxisAlignment.start,
+                        //                 crossAxisAlignment:
+                        //                     CrossAxisAlignment.center,
+                        //                 children: [
+                        //                   Image.asset(
+                        //                     'assets/images/lunch.png',
+                        //                     width: 40,
+                        //                     height: 40,
+                        //                     // color: const Color.fromARGB(255, 250, 167, 0), // Optional: Apply tint color
+                        //                   ),
+                        //                   SizedBox(width: 10),
+                        //                   Column(
+                        //                     crossAxisAlignment:
+                        //                         CrossAxisAlignment.start,
+                        //                     children: [
+                        //                       Text(
+                        //                         widget.category_name == "Salon"
+                        //                             ? 'Day'
+                        //                             : "Lunch", // Title
+                        //                         style: TextStyle(
+                        //                           fontSize: 14,
+                        //                           fontWeight: FontWeight.bold,
+                        //                         ),
+                        //                       ),
+                        //                       Text(
+                        //                         timeSlotsLunch.isNotEmpty
+                        //                             ? '${timeSlotsLunch.first} to $endLunch'
+                        //                             : "$startLunch to $endLunch",
+                        //                         // Time
+                        //                         style: TextStyle(
+                        //                           fontSize: 12,
+                        //                           color: Colors.grey[600],
+                        //                         ),
+                        //                       ),
+                        //                     ],
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //               GestureDetector(
+                        //                 onTap: toggleLunchTimeSlotsVisibility,
+                        //                 // Toggle lunch time slots on click
+                        //                 child: Container(
+                        //                   decoration: BoxDecoration(
+                        //                     shape: BoxShape.circle,
+                        //                     color: Colors.white,
+                        //                     border:
+                        //                         Border.all(color: Colors.grey),
+                        //                   ),
+                        //                   child: Icon(
+                        //                     isLunchTimeSlotsVisible
+                        //                         ? Icons
+                        //                             .keyboard_arrow_up_outlined
+                        //                         : Icons
+                        //                             .keyboard_arrow_down_outlined,
+                        //                     size: 20,
+                        //                     color: Colors.black,
+                        //                   ),
+                        //                 ),
+                        //               ),
+                        //             ],
+                        //           ),
+                        //         ),
+                        //         if (isLunchTimeSlotsVisible) // Show lunch time slots if visible
+                        //           SizedBox(height: 20),
+                        //         // if (isLunchTimeSlotsVisible)
+                        //         //   Container(
+                        //         //     height: heights*0.3,
+                        //         //     child: GridView.builder(
+                        //         //       shrinkWrap: true,
+                        //         //       itemCount: bookModel[0].weekday?[0].meals![0].time!.length,
+                        //         //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        //         //         crossAxisCount: 3,
+                        //         //         crossAxisSpacing: 0,
+                        //         //         mainAxisSpacing: 0,
+                        //         //         childAspectRatio: 8.5/4,
+                        //         //       ),
+                        //         //       itemBuilder: (BuildContext context, int index) {
+                        //         //         print(bookModel[0].weekday?[0].meals?[index].time?.length);
+                        //         //         final data =bookModel[0].weekday?[0].meals![0].time![index];
+                        //         //         return TimeSlotCard(
+                        //         //           timeSlot: data!.t01Time.toString()??"",
+                        //         //           isSelected:
+                        //         //           selectedTimeSlot ==  data.t01Time,
+                        //         //           onTap: () => selectTimeSlot(
+                        //         //               data.t01Time.toString()??"",
+                        //         //               widget.category_name ==
+                        //         //                   "Salon"
+                        //         //                   ? 'Day'
+                        //         //                   : "Lunch"),
+                        //         //         );
+                        //         //       },
+                        //         //     ),
+                        //         //   ),
+                        //           // Align(
+                        //           //   alignment: Alignment.topLeft,
+                        //           //   child: Wrap(
+                        //           //     spacing: 10.0,
+                        //           //     runSpacing: 10.0,
+                        //           //     children: timeSlotsLunch
+                        //           //         .map((slot) => TimeSlotCard(
+                        //           //               timeSlot: slot,
+                        //           //               isSelected:
+                        //           //                   selectedTimeSlot == slot,
+                        //           //               onTap: () => selectTimeSlot(
+                        //           //                   slot,
+                        //           //                   widget.category_name ==
+                        //           //                           "Salon"
+                        //           //                       ? 'Day'
+                        //           //                       : "Lunch"),
+                        //           //             ))
+                        //           //         .toList(),
+                        //           //   ),
+                        //           // ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // if (timeSlotsDinner.isNotEmpty)
+                        //   Container(
+                        //     margin: EdgeInsets.only(
+                        //         left: 16, right: 16, top: 0, bottom: 16),
+                        //     decoration: BoxDecoration(
+                        //       border:
+                        //           Border.all(color: Colors.grey, width: 1.0),
+                        //       borderRadius: BorderRadius.circular(10),
+                        //     ),
+                        //     padding: const EdgeInsets.only(
+                        //         left: 16, right: 16, top: 10, bottom: 26),
+                        //     child: Column(
+                        //       children: [
+                        //         Center(
+                        //           child: Row(
+                        //             mainAxisAlignment:
+                        //                 MainAxisAlignment.spaceBetween,
+                        //             crossAxisAlignment:
+                        //                 CrossAxisAlignment.center,
+                        //             children: [
+                        //               Row(
+                        //                 mainAxisAlignment:
+                        //                     MainAxisAlignment.start,
+                        //                 crossAxisAlignment:
+                        //                     CrossAxisAlignment.center,
+                        //                 children: [
+                        //                   Image.asset(
+                        //                     'assets/images/dinner.png',
+                        //                     width: 40,
+                        //                     height: 40,
+                        //                     // color: const Color.fromARGB(255, 250, 167, 0), // Optional: Apply tint color
+                        //                   ),
+                        //                   SizedBox(width: 10),
+                        //                   Column(
+                        //                     crossAxisAlignment:
+                        //                         CrossAxisAlignment.start,
+                        //                     children: [
+                        //                       Text(
+                        //                         widget.category_name == "Salon"
+                        //                             ? 'Night'
+                        //                             : "Dinner",
+                        //                         style: TextStyle(
+                        //                           fontSize: 14,
+                        //                           fontWeight: FontWeight.bold,
+                        //                         ),
+                        //                       ),
+                        //                       Text(
+                        //                         timeSlotsDinner.isNotEmpty
+                        //                             ? '${timeSlotsDinner.first} to $endDinner'
+                        //                             : "$startDinner to $endDinner",
+                        //                         // Time
+                        //                         style: TextStyle(
+                        //                           fontSize: 12,
+                        //                           color: Colors.grey[600],
+                        //                         ),
+                        //                       ),
+                        //                     ],
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //               GestureDetector(
+                        //                 onTap: toggleTimeSlotsVisibility,
+                        //                 // Toggle time slots on click
+                        //                 child: Container(
+                        //                   decoration: BoxDecoration(
+                        //                     shape: BoxShape.circle,
+                        //                     color: Colors.white,
+                        //                     border:
+                        //                         Border.all(color: Colors.grey),
+                        //                   ),
+                        //                   child: Icon(
+                        //                     isDinnerTimeSlotsVisible
+                        //                         ? Icons
+                        //                             .keyboard_arrow_up_outlined
+                        //                         : Icons
+                        //                             .keyboard_arrow_down_outlined,
+                        //                     size: 20,
+                        //                     color: Colors.black,
+                        //                   ),
+                        //                 ),
+                        //               ),
+                        //             ],
+                        //           ),
+                        //         ),
+                        //         if (isDinnerTimeSlotsVisible) // Show time slots if visible
+                        //           SizedBox(height: 20),
+                        //         if (isDinnerTimeSlotsVisible)
+                        //           Align(
+                        //             alignment: Alignment.topLeft,
+                        //             child: Wrap(
+                        //               spacing: 10.0,
+                        //               runSpacing: 10.0,
+                        //               children: timeSlotsDinner
+                        //                   .map((slot) => TimeSlotCard(
+                        //                         timeSlot: slot,
+                        //                         isSelected:
+                        //                             selectedTimeSlot == slot,
+                        //                         onTap: () => selectTimeSlot(
+                        //                             slot,
+                        //                             widget.category_name ==
+                        //                                     "Salon"
+                        //                                 ? 'Night'
+                        //                                 : "Dinner"),
+                        //                       ))
+                        //                   .toList(),
+                        //             ),
+                        //           ),
+                        //       ],
+                        //     ),
+                        //   ),
                       ]),
                 ),
               ),
@@ -700,7 +939,7 @@ class _BookTableScreenState extends State<BookTableScreen> {
                             child: Row(
                               children: [
                                 ClipRect(
-                                  child: Container(
+                                  child: SizedBox(
                                     height: 40,
                                     width: 40,
                                     child: Image.asset(
@@ -859,6 +1098,32 @@ class _BookTableScreenState extends State<BookTableScreen> {
       }
     } catch (e) {
       print('prebookoffer: $e');
+      setState(() {
+        isLoading = false; // Set isLoading to false in case of error
+      });
+    }
+  }
+  Future<void> timeSlot(String store_id) async {
+    print('BookModel: store_id $store_id');
+    print('😊😊😊');
+    try {
+      final body = {"store_id": "$store_id"};
+      final response = await ApiServices.timeSlot(body);
+      print('BookModel: response $response');
+      if (response != null) {
+        setState(() {
+          bookModel = response;
+          isLoading = false;
+          print('BookModel: response ${bookModel[0].weekday?[0].t04Weekday}');
+          // Set isLoading to false when fetching ends
+        });
+      } else {
+        setState(() {
+          isLoading = false; // Set isLoading to false when fetching ends
+        });
+      }
+    } catch (e) {
+      print('Slot: $e');
       setState(() {
         isLoading = false; // Set isLoading to false in case of error
       });

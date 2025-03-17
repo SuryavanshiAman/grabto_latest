@@ -5,6 +5,7 @@ import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
 
 import '../services/api_services.dart';
+import 'filter_boottom_sheet.dart';
 
 class FirstList {
   String name;
@@ -193,18 +194,23 @@ class _NearMeScreenState extends State<NearMeScreen> {
                 : MyColors.backgroundBg,
             leadingWidth: 45,
             leading: _showTitle
-                ? Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: CircleAvatar(
-                      // radius: 18,
-                      backgroundColor: Colors.grey.withOpacity(0.5),
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: MyColors.whiteBG,
+                ? InkWell(
+              onTap: (){Navigator.pop(context);},
+                  child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: CircleAvatar(
+                        // radius: 18,
+                        backgroundColor: Colors.grey.withOpacity(0.5),
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: MyColors.whiteBG,
+                        ),
                       ),
                     ),
-                  )
-                : Icon(Icons.arrow_back, color: MyColors.blackBG),
+                )
+                : InkWell(
+                onTap: (){Navigator.pop(context);},
+                child: Icon(Icons.arrow_back, color: MyColors.blackBG)),
             title: !_showTitle
                 ? Text(
                     "Restaurants near you",
@@ -271,13 +277,14 @@ class _NearMeScreenState extends State<NearMeScreen> {
                               toggleSelection(item);
                               selectedName = list[index].name;
                               print("item");
+                              index==0?showFilterBottomSheet(context):null;
                             });
                           },
                           child: Container(
                             margin: EdgeInsets.symmetric(
                                 horizontal: 5, vertical: 10),
                             padding: EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 5),
+                                horizontal: 8, ),
                             decoration: BoxDecoration(
                                 color: isSelected
                                     ? Colors.grey.withOpacity(0.3)
@@ -288,22 +295,26 @@ class _NearMeScreenState extends State<NearMeScreen> {
                                         ? MyColors.blackBG
                                         : Colors.grey.withOpacity(0.5))),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Center(
                                   child: Text(
                                     item.name,
                                     style: TextStyle(
                                       color: Colors.black,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500
                                     ),
                                   ),
                                 ),
+                                SizedBox(width: widths*0.02,),
                                 index == 0
-                                    ? Icon(Icons.tune_outlined)
+                                    ? Icon(Icons.tune_outlined,size: 18,)
                                     : index == 1
                                         ? Icon(
-                                            Icons.keyboard_arrow_down_outlined)
+                                            Icons.keyboard_arrow_down_outlined,size: 20,)
                                         : isSelected
-                                            ? Icon(Icons.cancel_outlined)
+                                            ? Icon(Icons.close,size: 16,)
                                             : Container()
                               ],
                             ),

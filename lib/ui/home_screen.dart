@@ -18,8 +18,7 @@ import 'package:grabto/ui/bottom_sortlist_screen.dart';
 import 'package:grabto/ui/customer_care.dart';
 import 'package:grabto/ui/delete_screen.dart';
 import 'package:grabto/ui/how_it_works.dart';
-import 'package:grabto/ui/membership_plan_screen.dart';
-import 'package:grabto/ui/redeem_screen.dart';
+import 'package:grabto/ui/select_address_screen.dart';
 import 'package:grabto/ui/term_and_condition.dart';
 import 'package:grabto/ui/transaction_screen.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
@@ -27,7 +26,6 @@ import 'package:grabto/widget/item_list_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:flutter/src/widgets/basic.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -35,6 +33,8 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -215,7 +215,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   color: MyColors.primaryColor,
                 ),
                 onPressed: () {
-                  _showCityDialog();
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
+                  // AddressScreen();
+                  // _showCityDialog();
                 },
               ),
             ),
@@ -989,6 +991,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
 //Notification
 class NotificationWidget extends StatelessWidget {
+  const NotificationWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return const Padding(
@@ -1018,7 +1022,7 @@ class NotificationWidget extends StatelessWidget {
 class CustomPopup extends StatefulWidget {
   final String imageUrl;
 
-  CustomPopup({required this.imageUrl});
+  CustomPopup({super.key, required this.imageUrl});
 
   @override
   _CustomPopupState createState() => _CustomPopupState();

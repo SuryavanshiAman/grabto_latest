@@ -253,8 +253,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                 Container(
                   height: heights*0.3,
                   decoration: BoxDecoration(
-                    color: Colors.red,
-                    image: DecorationImage(image: AssetImage("assets/images/hotel.png"),fit: BoxFit.fill),
+                    // color: Colors.red,
+                    image: DecorationImage(image: AssetImage("assets/images/Grabto.gif"),fit: BoxFit.fill),
                     borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20) )
                   ),
                   child: Padding(
@@ -269,7 +269,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: MyColors.blackBG),
+                                  color: MyColors.whiteBG),
                             ),
                           ],
                         ),
@@ -278,7 +278,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                           style: TextStyle(
                               fontSize: 23,
                               fontWeight: FontWeight.w900,
-                              color: MyColors.primaryColor),
+                              color: MyColors.whiteBG),
                         ),
                         InkWell(
                           onTap: () {
@@ -290,7 +290,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                                 .size
                                 .width,
                             margin: EdgeInsets.symmetric(horizontal: 15),
-                            height: 46,
+                            height: 40,
                             child: Material(
                               elevation: 1, // Set the elevation value as needed
                               shape: RoundedRectangleBorder(
