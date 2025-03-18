@@ -14,12 +14,12 @@ import 'package:intl/intl.dart';
 
 class BookTableScreen extends StatefulWidget {
   String startTime;
-  String endTime;
+  // String endTime;
   String storeName;
   String store_id;
   String category_name;
 
-  BookTableScreen(this.startTime, this.endTime, this.storeName, this.store_id,
+  BookTableScreen(this.startTime, this.storeName, this.store_id,
       this.category_name);
 
   @override
@@ -165,33 +165,34 @@ class _BookTableScreenState extends State<BookTableScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    startLunch = widget.startTime ?? "10:00 AM";
-    endDinner = widget.endTime ?? "10:00 PM";
     timeSlot(widget.store_id);
-    DateTime now = DateTime.now();
-    DateTime endDinnerTime = DateFormat("hhh:mm a").parse(endDinner);
-    print("💕💕💕💕$now");
-    availableSeates(widget.store_id, now);
-    // Us time ko current date ke saath set karna
-    endDinnerTime = DateTime(
-        now.year, now.month, now.day, endDinnerTime.hour, endDinnerTime.minute);
-
-    // Agar current time start dinner time se zyada hai, toh selected date ko next day set karna
-    if (now.isAfter(endDinnerTime)) {
-      _selectedDate = DateTime(now.year, now.month, now.day + 1); // Next day
-    } else {
-      _selectedDate = DateTime(now.year, now.month, now.day); // Aaj ki date
-    }
+    // startLunch = widget.startTime ?? "10:00 AM";
+    // endDinner = widget.endTime ?? "10:00 PM";
+    //
+    // DateTime now = DateTime.now();
+    // DateTime endDinnerTime = DateFormat("hhh:mm a").parse(endDinner);
+    // print("💕💕💕💕$now");
+    // availableSeates(widget.store_id, now);
+    // // Us time ko current date ke saath set karna
+    // endDinnerTime = DateTime(
+    //     now.year, now.month, now.day, endDinnerTime.hour, endDinnerTime.minute);
+    //
+    // // Agar current time start dinner time se zyada hai, toh selected date ko next day set karna
+    // if (now.isAfter(endDinnerTime)) {
+    //   _selectedDate = DateTime(now.year, now.month, now.day + 1); // Next day
+    // } else {
+    //   _selectedDate = DateTime(now.year, now.month, now.day); // Aaj ki date
+    // }
 
     prebookoffer(widget.store_id);
     print("😋😋😋😋${widget.store_id}");
     fetchStoresTermCondition();
     checkTimeSlotsVisibility(_selectedDate);
-
-    timeSlotsLunch = generateTimeSlots(
-        startLunch, endLunch, intervalInMinutes, _selectedDate);
-    timeSlotsDinner = generateTimeSlots(
-        startDinner, endDinner, intervalInMinutes, _selectedDate);
+    //
+    // timeSlotsLunch = generateTimeSlots(
+    //     startLunch, endLunch, intervalInMinutes, _selectedDate);
+    // timeSlotsDinner = generateTimeSlots(
+    //     startDinner, endDinner, intervalInMinutes, _selectedDate);
   }
 
   void selectTimeSlot(String timeSlot, String type) {
@@ -434,7 +435,7 @@ class _BookTableScreenState extends State<BookTableScreen> {
                                         ),
                                       ),
                                       Text(
-                                        // dateString,
+                                        // "",
                                           data?.t05Date.toString()!=null? DateFormat('dd MMM').format(DateTime.parse(data?.t05Date.toString()??"2025-01-25")):"",
                                         style: TextStyle(
                                           fontSize: 16,
@@ -467,7 +468,7 @@ class _BookTableScreenState extends State<BookTableScreen> {
                         bookModel.isNotEmpty&&bookModel.toString()!=""?  ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                            itemCount: bookModel[0].weekday![0].meals!.length,
+                            itemCount: bookModel[0].weekday![0].meals?.length??0,
                             itemBuilder: (ctx,int mealIndex){
                             final mealData =  bookModel[0].weekday![0].meals![mealIndex];
                           return Container(
@@ -583,12 +584,11 @@ class _BookTableScreenState extends State<BookTableScreen> {
                                                 availableSeat=data.t02Noofseats??0;
                                               });
                                               selectTimeSlot(
-
                                                 data.t01Time.toString()??"",
                                                 widget.category_name ==
                                                     "Salon"
                                                     ? 'Day'
-                                                    : "Lunch");}
+                                                    : mealData.t03FoodType.toString());}
                                           );
                                         },
                                       ),
@@ -1027,9 +1027,7 @@ class _BookTableScreenState extends State<BookTableScreen> {
                           showErrorMessage(context,
                               message: 'There is not a sufficient seats');
                         } else {
-                          print(
-                            "Proceed clicked - timetype: $timetype2,  Guest: $guest, Date: $visitingdate, Time: $visitingtime, Offer ID: ${selectedPreBookOffer!.id}",
-                          );
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(

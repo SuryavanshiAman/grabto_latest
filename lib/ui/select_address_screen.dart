@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
 import 'package:http/http.dart' as http;
@@ -78,7 +80,9 @@ bool visibility=false;
   Future<Map<String, dynamic>> fetchPlaceDetailsForSuggestion(String placeId) async {
     final url =
         "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$googleApiKey";
-    print("Fetching place details: $url");
+    // print("Fetching place details: $url");
+    print("Fetching place details: $placeId");
+    print("Dhakelu");
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -116,10 +120,74 @@ bool visibility=false;
       return {};
     }
   }
+  GoogleMapController? _mapController;
+  late LatLng _currentLocation;
+  Future<void> _getCurrentLocation() async {
+    LocationPermission permission = await Geolocator.requestPermission();
+
+    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+      return;
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    setState(() {
+      _currentLocation = LatLng(position.latitude, position.longitude);
+    });
+
+    // Fetch and update the address
+    _getAddressFromLatLng(position.latitude, position.longitude);
+
+    _mapController?.animateCamera(CameraUpdate.newLatLng(_currentLocation));
+  }
+  // static const String googleApiKey = "AIzaSyCOqfJTgg1Blp1GIeh7o8W8PC1w5dDyhWI";
+  String _currentAddress = "Fetching address..."; // Default text
+  String _longName = "Fetching details...";
+  double _latitude=0.0;
+  double _longitude=0.0;
+  Future<void> _getAddressFromLatLng(double lat, double lng) async {
+    try {
+      // final url = Uri.parse("https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lng");
+      final url = Uri.parse("https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$googleApiKey");
+      print(url);
+      final response = await http.get(url,
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        String formattedAddress = data["results"][0]["formatted_address"];
+        List<dynamic> addressComponents = data["results"][0]["address_components"];
+        String longName = addressComponents.isNotEmpty ? addressComponents[0]["long_name"] : "Not Available";
+        Map<String, dynamic> location = data["results"][0]["geometry"]["location"];
+        double fetchedLat = location["lat"];
+        double fetchedLng = location["lng"];
+
+        setState(() {
+          _currentAddress = formattedAddress;
+          _longName = longName;
+          _latitude = fetchedLat;
+          _longitude = fetchedLng;
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>LocationPickerScreen(lat:_latitude,long:_longitude)));
+
+        });
+      } else {
+        setState(() {
+          _currentAddress = "Failed to fetch address";
+        });
+      }
+    } catch (e) {
+      print("Error fetching address: $e");
+      setState(() {
+        _currentAddress = "Unable to fetch address";
+      });
+    }
+  }
   String selectedLocation = "Write here my selected location";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColors.whiteBG,
       appBar: AppBar(
         title: Text(
           "Enter your area or apartment name",
@@ -142,13 +210,16 @@ bool visibility=false;
               height: heights*0.06,
               child: TextField(
                 controller: searchCont,
+                // maxLines: 3,
+
                 decoration: InputDecoration(
+contentPadding: EdgeInsets.only(top: 10),
                   border: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
                     borderRadius: BorderRadius.circular(15)
                   ),
                   focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
+                      borderSide: BorderSide(color: Colors.grey.withOpacity(0.5)),
                       borderRadius: BorderRadius.circular(15)
                   ),
                   hintText: "Try JP Nagar, Siri Gardenia, etc.",
@@ -172,7 +243,6 @@ bool visibility=false;
               ),
             ),
             SizedBox(height: 16),
-
             // Use My Current Location
             ListTile(
               minLeadingWidth: 5,
@@ -182,15 +252,16 @@ bool visibility=false;
                   Text(
                     "Use my current location",
                     style: TextStyle(
-                        color: Colors.red, fontWeight: FontWeight.w500),
+                        color: Colors.red, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
               trailing: Icon(Icons.arrow_forward_ios_rounded,size: 16,),
-              onTap: () {},
+              onTap: () {
+                _getCurrentLocation().then((data){});
+              },
             ),
             Divider(color: MyColors.textColor.withOpacity(0.1),),
-
             ListTile(minLeadingWidth: 5,
               title: Row(
                 children: [
@@ -198,16 +269,14 @@ bool visibility=false;
                   Text(
                     "Add new address",
                     style: TextStyle(
-                        color: Colors.red, fontWeight:  FontWeight.w500),
+                        color: Colors.red, fontWeight:  FontWeight.w600),
                   ),
                 ],
               ),
 
               onTap: () {},
             ),
-
             Divider(color: MyColors.textColor.withOpacity(0.1),),
-
             // Saved Addresses
          visibility==false?Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -266,13 +335,13 @@ bool visibility=false;
                   return ListTile(
                     onTap: () {
                       if (suggestion['place_id'] != null) {
-                        fetchPlaceDetailsForSuggestion(suggestion['place_id']).then((details) {
+                        fetchPlaceDetailsForSuggestion(suggestion['place_id']).then((details,) {
                           // elementList.setDistrict(details['district']);
                           setState(() {
                             selectedLocation =
                             "${suggestion['description']} (${details['district']}, ${details['pincode']})";
                           });
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>LocationPickerScreen(lat:details['latitude'],long:details['longitude'])));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>LocationPickerScreen(lat:suggestion['latitude'],long:suggestion['longitude'])));
                           // Navigator.pop(context);
                         }).catchError((e) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -299,9 +368,7 @@ bool visibility=false;
                      ],
                    ),
                     subtitle: Text(
-                      suggestion['description'].toString().contains(',')
-                          ? suggestion['description'].toString().substring(suggestion['description'].toString().indexOf(',') + 1).trim()
-                          : '', // Rest of the text after comma
+                     "${ suggestion['description'].toString().contains(',') ? suggestion['description'].toString().substring(suggestion['description'].toString().indexOf(',') + 1).trim() : ''}, lat-${suggestion['latitude']},long-${suggestion['longitude']}", // Rest of the text after comma
                       style: const TextStyle(
                         // fontFamily: "nunito",
                         fontWeight: FontWeight.w400,

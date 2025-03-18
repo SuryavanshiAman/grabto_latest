@@ -27,10 +27,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../helper/location_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -186,11 +189,36 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final address=Provider.of<Address>(context);
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: MyColors.backgroundBg,
       appBar: AppBar(
         backgroundColor: MyColors.backgroundBg,
+        leadingWidth: 50,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            //
+            InkWell(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
+
+              },
+              child: Row(
+                children: [
+                  Icon(LucideIcons.navigation,size: 16,color: MyColors.redBG,),
+                  SizedBox(width: 2,),
+                  Text(address.address,style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600),),
+                  Icon(Icons.keyboard_arrow_down_outlined,size: 16,color: MyColors.redBG,),
+
+                ],
+              ),
+            ),
+            Text(address.area,maxLines: 1,style: TextStyle(fontSize: 11,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),),
+          ],
+        ),
         actions: [
           Text(
             "${current_location}",
@@ -215,9 +243,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   color: MyColors.primaryColor,
                 ),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
+                  // Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
                   // AddressScreen();
-                  // _showCityDialog();
+                  _showCityDialog();
                 },
               ),
             ),

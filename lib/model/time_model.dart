@@ -14,7 +14,7 @@ class TimeModel {
     required this.store_id,
     required this.status,
     required this.day,
-    required this.operation_status, // Update constructor to include this
+    required this.operation_status,
     required this.start_time,
     required this.end_time,
     required this.created_at,

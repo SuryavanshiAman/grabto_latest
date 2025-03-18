@@ -87,7 +87,7 @@ class ApiServices {
     const url = '$BASE_URL/user_details';
     final uri = Uri.parse(url);
     final response = await http.post(uri, body: body);
-
+print(url);
     if (response.statusCode == 200) {
       // Parse the JSON response
       final jsonResponse = json.decode(response.body) as Map<String, dynamic>;

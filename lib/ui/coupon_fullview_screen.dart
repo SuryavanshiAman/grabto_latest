@@ -1515,7 +1515,7 @@ alignment: Alignment.center,
                                       builder: (context) =>
                                           BookTableScreen(
                                               "$start_time",
-                                              "$end_time",
+                                              // "$end_time",
                                               "$storeName",
                                               "${widget.id}",
                                             "$category_name"
@@ -2904,7 +2904,8 @@ kycStatus=="Approve"?
                         MaterialPageRoute(
                             builder: (context) =>
                                 BookTableScreen("$start_time",
-                                    "$end_time", "$storeName", "$storeId","$categoryName")),
+                                    // "$end_time",
+                                    "$storeName", "$storeId","$categoryName")),
                       ):showErrorMessage(context, message: "Store temporarily unavailable here.Kindly visit store for more details.");
                     }},
                     child: const Text(

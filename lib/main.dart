@@ -16,6 +16,8 @@ import 'firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'helper/location_provider.dart';
+
 final _messageStreamController = BehaviorSubject<RemoteMessage>();
 
 // TODO: Define the background message handler
@@ -197,6 +199,7 @@ class _MyAppState extends State<MyApp> {
       providers: [
         // ChangeNotifierProvider(create: (_) => PurchaseProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()), // Add UserProvider here
+        ChangeNotifierProvider(create: (_) => Address()), // Add UserProvider here
       ],
       child: MaterialApp(
         title: 'Grabto',
