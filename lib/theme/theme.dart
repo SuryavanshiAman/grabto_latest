@@ -30,7 +30,7 @@ class MyColors {
   static const Color btnTextColor = Color(0xFFFFFFFF);
   static const Color iconColor = Color(0xFFDA1A22);
   static const Color drawerIconColor = Color(0xFFDA1A22);
-  static const Color orange = Color(0xFFfb5006);
+  static const Color orange = Color(0xFFDA1A22);
   static const Color bottomNavigationSelectedColor = Color(0xFFDA1A22);
   static const Color bottomNavigationUnselectedColor = Colors.black54;
   static const Color bottomNavigationBackgroundColor = Colors.white;

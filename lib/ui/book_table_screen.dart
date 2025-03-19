@@ -106,7 +106,7 @@ class _BookTableScreenState extends State<BookTableScreen> {
       isLunchTimeSlotsVisible = !isLunchTimeSlotsVisible; // Toggle visibility
     });
   }
-
+int selectedIndex=0;
   void checkTimeSlotsVisibility(DateTime selectedDate) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -357,37 +357,31 @@ class _BookTableScreenState extends State<BookTableScreen> {
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
-                            children: List.generate(bookModel.length, (index) {
-                              final data= bookModel[index].weekday?[index];
-                              String endTime = "11:19 PM";
-                              DateTime now = DateTime.now();
-                              DateTime todayEndTime =
-                                  DateFormat("hh:mm a").parse(endTime);
-
-                              todayEndTime = DateTime(
-                                now.year,
-                                now.month,
-                                now.day,
-                                todayEndTime.hour,
-                                todayEndTime.minute,
-                              );
-
-                              // Calculate the date for the given index
+                            children: List.generate(bookModel[0].weekday?.length??0, (index) {
+                              final data= bookModel[0].weekday?[index];
+                              // String endTime = "11:19 PM";
+                              // DateTime now = DateTime.now();
+                              // DateTime todayEndTime =
+                              //     DateFormat("hh:mm a").parse(endTime);
+                              // todayEndTime = DateTime(
+                              //   now.year,
+                              //   now.month,
+                              //   now.day,
+                              //   todayEndTime.hour,
+                              //   todayEndTime.minute,
+                              // );
                               DateTime date =
                                   DateTime.now().add(Duration(days: index));
-
-                              // Skip today's widget if current time exceeds end time
-                              if (index == 0 &&
-                                  DateTime.now().isAfter(todayEndTime)) {
-                                return SizedBox(
-                                  width: 10,
-                                ); // Return an empty widget instead of null
-                              }
-
-                              String dateString =
-                                  DateFormat('d MMM').format(date);
-                              String dayString = DateFormat('EEE').format(date);
-
+                              // if (index == 0 &&
+                              //     DateTime.now().isAfter(todayEndTime)) {
+                              //   return SizedBox(
+                              //     width: 10,
+                              //   ); // Return an empty widget instead of null
+                              // }
+                              // String dateString =
+                              //     DateFormat('d MMM').format(date);
+                              // String dayString = DateFormat('EEE').format(date);
+                              //
                               double leftMargin = index == 0 ? 16 : 4;
                               double rightMargin = index == 29 ? 16 : 4;
 
@@ -535,7 +529,13 @@ class _BookTableScreenState extends State<BookTableScreen> {
                                         ],
                                       ),
                                       GestureDetector(
-                                        onTap: toggleLunchTimeSlotsVisibility,
+                                        onTap: (){
+                                          setState(() {
+                                            selectedIndex=mealIndex;
+                                          });
+                                          selectedIndex==mealIndex ? toggleLunchTimeSlotsVisibility():null;
+
+                                          },
                                         // Toggle lunch time slots on click
                                         child: Container(
                                           decoration: BoxDecoration(
@@ -545,7 +545,8 @@ class _BookTableScreenState extends State<BookTableScreen> {
                                             Border.all(color: Colors.grey),
                                           ),
                                           child: Icon(
-                                            isLunchTimeSlotsVisible
+                                            // isLunchTimeSlotsVisible
+                                            selectedIndex==mealIndex&&isLunchTimeSlotsVisible
                                                 ? Icons
                                                 .keyboard_arrow_up_outlined
                                                 : Icons
@@ -558,7 +559,7 @@ class _BookTableScreenState extends State<BookTableScreen> {
                                     ],
                                   ),
                                 ),
-                                if (isLunchTimeSlotsVisible) // Show lunch time slots if visible
+                                if (selectedIndex==mealIndex&&isLunchTimeSlotsVisible)
                                   Padding(
                                     padding: const EdgeInsets.only(top:18.0),
                                     child: SizedBox(
@@ -1145,6 +1146,7 @@ class TimeSlotCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        alignment: Alignment.center,
         padding: EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           color: isSelected
@@ -1154,18 +1156,13 @@ class TimeSlotCard extends StatelessWidget {
               color: isSelected ? MyColors.primaryColor : Colors.grey),
           borderRadius: BorderRadius.circular(10.0),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              timeSlot,
-              style: TextStyle(
-                fontSize: 12.0,
-                fontWeight: FontWeight.bold,
-                color: isSelected ? MyColors.primaryColor : Colors.black,
-              ),
-            ),
-          ],
+        child: Text(
+          timeSlot,
+          style: TextStyle(
+            fontSize: 12.0,
+            fontWeight: FontWeight.bold,
+            color: isSelected ? MyColors.primaryColor : Colors.black,
+          ),
         ),
       ),
     );

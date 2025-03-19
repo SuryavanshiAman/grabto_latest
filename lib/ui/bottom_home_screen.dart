@@ -33,8 +33,8 @@ import '../widget/sub_categories_card_widget.dart';
 
 class HomeBottamScreen extends StatefulWidget {
   final Future<void> Function(String) onFetchMembership;
-
-  HomeBottamScreen({required this.onFetchMembership});
+  final List<BannerModel> bannersDa;
+  HomeBottamScreen({super.key, required this.onFetchMembership, required this.bannersDa});
 
   @override
   State<HomeBottamScreen> createState() => _HomeBottamScreenState();
@@ -58,6 +58,11 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
   List<SubCategoriesModel> wahtyourchoicList = [];
   List<LocalityModel> localtiyList = [];
   String userName = '';
+  String bannerId = '';
+  String bannerType = '';
+  String bannerImage = '';
+  String bannerStatus = '';
+  String bannerURL = '';
   bool isLoading = false;
   String cityId = "";
   List<PreBookTableHistoryModel> prebookofferlistHistory = [];
@@ -74,6 +79,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
     WidgetsBinding.instance.addObserver(this);
     getUserDetails();
     fetchSubCategories(5);
+    getBanners();
     // fetchSubCategories()
   }
   @override
@@ -193,6 +199,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
           "${_cityId}",
           "");
       getName();
+      getBanners();
       fetchGreatOffers1("");
       fetchGreatOffers2("2");
       fetchWhatYourChoice();
@@ -250,117 +257,126 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 //Name Layout start
-                Container(
-                  height: heights*0.3,
-                  decoration: BoxDecoration(
-                    // color: Colors.red,
-                    image: DecorationImage(image: AssetImage("assets/images/Grabto.gif"),fit: BoxFit.fill),
-                    borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20) )
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10, left: 20, bottom: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              "Welcome,",
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: MyColors.whiteBG),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          "$userName",
-                          style: TextStyle(
-                              fontSize: 23,
-                              fontWeight: FontWeight.w900,
-                              color: MyColors.whiteBG),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            _navigateToSearchScreen(context);
-                          },
-                          child: Container(
-                            width: MediaQuery
-                                .of(context)
-                                .size
-                                .width,
-                            margin: EdgeInsets.symmetric(horizontal: 15),
-                            height: 40,
-                            child: Material(
-                              elevation: 1, // Set the elevation value as needed
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                InkWell(
+                  onTap: (){
+                    widget.bannersDa[0].type=="1"?
+                    navigateToTopSubCategories(
+                        context, "Food", 5):Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                          CouponFullViewScreen("${widget.bannersDa[0].url}")
+                    ));
+                  },
+                  child: Container(
+                    height: heights*0.3,
+                    decoration: BoxDecoration(
+                      // color: Colors.red,
+                      image: DecorationImage(image: NetworkImage(widget.bannersDa[0].image),fit: BoxFit.fill),
+                      borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20) )
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10, left: 20, bottom: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "Welcome,",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: MyColors.whiteBG),
                               ),
-                              child: Container(
-                                height: 55,
-                                padding: const EdgeInsets.all(10),
-                                decoration: ShapeDecoration(
-                                  color: MyColors.searchBg,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
+                            ],
+                          ),
+                          Text(
+                            "$userName",
+                            style: TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.w900,
+                                color: MyColors.whiteBG),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              _navigateToSearchScreen(context);
+                            },
+                            child: Container(
+                              width: MediaQuery
+                                  .of(context)
+                                  .size
+                                  .width,
+                              margin: EdgeInsets.symmetric(horizontal: 15),
+                              height: 40,
+                              child: Material(
+                                elevation: 1, // Set the elevation value as needed
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width: 28,
-                                      height: 28,
-                                      margin: EdgeInsets.only(right: 10),
-                                      clipBehavior: Clip.antiAlias,
-                                      decoration: BoxDecoration(),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                              width: 28,
-                                              height: 28,
-                                              child: Icon(
-                                                Icons.search,
-                                                color: MyColors.primaryColor,
-                                              )),
-                                        ],
-                                      ),
+                                child: Container(
+                                  height: 55,
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: ShapeDecoration(
+                                    color: MyColors.searchBg,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
-                                    SizedBox(
-                                      child: Text(
-                                        'Search',
-                                        style: TextStyle(
-                                          color: Color(0x993C3C43),
-                                          fontSize: 17,
-                                          fontFamily: 'SF Pro Text',
-                                          fontWeight: FontWeight.w400,
-                                          height: 0.08,
-                                          letterSpacing: -0.41,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 28,
+                                        height: 28,
+                                        margin: EdgeInsets.only(right: 10),
+                                        clipBehavior: Clip.antiAlias,
+                                        decoration: BoxDecoration(),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                                width: 28,
+                                                height: 28,
+                                                child: Icon(
+                                                  Icons.search,
+                                                  color: MyColors.primaryColor,
+                                                )),
+                                          ],
                                         ),
                                       ),
-                                    ),
-                                    Container(
-                                      width: 18,
-                                      height: 18,
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [],
+                                      SizedBox(
+                                        child: Text(
+                                          'Search',
+                                          style: TextStyle(
+                                            color: Color(0x993C3C43),
+                                            fontSize: 17,
+                                            fontFamily: 'SF Pro Text',
+                                            fontWeight: FontWeight.w400,
+                                            height: 0.08,
+                                            letterSpacing: -0.41,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                      Container(
+                                        width: 18,
+                                        height: 18,
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -1231,6 +1247,7 @@ InkWell(
                   height: heights*0.3,
                   child: GridView.builder(
                     shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
                     itemCount: subCategoriesList.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
@@ -1885,7 +1902,22 @@ InkWell(
     print("name: " + n.name);
     userName = n.name;
   }
-
+  Future<void> getBanners() async {
+    print("ttttt");
+    final UserModel user = await SharedPref.getUser();
+    List<BannerModel> banners = user.banners;
+    for (var banner in banners) {
+      // setState(() {
+        bannerId=banner.id.toString();
+        bannerImage=banner.image;
+        bannerType=banner.type;
+        bannerURL=banner.url;
+        bannerStatus=banner.status;
+      // });
+      print(banner.image);
+      print("ttttt");
+    }
+  }
   Future<void> navigateToTopCategoriesScreen() async {
     final route = MaterialPageRoute(
         builder: (context) => TopCategoriesScreen("Categories", categories));
@@ -2162,7 +2194,7 @@ class YourChoiceHomeWidget extends StatelessWidget {
   final List<SubCategoriesModel> yourChoiceItems;
   String city_id;
 
-  YourChoiceHomeWidget(this.yourChoiceItems, this.city_id);
+  YourChoiceHomeWidget(this.yourChoiceItems, this.city_id, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -2247,7 +2279,7 @@ class YourChoiceHomeWidget extends StatelessWidget {
 class TrendingRestruantWidget extends StatelessWidget {
   final List<StoreModel> restaurantsItems;
 
-  TrendingRestruantWidget(this.restaurantsItems);
+  TrendingRestruantWidget(this.restaurantsItems, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -2673,7 +2705,7 @@ class TrendingRestruantWidget extends StatelessWidget {
 class RecentJoinedWidget extends StatelessWidget {
   final List<StoreModel> stores; // Renamed from restaurantsItems
 
-  RecentJoinedWidget(this.stores);
+  RecentJoinedWidget(this.stores, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -3008,7 +3040,7 @@ class RecentJoinedWidget extends StatelessWidget {
 class LocationWidget extends StatelessWidget {
   final List<LocalityModel> locationItems;
 
-  LocationWidget(this.locationItems);
+  LocationWidget(this.locationItems, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -3099,7 +3131,7 @@ class TopCollectionWidget extends StatelessWidget {
   List<StoreModel> restaurantsItems;
   dynamic leftMrgin;
 
-  TopCollectionWidget(this.restaurantsItems, this.leftMrgin);
+  TopCollectionWidget(this.restaurantsItems, this.leftMrgin, {super.key});
 
   @override
   Widget build(BuildContext context) {

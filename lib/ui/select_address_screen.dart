@@ -122,7 +122,7 @@ bool visibility=false;
   }
   GoogleMapController? _mapController;
   late LatLng _currentLocation;
-  Future<void> _getCurrentLocation() async {
+  Future<void> _getCurrentLocation(dynamic type) async {
     LocationPermission permission = await Geolocator.requestPermission();
 
     if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
@@ -138,7 +138,7 @@ bool visibility=false;
     });
 
     // Fetch and update the address
-    _getAddressFromLatLng(position.latitude, position.longitude);
+    _getAddressFromLatLng(position.latitude, position.longitude, type);
 
     _mapController?.animateCamera(CameraUpdate.newLatLng(_currentLocation));
   }
@@ -147,7 +147,7 @@ bool visibility=false;
   String _longName = "Fetching details...";
   double _latitude=0.0;
   double _longitude=0.0;
-  Future<void> _getAddressFromLatLng(double lat, double lng) async {
+  Future<void> _getAddressFromLatLng(double lat, double lng,dynamic type) async {
     try {
       // final url = Uri.parse("https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lng");
       final url = Uri.parse("https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$googleApiKey");
@@ -168,7 +168,7 @@ bool visibility=false;
           _longName = longName;
           _latitude = fetchedLat;
           _longitude = fetchedLng;
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>LocationPickerScreen(lat:_latitude,long:_longitude)));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>LocationPickerScreen(lat:_latitude,long:_longitude,type:type)));
 
         });
       } else {
@@ -244,37 +244,114 @@ contentPadding: EdgeInsets.only(top: 10),
             ),
             SizedBox(height: 16),
             // Use My Current Location
-            ListTile(
-              minLeadingWidth: 5,
-              title: Row(
-                children: [
-                  Icon(Icons.navigation_rounded, color: Colors.red,size: 18,),
-                  Text(
-                    "Use my current location",
-                    style: TextStyle(
-                        color: Colors.red, fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-              trailing: Icon(Icons.arrow_forward_ios_rounded,size: 16,),
-              onTap: () {
-                _getCurrentLocation().then((data){});
-              },
-            ),
-            Divider(color: MyColors.textColor.withOpacity(0.1),),
-            ListTile(minLeadingWidth: 5,
-              title: Row(
-                children: [
-              Icon(LucideIcons.plus, color: Colors.red,size: 18,weight: 50,),
-                  Text(
-                    "Add new address",
-                    style: TextStyle(
-                        color: Colors.red, fontWeight:  FontWeight.w600),
-                  ),
-                ],
-              ),
+            // SizedBox(
+            //   height: heights*0.05,
+            //   child: ListTile(
+            //     minLeadingWidth: 5,
+            //     title: Row(
+            //       children: [
+            //         Icon(Icons.navigation_rounded, color: Colors.red,size: 18,),
+            //         Text(
+            //           "Use my current location",
+            //           style: TextStyle(
+            //               color: Colors.red, fontWeight: FontWeight.w600),
+            //         ),
+            //       ],
+            //     ),
+            //     trailing: Icon(Icons.arrow_forward_ios_rounded,size: 16,),
+            //     onTap: () {
+            //       _getCurrentLocation(2).then((data){});
+            //     },
+            //   ),
+            // ),
+            InkWell(
+              onTap: (){
+                _getCurrentLocation(2);
 
-              onTap: () {},
+              },
+              child: Container(
+                height: heights*0.05,
+                child:Row(
+                  children: [
+                    Icon(Icons.navigation_rounded, color: Colors.red,size: 18,),
+                    Text(
+                      "Use my current location",
+                      style: TextStyle(
+                          color: Colors.red, fontWeight: FontWeight.w600),
+                    ),
+                    Spacer(),
+                    Icon(Icons.arrow_forward_ios_rounded,size: 14,)
+                  ],
+                ),
+                // ListTile(
+                //
+                //   minLeadingWidth: 5,
+                //   // tileColor: Colors.red,
+                //   title: Row(
+                //     children: [
+                //   Icon(LucideIcons.plus, color: Colors.red,size: 18,weight: 50,),
+                //       Text(
+                //         "Add new address",
+                //         style: TextStyle(
+                //             color: Colors.red, fontWeight:  FontWeight.w600),
+                //       ),
+                //     ],
+                //   ),
+                //
+                //   onTap: () {
+                //     _getCurrentLocation(1);
+                //     // Navigator.push(context, MaterialPageRoute(builder: (context)=>LocationPickerScreen(lat:suggestion['latitude'],long:suggestion['longitude'],type:1)));
+                //
+                //   },
+                // ),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 10,bottom: 10),
+              color:  MyColors.textColor.withOpacity(0.1),
+              height: 1,
+              width: widths,
+            ),
+            // Divider(color: MyColors.textColor.withOpacity(0.1),height: 50,),
+            InkWell(
+              onTap: (){
+                _getCurrentLocation(1);
+
+              },
+              child: Container(
+                height: heights*0.05,
+                child:Row(
+                  children: [
+                    Icon(LucideIcons.plus, color: Colors.red,size: 18,weight: 50,),
+                    Text(
+                      "Add new address",
+                      style: TextStyle(
+                          color: Colors.red, fontWeight:  FontWeight.w600),
+                    ),
+                  ],
+                ),
+                // ListTile(
+                //
+                //   minLeadingWidth: 5,
+                //   // tileColor: Colors.red,
+                //   title: Row(
+                //     children: [
+                //   Icon(LucideIcons.plus, color: Colors.red,size: 18,weight: 50,),
+                //       Text(
+                //         "Add new address",
+                //         style: TextStyle(
+                //             color: Colors.red, fontWeight:  FontWeight.w600),
+                //       ),
+                //     ],
+                //   ),
+                //
+                //   onTap: () {
+                //     _getCurrentLocation(1);
+                //     // Navigator.push(context, MaterialPageRoute(builder: (context)=>LocationPickerScreen(lat:suggestion['latitude'],long:suggestion['longitude'],type:1)));
+                //
+                //   },
+                // ),
+              ),
             ),
             Divider(color: MyColors.textColor.withOpacity(0.1),),
             // Saved Addresses
@@ -341,7 +418,7 @@ contentPadding: EdgeInsets.only(top: 10),
                             selectedLocation =
                             "${suggestion['description']} (${details['district']}, ${details['pincode']})";
                           });
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>LocationPickerScreen(lat:suggestion['latitude'],long:suggestion['longitude'])));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>LocationPickerScreen(lat:suggestion['latitude'],long:suggestion['longitude'],type:2)));
                           // Navigator.pop(context);
                         }).catchError((e) {
                           ScaffoldMessenger.of(context).showSnackBar(

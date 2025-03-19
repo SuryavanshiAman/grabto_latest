@@ -124,15 +124,19 @@ import 'package:geocoding/geocoding.dart';
 import 'package:grabto/helper/location_provider.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
+import 'package:grabto/ui/home_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
+import 'add_address_bottom_sheet_screen.dart';
+
 class LocationPickerScreen extends StatefulWidget {
   final double lat;
   final double long;
+  final int type;
 
-  const LocationPickerScreen({super.key, required this.lat, required this.long});
+  const LocationPickerScreen({super.key, required this.lat, required this.long,required this.type});
 
   @override
   _LocationPickerScreenState createState() => _LocationPickerScreenState();
@@ -337,6 +341,15 @@ print(url);
                   onPressed: () {
                     address.setAddress(_longName2);
                     address.setArea(_currentAddress);
+                    widget.type==1?
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      builder: (context) => const AddressBottomSheet(),
+                    ):Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: MyColors.orange,

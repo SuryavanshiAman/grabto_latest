@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:grabto/model/user_model.dart';
 import 'package:grabto/ui/intro_screen.dart';
 import 'package:grabto/ui/login_screen.dart';
@@ -24,7 +26,7 @@ class SharedPref {
   static const String KEY_CREATED_AT = "created_at";
   static const String KEY_UPDATED_AT = "updated_at";
   static const String KEY_TOKEN = "token";
-
+  static const String KEY_BANNER = 'banner';
   static const String KEY_GATEWAY_STATUS = "gateway_status";
   static const String KEY_EXTERNAL_LINK = "external";
   static const String KEY_ABOUT_EXTERNAL_STATUS= "about_external_status";
@@ -48,6 +50,8 @@ class SharedPref {
     await prefs.setString(KEY_LONG, userData[KEY_LONG] ?? '');
     await prefs.setString(KEY_CREATED_AT, userData[KEY_CREATED_AT] ?? '');
     await prefs.setString(KEY_UPDATED_AT, userData[KEY_UPDATED_AT] ?? '');
+    String bannerJson = jsonEncode(userData[KEY_BANNER]);
+    await prefs.setString(KEY_BANNER, bannerJson);
   }
 
   static Future<int> isLoggedIn() async {
@@ -77,6 +81,14 @@ class SharedPref {
 
   static Future<UserModel> getUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? bannerJson = prefs.getString(KEY_BANNER);
+    List<BannerModel> banners = [];
+    if (bannerJson != null) {
+      List<dynamic> decodedBanners = jsonDecode(bannerJson);
+      print(decodedBanners.length);
+      print("decodedBanners.length");
+      banners = decodedBanners.map((e) => BannerModel.fromMap(e)).toList();
+    }
     return UserModel(
       id: prefs.getInt(KEY_ID) ?? 0,
       current_month: prefs.getString(KEY_CURRENT_MONTH) ?? '',
@@ -94,6 +106,7 @@ class SharedPref {
       long: prefs.getString(KEY_LONG) ?? '',
       created_at: prefs.getString(KEY_CREATED_AT) ?? '',
       updated_at: prefs.getString(KEY_UPDATED_AT) ?? '',
+      banners: banners,
     );
   }
 
