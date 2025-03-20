@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:grabto/helper/shared_pref.dart';
 import 'package:grabto/main.dart';
@@ -12,24 +14,38 @@ import 'package:grabto/theme/theme.dart';
 import 'package:grabto/ui/all_coupon_screen.dart';
 import 'package:grabto/ui/booked_table_screen.dart';
 import 'package:grabto/ui/coupon_fullview_screen.dart';
+import 'package:grabto/ui/delete_screen.dart';
 import 'package:grabto/ui/near_me_screen.dart';
 import 'package:grabto/ui/search_screen.dart';
+import 'package:grabto/ui/select_address_screen.dart';
 import 'package:grabto/ui/subcategories_screen.dart';
+import 'package:grabto/ui/term_and_condition.dart';
 import 'package:grabto/ui/top_categories_screen.dart';
 import 'package:grabto/ui/table_paybill_screen.dart';
+import 'package:grabto/ui/transaction_screen.dart';
 import 'package:grabto/utils/dashed_line.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:grabto/utils/time_slot.dart';
-import 'package:grabto/widget/categories_card_widget.dart';
 import 'package:grabto/widget/title_description_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:grabto/model/pre_book_table_history.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 
+import '../helper/location_provider.dart';
+import '../model/city_model.dart';
+import '../services/api.dart';
 import '../widget/sub_categories_card_widget.dart';
-
+import 'about_us_screen.dart';
+import 'customer_care.dart';
+import 'how_it_works.dart';
+import 'package:http/http.dart'as http;
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 
 class HomeBottamScreen extends StatefulWidget {
   final Future<void> Function(String) onFetchMembership;
@@ -75,6 +91,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
   void initState() {
     // TODO: implement initState
     super.initState();
+    _scrollController.addListener(_handleScroll);
+
     _instance = this;
     WidgetsBinding.instance.addObserver(this);
     getUserDetails();
@@ -106,38 +124,18 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
 
   static _HomeBottamScreenState? get instance => _instance;
 
-  // List<Map<String, dynamic>> topCollection = [
-  //   {
-  //     'imgUrl':
-  //     'https://lh3.googleusercontent.com/p/AF1QipNEsQ1otg5pAlXzH58z_VyugPEYCZAGFXaSdI9q=w1080-h608-p-no-v0',
-  //   },
-  //   {
-  //     'imgUrl': 'https://10619-2.s.cdn12.com/rests/original/110_536113530.jpg',
-  //   },
-  //   {
-  //     'imgUrl':
-  //     'https://content.jdmagicbox.com/comp/ahmedabad/r5/079pxx79.xx79.210130161448.z7r5/catalogue/-soz2ewh9fy.jpg?clr=',
-  //   },
-  //   {
-  //     'imgUrl':
-  //     'https://cdn.dribbble.com/users/36464/screenshots/2377234/media/e97032947d984e74b72da6421547e1b8.jpg',
-  //   },
-  //   {
-  //     'imgUrl':
-  //     'https://img.freepik.com/free-vector/buy-one-get-one-free-sticker-label-design_1017-16289.jpg'
-  //   },
-  //   {
-  //     'imgUrl':
-  //     'https://static2.bigstockphoto.com/4/2/4/large1500/424853807.jpg'
-  //   },
-  //   {
-  //     'imgUrl':
-  //     'https://img.freepik.com/free-vector/buy-one-get-one-free-sale-deals-background_1017-40813.jpg'
-  //   },
-  //
-  //   // Add more items as needed
-  // ];
-
+  List<CityModel> cityList = [];
+  String userEmail = '';
+  String userMobile = '';
+  String userimage = '';
+  String dialogimage = '';
+  String current_location = '';
+  String address = '';
+  String home_location = '';
+  String planName = '';
+  String left_day = '';
+  String gatewayStatus = '';
+  String externalStatus = '';
   Future<void> getUserDetails() async {
     setState(() {
       isLoading = true;
@@ -150,10 +148,38 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
     setState(() {
       user_id=n.id;
       cityId = n.home_location;
+      user_id = n.id;
+      userName = n.name;
+      userEmail = n.email;
+      userMobile = n.mobile;
+      userimage = n.image;
+      address = n.address;
+      current_location = n.current_location;
+      home_location = n.home_location;
     });
     await allApiCall(cityId);
   }
 
+  int _selectedIndex = 0;
+  Future<void> shareNetworkImage(String imageUrl, String text) async {
+    setState(() {
+      isLoading = true;
+    });
+    final http.Response response = await http.get(Uri.parse(imageUrl));
+    final Directory directory = await getTemporaryDirectory();
+    final File file = await File('${directory.path}/Image.png')
+        .writeAsBytes(response.bodyBytes);
+    await Share.shareXFiles(
+      [
+        XFile(file.path),
+      ],
+      text: text,
+    );
+
+    setState(() {
+      isLoading = false;
+    });
+  }
   Future<void> allApiCall(String _cityId) async {
     setState(() {
       isLoading = true;
@@ -233,11 +259,1725 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
       );
     }
   }
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  void _onItemTappedd(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    //Navigator.push(context, MaterialPageRoute(builder: (context){return HomeScreen();}));
+    Navigator.pop(context);
+
+    //Navigator.push(context, MaterialPageRoute(builder: (context) => HomeBottamScreen()));
+  }
+  Future<void> _handleReturnFromSecondScreen() async {
+    // This function will be called when returning from the second screen
+    print('Returned from HomeScreen');
+    await getUserDetails();
+    await fetchCity();
+    await currentMembership("$user_id");
+  }
+  void logoutUser() {
+    SharedPref.logout(context);
+  }
+  final ScrollController _scrollController = ScrollController();
+  bool _showTitle = true;
+  void _handleScroll() {
+    setState(() {
+      if (_scrollController.position.pixels > 100) {
+        _showTitle = false;
+      } else {
+        _showTitle = true;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return  categories.isNotEmpty? Center(
-      child: Container(
+    // final address=Provider.of<Address>(context);
+    return  categories.isNotEmpty? Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: MyColors.backgroundBg,
+      // appBar: AppBar(
+      //   backgroundColor: MyColors.backgroundBg,
+      //   leadingWidth: 20,
+      //   title: Column(
+      //     crossAxisAlignment: CrossAxisAlignment.start,
+      //     children: [
+      //       //
+      //       InkWell(
+      //         onTap: (){
+      //           Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
+      //
+      //         },
+      //         child: Row(
+      //           children: [
+      //             Icon(LucideIcons.navigation,size: 16,color: MyColors.redBG,),
+      //             SizedBox(width: 2,),
+      //             Container(
+      //                 width: widths*0.41,
+      //                 child: Text(address.address,style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),)),
+      //             Icon(Icons.keyboard_arrow_down_outlined,size: 16,color: MyColors.redBG,),
+      //
+      //           ],
+      //         ),
+      //       ),
+      //       Text(address.area,maxLines: 1,style: TextStyle(fontSize: 11,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),),
+      //     ],
+      //   ),
+      //   actions: [
+      //     // Text(
+      //     //   "${current_location}",
+      //     //   style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+      //     // ),
+      //     const SizedBox(width: 10),
+      //     Container(
+      //       width: 45,
+      //       height: 45,
+      //       margin: const EdgeInsets.only(right: 15),
+      //       child: Card(
+      //         elevation: 2,
+      //         color: Colors.white,
+      //         shadowColor: MyColors.primaryColorLight,
+      //         shape: RoundedRectangleBorder(
+      //           borderRadius: BorderRadius.circular(40.0),
+      //         ),
+      //         child: IconButton(
+      //           icon: const Icon(
+      //             Icons.pin_drop,
+      //             size: 24,
+      //             color: MyColors.primaryColor,
+      //           ),
+      //           onPressed: () {
+      //             // Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
+      //             // AddressScreen();
+      //             // _showCityDialog();
+      //           },
+      //         ),
+      //       ),
+      //     ),
+      //   ],
+      // ),
+      body:
+      // CustomScrollView(
+      //   controller: _scrollController,
+      //   slivers: <Widget>[
+      //     SliverAppBar(
+      //       pinned: true,
+      //       snap: false,
+      //       floating: false,
+      //       leadingWidth: 45,
+      //       expandedHeight: 260.0,
+      //       title: !_showTitle
+      //           ? Column(
+      //         crossAxisAlignment: CrossAxisAlignment.start,
+      //         children: [
+      //           //
+      //           InkWell(
+      //             onTap: (){
+      //               Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
+      //
+      //             },
+      //             child: Row(
+      //               children: [
+      //                 Icon(LucideIcons.navigation,size: 16,color: MyColors.redBG,),
+      //                 SizedBox(width: 2,),
+      //                 Container(
+      //                     width: widths*0.41,
+      //                     child: Text(address.address,style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),)),
+      //                 Icon(Icons.keyboard_arrow_down_outlined,size: 16,color: MyColors.redBG,),
+      //
+      //               ],
+      //             ),
+      //           ),
+      //           Text(address.area,maxLines: 1,style: TextStyle(fontSize: 11,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),),
+      //         ],
+      //       )
+      //           : const Text(""),
+      //       actions: [
+      //         _showTitle
+      //             ?  Text(
+      // "${current_location}",
+      //   style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+      // ):Text(""),
+      // const SizedBox(width: 10),
+      //         _showTitle
+      //             ?   Container(
+      //   width: 45,
+      //   height: 45,
+      //   margin: const EdgeInsets.only(right: 15),
+      //   child: Card(
+      //     elevation: 2,
+      //     color: Colors.white,
+      //     shadowColor: MyColors.primaryColorLight,
+      //     shape: RoundedRectangleBorder(
+      //       borderRadius: BorderRadius.circular(40.0),
+      //     ),
+      //     child: IconButton(
+      //       icon: const Icon(
+      //         Icons.pin_drop,
+      //         size: 24,
+      //         color: MyColors.primaryColor,
+      //       ),
+      //       onPressed: () {
+      //         // Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
+      //         // AddressScreen();
+      //         // _showCityDialog();
+      //       },
+      //     ),
+      //   ),
+      // ):Container(),
+      //         SizedBox(
+      //           width: widths * 0.03,
+      //         )
+      //       ],
+      //       flexibleSpace: FlexibleSpaceBar(
+      //         centerTitle: true,
+      //         background: _showTitle
+      //             ? Image.network(widget.bannersDa[0].image,fit: BoxFit.fill,)
+      //             : const Text(""),
+      //         title:Column(
+      //           crossAxisAlignment: CrossAxisAlignment.start,
+      //             mainAxisAlignment: MainAxisAlignment.center,
+      //             children: [
+      //               SizedBox(height: heights*0.1,),
+      //               _showTitle
+      //                   ?Row(
+      //                 children: [
+      //                   Text(
+      //                     "Welcome,",
+      //                     style: TextStyle(
+      //                         fontSize: 12,
+      //                         fontWeight: FontWeight.bold,
+      //                         color: MyColors.whiteBG),
+      //                   ),
+      //                   Text(
+      //                     "$userName",
+      //                     style: TextStyle(
+      //                         fontSize: 14,
+      //                         fontWeight: FontWeight.w900,
+      //                         color: MyColors.whiteBG),
+      //                   ),
+      //                 ],
+      //               ):Container(),
+      //
+      //               InkWell(
+      //                 onTap: () {
+      //                   _navigateToSearchScreen(context);
+      //                 },
+      //                 child: Container(
+      //                   height: 30,
+      //                   width: widths*0.65,
+      //                   // padding: const EdgeInsets.all(10),
+      //                   decoration: ShapeDecoration(
+      //                     color: MyColors.searchBg,
+      //                     shape: RoundedRectangleBorder(
+      //                       borderRadius: BorderRadius.circular(20),
+      //                     ),
+      //                   ),
+      //                   child: Row(
+      //                     mainAxisSize: MainAxisSize.min,
+      //                     mainAxisAlignment: MainAxisAlignment.start,
+      //                     crossAxisAlignment: CrossAxisAlignment.center,
+      //                     children: [
+      //                       Container(
+      //                         width: 28,
+      //                         height: 28,
+      //                         margin: EdgeInsets.only(right: 10),
+      //                         clipBehavior: Clip.antiAlias,
+      //                         decoration: BoxDecoration(),
+      //                         child: Row(
+      //                           mainAxisSize: MainAxisSize.min,
+      //                           mainAxisAlignment: MainAxisAlignment.center,
+      //                           crossAxisAlignment: CrossAxisAlignment.center,
+      //                           children: [
+      //                             SizedBox(
+      //                                 width: 28,
+      //                                 height: 28,
+      //                                 child: Icon(
+      //                                   Icons.search,
+      //                                   color: MyColors.primaryColor,
+      //                                 )),
+      //                           ],
+      //                         ),
+      //                       ),
+      //                       SizedBox(
+      //                         child: Text(
+      //                           'Search',
+      //                           style: TextStyle(
+      //                             color: Color(0x993C3C43),
+      //                             fontSize: 17,
+      //                             fontFamily: 'SF Pro Text',
+      //                             fontWeight: FontWeight.w400,
+      //                             height: 0.08,
+      //                             letterSpacing: -0.41,
+      //                           ),
+      //                         ),
+      //                       ),
+      //                       Container(
+      //                         width: 18,
+      //                         height: 18,
+      //                         child: Row(
+      //                           mainAxisSize: MainAxisSize.min,
+      //                           mainAxisAlignment: MainAxisAlignment.center,
+      //                           crossAxisAlignment: CrossAxisAlignment.center,
+      //                           children: [],
+      //                         ),
+      //                       ),
+      //                     ],
+      //                   ),
+      //                 ),
+      //               ),
+      //             ],
+      //         ) ,
+      //       ),
+      //       // expandedHeight: 160,
+      //       // bottom: PreferredSize(
+      //       //     preferredSize: Size(300.0, 50.0),
+      //       //     child: Container(
+      //       //       color: MyColors.whiteBG,
+      //       //       child: SizedBox(
+      //       //         height: 55,
+      //       //         child: ListView.builder(
+      //       //           scrollDirection: Axis.horizontal,
+      //       //           itemCount: orderedList.length,
+      //       //           itemBuilder: (context, index) {
+      //       //             FirstList item = orderedList[index];
+      //       //             bool isSelected = selectedList.contains(item);
+      //       //
+      //       //             return GestureDetector(
+      //       //               onTap: () {
+      //       //                 setState(() {
+      //       //                   toggleSelection(item);
+      //       //                   selectedName = list[index].name;
+      //       //                   print("item");
+      //       //                   index==0?showFilterBottomSheet(context):null;
+      //       //                 });
+      //       //               },
+      //       //               child: Container(
+      //       //                 margin: EdgeInsets.symmetric(
+      //       //                     horizontal: 5, vertical: 10),
+      //       //                 padding: EdgeInsets.symmetric(
+      //       //                   horizontal: 8, ),
+      //       //                 decoration: BoxDecoration(
+      //       //                     color: isSelected
+      //       //                         ? Colors.grey.withOpacity(0.3)
+      //       //                         : MyColors.whiteBG,
+      //       //                     borderRadius: BorderRadius.circular(20),
+      //       //                     border: Border.all(
+      //       //                         color: isSelected
+      //       //                             ? MyColors.blackBG
+      //       //                             : Colors.grey.withOpacity(0.5))),
+      //       //                 child: Row(
+      //       //                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //       //                   children: [
+      //       //                     Center(
+      //       //                       child: Text(
+      //       //                         item.name,
+      //       //                         style: TextStyle(
+      //       //                             color: Colors.black,
+      //       //                             fontSize: 13,
+      //       //                             fontWeight: FontWeight.w500
+      //       //                         ),
+      //       //                       ),
+      //       //                     ),
+      //       //                     SizedBox(width: widths*0.02,),
+      //       //                     index == 0
+      //       //                         ? Icon(Icons.tune_outlined,size: 18,)
+      //       //                         : index == 1
+      //       //                         ? Icon(
+      //       //                       Icons.keyboard_arrow_down_outlined,size: 20,)
+      //       //                         : isSelected
+      //       //                         ? Icon(Icons.close,size: 16,)
+      //       //                         : Container()
+      //       //                   ],
+      //       //                 ),
+      //       //               ),
+      //       //             );
+      //       //           },
+      //       //         ),
+      //       //       ),
+      //       //     )),
+      //     ),
+      //   SliverList(
+      //       delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+      //         return  RefreshIndicator(
+      //           color: Colors.white,
+      //           backgroundColor: MyColors.primaryColor,
+      //           onRefresh: _handleRefresh,
+      //           child: Column(
+      //             crossAxisAlignment: CrossAxisAlignment.start,
+      //             children: [
+      //               //Name Layout start
+      //               InkWell(
+      //                 onTap: (){
+      //                   widget.bannersDa[0].type=="1"?
+      //                   navigateToTopSubCategories(
+      //                       context, "Food", 5):Navigator.push(context, MaterialPageRoute(builder: (context)=>
+      //                       CouponFullViewScreen("${widget.bannersDa[0].url}")
+      //                   ));
+      //                 },
+      //                 child: Container(
+      //                   height: heights*0.46,
+      //                   decoration: BoxDecoration(
+      //                     // color: Colors.red,
+      //                       image: DecorationImage(image: NetworkImage(widget.bannersDa[0].image),fit: BoxFit.fill),
+      //                       borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20) )
+      //                   ),
+      //                   child: Padding(
+      //                     padding: const EdgeInsets.only(top: 40, left: 10, bottom: 20),
+      //                     child: Column(
+      //                       crossAxisAlignment: CrossAxisAlignment.start,
+      //                       children: [
+      //                         Row(
+      //                           children: [
+      //                             GestureDetector(
+      //                                 onTap: () {
+      //                                   if (_scaffoldKey.currentState!.isDrawerOpen) {
+      //                                     _scaffoldKey.currentState!.closeDrawer();
+      //                                   } else {
+      //                                     _scaffoldKey.currentState!.openDrawer();
+      //                                   }
+      //                                 },
+      //                                 child: const Icon(Icons.menu,color: MyColors.whiteBG,)),
+      //                             SizedBox(width: widths*0.05,),
+      //                             Column(
+      //                               crossAxisAlignment: CrossAxisAlignment.start,
+      //                               children: [
+      //                                 //
+      //                                 InkWell(
+      //                                   onTap: (){
+      //                                     Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
+      //
+      //                                   },
+      //                                   child: Row(
+      //                                     children: [
+      //                                       Icon(LucideIcons.navigation,size: 16,color: MyColors.whiteBG,),
+      //                                       SizedBox(width: 2,),
+      //                                       Container(
+      //                                           width: widths*0.41,
+      //                                           child: Text(address.address,style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis,color: MyColors.whiteBG,),)),
+      //                                       Icon(Icons.keyboard_arrow_down_outlined,size: 16,color: MyColors.whiteBG,),
+      //
+      //                                     ],
+      //                                   ),
+      //                                 ),
+      //                                 Container(
+      //                                     width: widths*0.41,
+      //                                     child: Text(address.area,maxLines: 1,style: TextStyle(fontSize: 12,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis,color: MyColors.whiteBG,),)),
+      //                               ],
+      //                             ),
+      //                             const SizedBox(width: 10),
+      //                             Text(
+      //                               "${current_location}",
+      //                               style:  TextStyle(fontSize: 13, fontWeight: FontWeight.bold,color: MyColors.whiteBG),
+      //                             ),
+      //                             const SizedBox(width: 10),
+      //                             Container(
+      //                               width: 35,
+      //                               height: 35,
+      //                               margin: const EdgeInsets.only(right: 15),
+      //                               child: Card(
+      //                                 elevation: 2,
+      //                                 color: Colors.white,
+      //                                 shadowColor: MyColors.primaryColorLight,
+      //                                 shape: RoundedRectangleBorder(
+      //                                   borderRadius: BorderRadius.circular(40.0),
+      //                                 ),
+      //                                 child:  Icon(
+      //                                   Icons.pin_drop,
+      //                                   size: 24,
+      //                                   color: MyColors.primaryColor,
+      //                                 ),
+      //                                 // IconButton(
+      //                                 //   icon: const Icon(
+      //                                 //     Icons.pin_drop,
+      //                                 //     size: 24,
+      //                                 //     color: MyColors.primaryColor,
+      //                                 //   ),
+      //                                 //   onPressed: () {
+      //                                 //     // Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
+      //                                 //     // AddressScreen();
+      //                                 //     // _showCityDialog();
+      //                                 //   },
+      //                                 // ),
+      //                               ),
+      //                             ),
+      //                           ],
+      //                         ),
+      //                         Row(
+      //                           children: [
+      //                             Text(
+      //                               "Welcome,",
+      //                               style: TextStyle(
+      //                                   fontSize: 18,
+      //                                   fontWeight: FontWeight.bold,
+      //                                   color: MyColors.whiteBG),
+      //                             ),
+      //                             Text(
+      //                               "$userName",
+      //                               style: TextStyle(
+      //                                   fontSize: 23,
+      //                                   fontWeight: FontWeight.w900,
+      //                                   color: MyColors.whiteBG),
+      //                             ),
+      //                           ],
+      //                         ),
+      //
+      //                         InkWell(
+      //                           onTap: () {
+      //                             _navigateToSearchScreen(context);
+      //                           },
+      //                           child: Container(
+      //                             width: MediaQuery
+      //                                 .of(context)
+      //                                 .size
+      //                                 .width,
+      //                             margin: EdgeInsets.symmetric(horizontal: 15),
+      //                             height: 40,
+      //                             child: Material(
+      //                               elevation: 1, // Set the elevation value as needed
+      //                               shape: RoundedRectangleBorder(
+      //                                 borderRadius: BorderRadius.circular(20),
+      //                               ),
+      //                               child: Container(
+      //                                 height: 55,
+      //                                 padding: const EdgeInsets.all(10),
+      //                                 decoration: ShapeDecoration(
+      //                                   color: MyColors.searchBg,
+      //                                   shape: RoundedRectangleBorder(
+      //                                     borderRadius: BorderRadius.circular(20),
+      //                                   ),
+      //                                 ),
+      //                                 child: Row(
+      //                                   mainAxisSize: MainAxisSize.min,
+      //                                   mainAxisAlignment: MainAxisAlignment.start,
+      //                                   crossAxisAlignment: CrossAxisAlignment.center,
+      //                                   children: [
+      //                                     Container(
+      //                                       width: 28,
+      //                                       height: 28,
+      //                                       margin: EdgeInsets.only(right: 10),
+      //                                       clipBehavior: Clip.antiAlias,
+      //                                       decoration: BoxDecoration(),
+      //                                       child: Row(
+      //                                         mainAxisSize: MainAxisSize.min,
+      //                                         mainAxisAlignment: MainAxisAlignment.center,
+      //                                         crossAxisAlignment: CrossAxisAlignment.center,
+      //                                         children: [
+      //                                           SizedBox(
+      //                                               width: 28,
+      //                                               height: 28,
+      //                                               child: Icon(
+      //                                                 Icons.search,
+      //                                                 color: MyColors.primaryColor,
+      //                                               )),
+      //                                         ],
+      //                                       ),
+      //                                     ),
+      //                                     SizedBox(
+      //                                       child: Text(
+      //                                         'Search',
+      //                                         style: TextStyle(
+      //                                           color: Color(0x993C3C43),
+      //                                           fontSize: 17,
+      //                                           fontFamily: 'SF Pro Text',
+      //                                           fontWeight: FontWeight.w400,
+      //                                           height: 0.08,
+      //                                           letterSpacing: -0.41,
+      //                                         ),
+      //                                       ),
+      //                                     ),
+      //                                     Container(
+      //                                       width: 18,
+      //                                       height: 18,
+      //                                       child: Row(
+      //                                         mainAxisSize: MainAxisSize.min,
+      //                                         mainAxisAlignment: MainAxisAlignment.center,
+      //                                         crossAxisAlignment: CrossAxisAlignment.center,
+      //                                         children: [],
+      //                                       ),
+      //                                     ),
+      //                                   ],
+      //                                 ),
+      //                               ),
+      //                             ),
+      //                           ),
+      //                         ),
+      //                       ],
+      //                     ),
+      //                   ),
+      //                 ),
+      //               ),
+      //               //Name Layout end
+      //
+      //               //Search bar start
+      //               // InkWell(
+      //               //   onTap: () {
+      //               //     _navigateToSearchScreen(context);
+      //               //   },
+      //               //   child: Container(
+      //               //     width: MediaQuery
+      //               //         .of(context)
+      //               //         .size
+      //               //         .width,
+      //               //     margin: EdgeInsets.symmetric(horizontal: 15),
+      //               //     height: 46,
+      //               //     child: Material(
+      //               //       elevation: 1, // Set the elevation value as needed
+      //               //       shape: RoundedRectangleBorder(
+      //               //         borderRadius: BorderRadius.circular(20),
+      //               //       ),
+      //               //       child: Container(
+      //               //         height: 55,
+      //               //         padding: const EdgeInsets.all(10),
+      //               //         decoration: ShapeDecoration(
+      //               //           color: MyColors.searchBg,
+      //               //           shape: RoundedRectangleBorder(
+      //               //             borderRadius: BorderRadius.circular(20),
+      //               //           ),
+      //               //         ),
+      //               //         child: Row(
+      //               //           mainAxisSize: MainAxisSize.min,
+      //               //           mainAxisAlignment: MainAxisAlignment.start,
+      //               //           crossAxisAlignment: CrossAxisAlignment.center,
+      //               //           children: [
+      //               //             Container(
+      //               //               width: 28,
+      //               //               height: 28,
+      //               //               margin: EdgeInsets.only(right: 10),
+      //               //               clipBehavior: Clip.antiAlias,
+      //               //               decoration: BoxDecoration(),
+      //               //               child: Row(
+      //               //                 mainAxisSize: MainAxisSize.min,
+      //               //                 mainAxisAlignment: MainAxisAlignment.center,
+      //               //                 crossAxisAlignment: CrossAxisAlignment.center,
+      //               //                 children: [
+      //               //                   SizedBox(
+      //               //                       width: 28,
+      //               //                       height: 28,
+      //               //                       child: Icon(
+      //               //                         Icons.search,
+      //               //                         color: MyColors.primaryColor,
+      //               //                       )),
+      //               //                 ],
+      //               //               ),
+      //               //             ),
+      //               //             SizedBox(
+      //               //               child: Text(
+      //               //                 'Search',
+      //               //                 style: TextStyle(
+      //               //                   color: Color(0x993C3C43),
+      //               //                   fontSize: 17,
+      //               //                   fontFamily: 'SF Pro Text',
+      //               //                   fontWeight: FontWeight.w400,
+      //               //                   height: 0.08,
+      //               //                   letterSpacing: -0.41,
+      //               //                 ),
+      //               //               ),
+      //               //             ),
+      //               //             Container(
+      //               //               width: 18,
+      //               //               height: 18,
+      //               //               child: Row(
+      //               //                 mainAxisSize: MainAxisSize.min,
+      //               //                 mainAxisAlignment: MainAxisAlignment.center,
+      //               //                 crossAxisAlignment: CrossAxisAlignment.center,
+      //               //                 children: [],
+      //               //               ),
+      //               //             ),
+      //               //           ],
+      //               //         ),
+      //               //       ),
+      //               //     ),
+      //               //   ),
+      //               // ),
+      //               //Search bar start
+      //
+      //               SizedBox(
+      //                 height: 25,
+      //               ),
+      //
+      //               //Slider bar start
+      //               Visibility(
+      //                 visible: imageSlider.isNotEmpty,
+      //                 child: Center(
+      //                   child: CarouselSlider(
+      //                     carouselController: _controller,
+      //                     items: imageSlider.map((json) {
+      //                       return GestureDetector(
+      //                         onTap: () {
+      //                           print("url: " + json['image']);
+      //                           Navigator.push(
+      //                               context,
+      //                               MaterialPageRoute(
+      //                                   builder: (context) =>
+      //                                       CouponFullViewScreen(
+      //                                           "${json['store_id']}")));
+      //                         },
+      //                         child: ClipRRect(
+      //                           borderRadius: BorderRadius.circular(15),
+      //                           child: CachedNetworkImage(
+      //                             imageUrl: json['image'],
+      //                             fit: BoxFit.fill,
+      //                             placeholder: (context, url) =>
+      //                                 Image.asset(
+      //                                   'assets/images/placeholder.png',
+      //                                   fit: BoxFit.cover,
+      //                                   width: double.infinity,
+      //                                   height: double.infinity,
+      //                                 ),
+      //                             errorWidget: (context, url, error) =>
+      //                                 Center(child: Icon(Icons.error)),
+      //                           ),
+      //                           // Image.network(
+      //                           //   json['image'],
+      //                           //   errorBuilder: (context, error, stackTrace) {
+      //                           //     return Center(
+      //                           //       child: Image.asset(
+      //                           //         'assets/images/placeholder.png',
+      //                           //         // Path to your placeholder image asset
+      //                           //         fit: BoxFit.cover,
+      //                           //         width: double.infinity,
+      //                           //         height: double.infinity,
+      //                           //       ),
+      //                           //     );
+      //                           //   },
+      //                           //   fit: BoxFit.cover,
+      //                           // ),
+      //                         ),
+      //                       );
+      //                     }).toList(),
+      //                     options: CarouselOptions(
+      //                       height: 165,
+      //                       enlargeCenterPage: true,
+      //                       autoPlay: true,
+      //                       reverse: true,
+      //                       disableCenter: true,
+      //                       aspectRatio: 16 / 9,
+      //                       autoPlayCurve: Curves.fastOutSlowIn,
+      //                       enableInfiniteScroll: true,
+      //                       autoPlayAnimationDuration: Duration(milliseconds: 800),
+      //                       viewportFraction: 0.75,
+      //                     ),
+      //                   ),
+      //                 ),
+      //               ),
+      //               //Slider bar end
+      //
+      //               //categories start
+      //               if(prebookofferlistHistory.isNotEmpty)
+      //                 Container(
+      //                   margin:
+      //                   EdgeInsets.only(top: 25, left: 15, right: 15, bottom: 15),
+      //                   child: Row(
+      //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //                     children: [
+      //                       Text(
+      //                         "My Booking",
+      //                         style: TextStyle(
+      //                             fontSize: 18, fontWeight: FontWeight.w500),
+      //                       ),
+      //                     ],
+      //                   ),
+      //                 ),
+      //               // Container(
+      //               //   margin: EdgeInsets.symmetric(horizontal: 10),
+      //               //   child: ClipPath(
+      //               //     clipper: CouponClipper(
+      //               //       borderRadius: 20,
+      //               //       curveRadius: 20,
+      //               //       curvePosition: 150,
+      //               //       curveAxis: Axis.horizontal,
+      //               //       clockwise: false,
+      //               //     ),
+      //               //     child: Container(
+      //               //       height: 305,
+      //               //       color: Color(0xFFf2f2f2),
+      //               //       padding: EdgeInsets.all(15),
+      //               //       child: Column(
+      //               //         mainAxisAlignment: MainAxisAlignment.start,
+      //               //         children: [
+      //               //           Row(
+      //               //             children: [
+      //               //               Text(
+      //               //                 "Confirmed",
+      //               //                 style: TextStyle(color: Colors.green,
+      //               //                     fontSize: 14, fontWeight: FontWeight.bold),
+      //               //               ),
+      //               //             ],
+      //               //           ),
+      //               //           Row(
+      //               //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               //             children: [
+      //               //               TitleDescriptionWidget(
+      //               //                 title: 'Today',
+      //               //                 description: '18 Oct 2024',
+      //               //                 titleFontSize: 18,
+      //               //                 descriptionFontSize: 14,
+      //               //               ),
+      //               //               TitleDescriptionWidget(
+      //               //                 title: 'Dinner',
+      //               //                 description: '06:30 PM',
+      //               //                 titleFontSize: 18,
+      //               //                 descriptionFontSize: 14,
+      //               //               ),
+      //               //               TitleDescriptionWidget(
+      //               //                 title: 'for 2',
+      //               //                 description: 'guests',
+      //               //                 titleFontSize: 18,
+      //               //                 descriptionFontSize: 14,
+      //               //               ),
+      //               //             ],
+      //               //           ),
+      //               //           SizedBox(height: 15),
+      //               //           Row(
+      //               //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               //             children: [
+      //               //               TitleDescriptionWidget(
+      //               //                 title: 'Bombay Mezbaan',
+      //               //                 description: 'Vikas Nagar, Lucknow',
+      //               //                 titleFontSize: 16,
+      //               //                 descriptionFontSize: 13,
+      //               //               ),
+      //               //               Row(
+      //               //                 children: [
+      //               //                   // First icon in a circular container
+      //               //                   Container(
+      //               //                     margin: EdgeInsets.only(left: 8.0), // Space between the icons
+      //               //                     decoration: BoxDecoration(
+      //               //                       shape: BoxShape.circle,
+      //               //                       color: Colors.red.shade100, // Light background color
+      //               //                     ),
+      //               //                     padding: EdgeInsets.all(8.0), // Padding for the icon
+      //               //                     child: Icon(
+      //               //                       Icons.phone, // Icon
+      //               //                       color: Colors.red, // Icon color
+      //               //                       size: 20, // Icon size
+      //               //                     ),
+      //               //                   ),
+      //               //                   // Second icon in a circular container
+      //               //                   Container(
+      //               //                     margin: EdgeInsets.only(left: 8.0),
+      //               //                     decoration: BoxDecoration(
+      //               //                       shape: BoxShape.circle,
+      //               //                       color: Colors.red.shade100, // Light background color
+      //               //                     ),
+      //               //                     padding: EdgeInsets.all(8.0), // Padding for the icon
+      //               //                     child: Icon(
+      //               //                       Icons.location_pin, // Icon
+      //               //                       color: Colors.red, // Icon color
+      //               //                       size: 20, // Icon size
+      //               //                     ),
+      //               //                   ),
+      //               //                 ],
+      //               //               ),
+      //               //             ],
+      //               //           ),
+      //               //
+      //               //
+      //               //           DashedLine(
+      //               //             color: MyColors.txtDescColor2,
+      //               //             margin: EdgeInsets.symmetric(vertical: 22, horizontal: 10),
+      //               //           ),
+      //               //           Container(
+      //               //             height: 45,
+      //               //             decoration: BoxDecoration(
+      //               //               border: Border.all(color: MyColors.primary, width: 1.0),
+      //               //               borderRadius: BorderRadius.circular(10),
+      //               //             ),
+      //               //             padding: const EdgeInsets.only(
+      //               //                 left: 15, right: 15, top: 5, bottom: 5),
+      //               //             child: Row(
+      //               //               crossAxisAlignment: CrossAxisAlignment.center,
+      //               //               children: [
+      //               //                 Expanded(
+      //               //                   child: Text(
+      //               //                     "Flat 20% Off on Total Bill",
+      //               //                     style: TextStyle(
+      //               //                       fontSize: 16,
+      //               //                       fontWeight: FontWeight.bold,
+      //               //                     ),
+      //               //                   ),
+      //               //                 ),
+      //               //               ],
+      //               //             ),
+      //               //           ),
+      //               //           SizedBox(height: 15),
+      //               //           Row(
+      //               //             mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space the buttons evenly
+      //               //             children: [
+      //               //               // First button
+      //               //               Expanded(
+      //               //                 child: GestureDetector(
+      //               //                   onTap: (){
+      //               //                     Navigator.push(
+      //               //                       context,
+      //               //                       MaterialPageRoute(
+      //               //                           builder: (context) => BookedTableScreen()),
+      //               //                     );
+      //               //                   },
+      //               //                   child: Container(
+      //               //                     margin: EdgeInsets.only(right: 10), // Space between the buttons
+      //               //                     decoration: BoxDecoration(
+      //               //                       color: MyColors.primaryColorLight, // Background color of the button
+      //               //                       borderRadius: BorderRadius.circular(10), // Rounded corners
+      //               //                     ),
+      //               //                     padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20), // Padding inside the button
+      //               //                     child: Center(
+      //               //                       child: Text(
+      //               //                         'View details', // Button text
+      //               //                         style: TextStyle(
+      //               //                           fontWeight: FontWeight.bold,
+      //               //                           color: MyColors.primaryColor, // Text color
+      //               //                           fontSize: 16,
+      //               //                         ),
+      //               //                       ),
+      //               //                     ),
+      //               //                   ),
+      //               //                 ),
+      //               //               ),
+      //               //               // Second button
+      //               //               Expanded(
+      //               //                 child: Container(
+      //               //                   margin: EdgeInsets.only(left: 10), // Space between the buttons
+      //               //                   decoration: BoxDecoration(
+      //               //                     color: Colors.grey.shade300, // Light background color for the button
+      //               //                     borderRadius: BorderRadius.circular(10), // Rounded corners
+      //               //                   ),
+      //               //                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20), // Padding inside the button
+      //               //                   child: Center(
+      //               //                     child: Text(
+      //               //                       'Pay bill now', // Button text
+      //               //                       style: TextStyle(
+      //               //                         fontWeight: FontWeight.bold,
+      //               //                         color: Colors.grey, // Gray text color
+      //               //                         fontSize: 16, // Text size
+      //               //                       ),
+      //               //                     ),
+      //               //                   ),
+      //               //                 ),
+      //               //               ),
+      //               //
+      //               //             ],
+      //               //           ),
+      //               //
+      //               //
+      //               //         ],
+      //               //       ),
+      //               //     ),
+      //               //   ),
+      //               // ),
+      //               if(prebookofferlistHistory.isNotEmpty)
+      //                 Container(
+      //                   height: 300,
+      //                   child: _buildOfferCard(prebookofferlistHistory),
+      //                 ),
+      //
+      //               // Column(
+      //               //   children: [
+      //               //     Container(
+      //               //       height: 45,
+      //               //       margin: EdgeInsets.symmetric(horizontal: 10),
+      //               //       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      //               //       width: double.infinity,
+      //               //       decoration: BoxDecoration(
+      //               //         color: MyColors.offerCardColor,
+      //               //         borderRadius: BorderRadius.only(
+      //               //           topLeft: Radius.circular(20),
+      //               //           topRight: Radius.circular(20),
+      //               //           bottomLeft: Radius.circular(20),
+      //               //           bottomRight: Radius.circular(20),
+      //               //         ), // Side rounded corners
+      //               //       ),
+      //               //       child: Row(
+      //               //         crossAxisAlignment: CrossAxisAlignment.center,
+      //               //         mainAxisAlignment: MainAxisAlignment.center,
+      //               //         children: [
+      //               //           Text(
+      //               //             "Flat 20% Off on Total Bill",
+      //               //             style: TextStyle(
+      //               //               fontSize: 18,
+      //               //               fontWeight: FontWeight.bold,
+      //               //               color: Color(
+      //               //                   0xFFFFFFFF), // Black text color
+      //               //             ),
+      //               //           ),
+      //               //         ],
+      //               //       ),
+      //               //     ),
+      //               //     Container(
+      //               //       margin: EdgeInsets.symmetric(horizontal: 30),
+      //               //       padding: EdgeInsets.all(12.0),
+      //               //       width: double.infinity,
+      //               //       decoration: BoxDecoration(
+      //               //         color: Colors.white, // Background color
+      //               //         border: Border(
+      //               //           left: BorderSide(color: MyColors.offerCardColor),  // Left border
+      //               //           right: BorderSide(color:MyColors.offerCardColor), // Right border
+      //               //           bottom: BorderSide(color: MyColors.offerCardColor), // Bottom border
+      //               //           // No top border specified
+      //               //         ),
+      //               //         borderRadius: BorderRadius.only(
+      //               //           topLeft: Radius.circular(0),
+      //               //           topRight: Radius.circular(0),
+      //               //           bottomLeft: Radius.circular(20),
+      //               //           bottomRight: Radius.circular(20),
+      //               //         ), // Bottom rounded corners
+      //               //       ),
+      //               //       child: Column(
+      //               //         children: [
+      //               //           Row(
+      //               //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               //             children: [
+      //               //               TitleDescriptionWidget(
+      //               //                 title: 'Bombay Mezbaan',
+      //               //                 description: 'Vikas Nagar, Lucknow',
+      //               //                 titleFontSize: 16,
+      //               //                 descriptionFontSize: 13,
+      //               //               ),
+      //               //               Row(
+      //               //                 children: [
+      //               //                   // First icon in a circular container
+      //               //                   Container(
+      //               //                     margin: EdgeInsets.only(left: 8.0),
+      //               //                     decoration: BoxDecoration(
+      //               //                       shape: BoxShape.circle,
+      //               //                       color: Color(
+      //               //                           0xFF6200EE), // Light background color
+      //               //                     ),
+      //               //                     padding: EdgeInsets.all(8.0),
+      //               //                     child: Icon(
+      //               //                       Icons.phone,
+      //               //                       color: Colors.white,
+      //               //                       // Secondary color for icons
+      //               //                       size: 20,
+      //               //                     ),
+      //               //                   ),
+      //               //                   // Second icon in a circular container
+      //               //                   Container(
+      //               //                     margin: EdgeInsets.only(left: 8.0),
+      //               //                     decoration: BoxDecoration(
+      //               //                       shape: BoxShape.circle,
+      //               //                       color: Color(
+      //               //                           0xFF6200EE), // Light background color
+      //               //                     ),
+      //               //                     padding: EdgeInsets.all(8.0),
+      //               //                     child: Icon(
+      //               //                       Icons.location_on,
+      //               //                       // Corrected to Icons.location_on
+      //               //                       color: Colors.white,
+      //               //                       // Secondary color for icons
+      //               //                       size: 20,
+      //               //                     ),
+      //               //                   ),
+      //               //                 ],
+      //               //               ),
+      //               //             ],
+      //               //           ),
+      //               //           SizedBox(height: 15),
+      //               //           DashedLine(
+      //               //             color: Color(0xFF757575),
+      //               //             // Text description color
+      //               //             margin: EdgeInsets.symmetric(
+      //               //                 vertical: 0, horizontal: 10),
+      //               //           ),
+      //               //           SizedBox(height: 10),
+      //               //           Row(
+      //               //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               //             children: [
+      //               //               Column(
+      //               //                 children: [
+      //               //                   Row(
+      //               //                     mainAxisAlignment: MainAxisAlignment.start, // Aligns the content to the start
+      //               //                     children: [
+      //               //                       Icon(
+      //               //                         Icons.man, // Icon of your choice
+      //               //                         color: MyColors.offerCardColor, // Icon color
+      //               //                         size: 18.0, // Icon size
+      //               //                       ),
+      //               //                       SizedBox(width: 8.0), // Space between icon and text
+      //               //                       Text(
+      //               //                         "Numbers of guest's 2", // Text next to the icon
+      //               //                         style: TextStyle(
+      //               //                           fontSize: 14,
+      //               //                           fontWeight: FontWeight.w500,
+      //               //                           color: Colors.black, // Text color
+      //               //                         ),
+      //               //                       ),
+      //               //                     ],
+      //               //                   ),
+      //               //                   SizedBox(height: 5),
+      //               //                   Row(
+      //               //                     mainAxisAlignment: MainAxisAlignment.start, // Aligns the content to the start
+      //               //                     children: [
+      //               //                       Icon(
+      //               //                         Icons.calendar_month, // Icon of your choice
+      //               //                         color: MyColors.offerCardColor, // Icon color
+      //               //                         size: 18.0, // Icon size
+      //               //                       ),
+      //               //                       SizedBox(width: 8.0), // Space between icon and text
+      //               //                       Text(
+      //               //                         "08 Nov at 08:30 PM", // Text next to the icon
+      //               //                         style: TextStyle(
+      //               //                           fontSize: 14,
+      //               //                           fontWeight: FontWeight.w500,
+      //               //                           color: Colors.black, // Text color
+      //               //                         ),
+      //               //                       ),
+      //               //                     ],
+      //               //                   ),
+      //               //                 ],
+      //               //               ),
+      //               //               TitleDescriptionWidget(
+      //               //                 title: 'Status',
+      //               //                 description: 'Confirmed',
+      //               //                 titleFontSize: 14,
+      //               //                 descriptionFontSize: 12,
+      //               //                 titleFontWeight: FontWeight.w400,
+      //               //                 descriptionFontWeight: FontWeight.bold,
+      //               //                 descriptionColor: MyColors.offerCardColor,
+      //               //               ),
+      //               //             ],
+      //               //           ),
+      //
+      //               //           SizedBox(height: 15),
+      //               //           Row(
+      //               //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               //             children: [
+      //               //               // First button
+      //               //               Expanded(
+      //               //                 child: GestureDetector(
+      //               //                   onTap: () {
+      //               //                     Navigator.push(
+      //               //                       context,
+      //               //                       MaterialPageRoute(
+      //               //                         builder: (context) =>
+      //               //                             BookedTableScreen(),
+      //               //                       ),
+      //               //                     );
+      //               //                   },
+      //               //                   child: Container(
+      //               //                     margin: EdgeInsets.only(right: 10),
+      //               //                     decoration: BoxDecoration(
+      //               //                       color: MyColors.offerCardColor,
+      //               //                       // Primary button color
+      //               //                       borderRadius: BorderRadius.circular(10),
+      //               //                     ),
+      //               //                     padding: EdgeInsets.symmetric(
+      //               //                         vertical: 10, horizontal: 20),
+      //               //                     child: Center(
+      //               //                       child: Text(
+      //               //                         'View details',
+      //               //                         style: TextStyle(
+      //               //                           fontWeight: FontWeight.bold,
+      //               //                           color: Color(0xFFFFFFFF),
+      //               //                           // White text color
+      //               //                           fontSize: 12,
+      //               //                         ),
+      //               //                       ),
+      //               //                     ),
+      //               //                   ),
+      //               //                 ),
+      //               //               ),
+      //               //               // Second button
+      //               //               Expanded(
+      //               //                 child: Container(
+      //               //                   margin: EdgeInsets.only(left: 10),
+      //               //                   decoration: BoxDecoration(
+      //               //                     color: Colors.grey.shade300,
+      //               //                     // Light background color for the button
+      //               //                     borderRadius: BorderRadius.circular(10),
+      //               //                   ),
+      //               //                   padding: EdgeInsets.symmetric(
+      //               //                       vertical: 10, horizontal: 20),
+      //               //                   child: Center(
+      //               //                     child: Text(
+      //               //                       'Pay bill',
+      //               //                       style: TextStyle(
+      //               //                         fontWeight: FontWeight.bold,
+      //               //                         color: Colors.grey, // Gray text color
+      //               //                         fontSize: 12,
+      //               //                       ),
+      //               //                     ),
+      //               //                   ),
+      //               //                 ),
+      //               //               ),
+      //               //             ],
+      //               //           ),
+      //
+      //
+      //               //         ],
+      //               //       )
+      //               //     ),
+      //               //   ],
+      //               // ),
+      //               // Container(
+      //               //   margin: EdgeInsets.symmetric(horizontal: 10),
+      //               //   child: ClipPath(
+      //               //     clipper: CouponClipper(
+      //               //       borderRadius: 20,
+      //               //       curveRadius: 20,
+      //               //       curvePosition: 150,
+      //               //       curveAxis: Axis.horizontal,
+      //               //       clockwise: false,
+      //               //     ),
+      //               //     child: Material(
+      //               //       elevation: 4,
+      //               //       // Add elevation here
+      //               //       borderRadius: BorderRadius.circular(20),
+      //               //       // Match the border radius with the clipper
+      //               //       child: Container(
+      //               //         height: 305,
+      //               //         color: Colors.green.shade50,
+      //               //         // Background color for the card
+      //               //         padding: EdgeInsets.all(15),
+      //               //         child: Column(
+      //               //           mainAxisAlignment: MainAxisAlignment.start,
+      //               //           children: [
+      //               //             Row(
+      //               //               children: [
+      //               //                 Text(
+      //               //                   "Confirmed",
+      //               //                   style: TextStyle(
+      //               //                     color: Color(0xFF6200EE),
+      //               //                     // Secondary color for text
+      //               //                     fontSize: 14,
+      //               //                     fontWeight: FontWeight.bold,
+      //               //                   ),
+      //               //                 ),
+      //               //               ],
+      //               //             ),
+      //               //             Row(
+      //               //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               //               children: [
+      //               //                 TitleDescriptionWidget(
+      //               //                   title: 'Bombay Mezbaan',
+      //               //                   description: 'Vikas Nagar, Lucknow',
+      //               //                   titleFontSize: 16,
+      //               //                   descriptionFontSize: 13,
+      //               //                 ),
+      //               //                 Row(
+      //               //                   children: [
+      //               //                     // First icon in a circular container
+      //               //                     Container(
+      //               //                       margin: EdgeInsets.only(left: 8.0),
+      //               //                       decoration: BoxDecoration(
+      //               //                         shape: BoxShape.circle,
+      //               //                         color: Color(
+      //               //                             0xFF6200EE), // Light background color
+      //               //                       ),
+      //               //                       padding: EdgeInsets.all(8.0),
+      //               //                       child: Icon(
+      //               //                         Icons.phone,
+      //               //                         color: Colors.white,
+      //               //                         // Secondary color for icons
+      //               //                         size: 20,
+      //               //                       ),
+      //               //                     ),
+      //               //                     // Second icon in a circular container
+      //               //                     Container(
+      //               //                       margin: EdgeInsets.only(left: 8.0),
+      //               //                       decoration: BoxDecoration(
+      //               //                         shape: BoxShape.circle,
+      //               //                         color: Color(
+      //               //                             0xFF6200EE), // Light background color
+      //               //                       ),
+      //               //                       padding: EdgeInsets.all(8.0),
+      //               //                       child: Icon(
+      //               //                         Icons.location_on,
+      //               //                         // Corrected to Icons.location_on
+      //               //                         color: Colors.white,
+      //               //                         // Secondary color for icons
+      //               //                         size: 20,
+      //               //                       ),
+      //               //                     ),
+      //               //                   ],
+      //               //                 ),
+      //               //               ],
+      //               //             ),
+      //               //             SizedBox(height: 15),
+      //               //             Row(
+      //               //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               //               children: [
+      //               //                 TitleDescriptionWidget(
+      //               //                   title: 'Today',
+      //               //                   description: '18 Oct 2024',
+      //               //                   titleFontSize: 18,
+      //               //                   descriptionFontSize: 14,
+      //               //                 ),
+      //               //                 TitleDescriptionWidget(
+      //               //                   title: 'Dinner',
+      //               //                   description: '06:30 PM',
+      //               //                   titleFontSize: 18,
+      //               //                   descriptionFontSize: 14,
+      //               //                 ),
+      //               //                 TitleDescriptionWidget(
+      //               //                   title: 'for 2',
+      //               //                   description: 'guests',
+      //               //                   titleFontSize: 18,
+      //               //                   descriptionFontSize: 14,
+      //               //                 ),
+      //               //               ],
+      //               //             ),
+      //               //             DashedLine(
+      //               //               color: Color(0xFF757575),
+      //               //               // Text description color
+      //               //               margin: EdgeInsets.symmetric(
+      //               //                   vertical: 22, horizontal: 10),
+      //               //             ),
+      //               //             Container(
+      //               //               height: 45,
+      //               //               decoration: BoxDecoration(
+      //               //                 border: Border.all(
+      //               //                     color: Color(0xFF6200EE), width: 1.0),
+      //               //                 // Primary border color
+      //               //                 borderRadius: BorderRadius.circular(10),
+      //               //               ),
+      //               //               padding: const EdgeInsets.all(5),
+      //               //               child: Row(
+      //               //                 crossAxisAlignment: CrossAxisAlignment.center,
+      //               //                 children: [
+      //               //                   Expanded(
+      //               //                     child: Text(
+      //               //                       "Flat 20% Off on Total Bill",
+      //               //                       style: TextStyle(
+      //               //                         fontSize: 16,
+      //               //                         fontWeight: FontWeight.bold,
+      //               //                         color: Color(
+      //               //                             0xFF000000), // Black text color
+      //               //                       ),
+      //               //                     ),
+      //               //                   ),
+      //               //                 ],
+      //               //               ),
+      //               //             ),
+      //               //             SizedBox(height: 15),
+      //               //             Row(
+      //               //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               //               children: [
+      //               //                 // First button
+      //               //                 Expanded(
+      //               //                   child: GestureDetector(
+      //               //                     onTap: () {
+      //               //                       Navigator.push(
+      //               //                         context,
+      //               //                         MaterialPageRoute(
+      //               //                           builder: (context) =>
+      //               //                               BookedTableScreen(),
+      //               //                         ),
+      //               //                       );
+      //               //                     },
+      //               //                     child: Container(
+      //               //                       margin: EdgeInsets.only(right: 10),
+      //               //                       decoration: BoxDecoration(
+      //               //                         color: Color(0xFF6200EE),
+      //               //                         // Primary button color
+      //               //                         borderRadius: BorderRadius.circular(10),
+      //               //                       ),
+      //               //                       padding: EdgeInsets.symmetric(
+      //               //                           vertical: 10, horizontal: 20),
+      //               //                       child: Center(
+      //               //                         child: Text(
+      //               //                           'View details',
+      //               //                           style: TextStyle(
+      //               //                             fontWeight: FontWeight.bold,
+      //               //                             color: Color(0xFFFFFFFF),
+      //               //                             // White text color
+      //               //                             fontSize: 16,
+      //               //                           ),
+      //               //                         ),
+      //               //                       ),
+      //               //                     ),
+      //               //                   ),
+      //               //                 ),
+      //               //                 // Second button
+      //               //                 Expanded(
+      //               //                   child: Container(
+      //               //                     margin: EdgeInsets.only(left: 10),
+      //               //                     decoration: BoxDecoration(
+      //               //                       color: Colors.grey.shade300,
+      //               //                       // Light background color for the button
+      //               //                       borderRadius: BorderRadius.circular(10),
+      //               //                     ),
+      //               //                     padding: EdgeInsets.symmetric(
+      //               //                         vertical: 10, horizontal: 20),
+      //               //                     child: Center(
+      //               //                       child: Text(
+      //               //                         'Pay bill now',
+      //               //                         style: TextStyle(
+      //               //                           fontWeight: FontWeight.bold,
+      //               //                           color: Colors.grey, // Gray text color
+      //               //                           fontSize: 16,
+      //               //                         ),
+      //               //                       ),
+      //               //                     ),
+      //               //                   ),
+      //               //                 ),
+      //               //               ],
+      //               //             ),
+      //               //           ],
+      //               //         ),
+      //               //       ),
+      //               //     ),
+      //               //   ),
+      //               // ),
+      //               InkWell(
+      //                 onTap: (){
+      //                   Navigator.push(context, MaterialPageRoute(builder: (context)=>NearMeScreen()));
+      //                 },
+      //                 child: Container(
+      //                   margin: EdgeInsets.all(10),
+      //                   height: heights*0.08,
+      //                   width: widths*0.4,
+      //                   decoration: BoxDecoration(
+      //                       image: DecorationImage(image: AssetImage("assets/images/near_me.png"),fit: BoxFit.fill)),
+      //                 ),
+      //               ),
+      //               Container(
+      //                 margin:
+      //                 EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 15),
+      //                 child: Row(
+      //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //                   children: [
+      //                     Text(
+      //                       "Foods",
+      //                       style: TextStyle(
+      //                           fontSize: 18, fontWeight: FontWeight.w500),
+      //                     ),
+      //                     // InkWell(
+      //                     //   onTap: () {
+      //                     //     navigateToTopCategoriesScreen();
+      //                     //   },
+      //                     //   child: Row(
+      //                     //     children: [
+      //                     //       Text(
+      //                     //         "View All",
+      //                     //         style: TextStyle(
+      //                     //             color: MyColors.txtDescColor,
+      //                     //             fontSize: 14,
+      //                     //             fontWeight: FontWeight.w300),
+      //                     //       ),
+      //                     //       SizedBox(
+      //                     //         width: 5,
+      //                     //       ),
+      //                     //       Icon(
+      //                     //         Icons.arrow_forward,
+      //                     //         size: 15,
+      //                     //         color: MyColors.primaryColor,
+      //                     //       )
+      //                     //     ],
+      //                     //   ),
+      //                     // ),
+      //                   ],
+      //                 ),
+      //               ),
+      //               Container(
+      //                 height: heights*0.3,
+      //                 child: GridView.builder(
+      //                   shrinkWrap: true,
+      //                   physics: NeverScrollableScrollPhysics(),
+      //                   itemCount: subCategoriesList.length,
+      //                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      //                     crossAxisCount: 3,
+      //                     crossAxisSpacing: 0,
+      //                     mainAxisSpacing: 0,
+      //                     childAspectRatio: 4.1/4,
+      //                   ),
+      //                   itemBuilder: (BuildContext context, int index) {
+      //                     SubCategoriesModel subCategoriesModel =
+      //                     subCategoriesList[index];
+      //                     return SubCategoriesCardWidget(
+      //                       imgUrl: subCategoriesModel.image,
+      //                       subcategoryName:
+      //                       subCategoriesModel.subcategory_name,
+      //                       spotAvailable: "",
+      //                       redeemed: "",
+      //                       onTap: () {
+      //                         navigateToAllCouponScreen(
+      //                           context,
+      //                           subCategoriesModel.subcategory_name,
+      //                           subCategoriesModel.category_id,
+      //                           subCategoriesModel.id,
+      //                         );
+      //                       },
+      //                     );
+      //                   },
+      //                 ),
+      //               ),
+      //
+      //               // categories.isNotEmpty?    Container(
+      //               //   height: 125,
+      //               //   child: ListView.builder(
+      //               //     itemBuilder: (context, index) {
+      //               //       CategoriesModel category = categories[index];
+      //               //       return CategoriesCardWidget(
+      //               //         imgUrl: category.image,
+      //               //         cateName: category.category_name,
+      //               //         onTap: () {
+      //               //           navigateToTopSubCategories(
+      //               //               context, category.category_name, category.id);
+      //               //         },
+      //               //       );
+      //               //     },
+      //               //     itemCount: categories.length,
+      //               //     //reverse: true,
+      //               //     //itemExtent: 100,
+      //               //     scrollDirection: Axis.horizontal,
+      //               //   ),
+      //               // ):CircularProgressIndicator(),
+      //               ///
+      //
+      //               //categories end
+      //
+      //               //Great Offers start
+      //               ///
+      //               // if (!greatOfferList1.isEmpty)
+      //               //   Container(
+      //               //     margin: EdgeInsets.only(
+      //               //         top: 25, left: 15, right: 15, bottom: 15),
+      //               //     child: Row(
+      //               //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               //       children: [
+      //               //         Text(
+      //               //           "Great Offers",
+      //               //           style: TextStyle(
+      //               //               fontSize: 18, fontWeight: FontWeight.w500),
+      //               //         ),
+      //               //       ],
+      //               //     ),
+      //               //   ),
+      //               // if (!greatOfferList1.isEmpty)
+      //               //   GreatOffersWidget(greatOfferList1, "${cityId}"),
+      //               ///
+      //               // SizedBox(
+      //               //   height: 10,
+      //               // ),
+      //               // GreatOffersWidget(greatOfferList2),
+      //
+      //               if (!localtiyList.isEmpty)
+      //                 Container(
+      //                   margin: EdgeInsets.only(
+      //                       top: 25, left: 15, right: 15, bottom: 15),
+      //                   child: Row(
+      //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //                     children: [
+      //                       Text(
+      //                         "Popular Location",
+      //                         style: TextStyle(
+      //                             fontSize: 18, fontWeight: FontWeight.w500),
+      //                       ),
+      //                     ],
+      //                   ),
+      //                 ),
+      //               if (!localtiyList.isEmpty) LocationWidget(localtiyList),
+      //
+      //               SizedBox(
+      //                 height: 0,
+      //               ),
+      //               //GreatOffersWidget(greatOfferList2),
+      //               //Great Offers end
+      //
+      //               // //What your choice start
+      //               // Container(
+      //               //   margin: EdgeInsets.only(top: 25, left: 15, right: 15, bottom: 15),
+      //               //   child: Row(
+      //               //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               //     children: [
+      //               //       Text(
+      //               //         "What your choice's",
+      //               //         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+      //               //       ),
+      //               //     ],
+      //               //   ),
+      //               // ),
+      //               // YourChoiceHomeWidget(wahtyourchoicList),
+      //               //What your choice start end
+      //
+      //               //Trending Restrount start
+      //               if (!trendingStoreList.isEmpty)
+      //                 Container(
+      //                   margin: EdgeInsets.only(
+      //                       top: 25, left: 15, right: 15, bottom: 15),
+      //                   child: Row(
+      //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //                     children: [
+      //                       Text(
+      //                         "Trending Restaurants",
+      //                         style: TextStyle(
+      //                             fontSize: 18, fontWeight: FontWeight.w500),
+      //                       ),
+      //                       InkWell(
+      //                         onTap: () {
+      //                           Navigator.push(context,
+      //                               MaterialPageRoute(builder: (context) {
+      //                                 return AllCouponScreen(
+      //                                     "Trending Restaurants",
+      //                                     "",
+      //                                     "",
+      //                                     "",
+      //                                     "",
+      //                                     "1",
+      //                                     "",
+      //                                     "",
+      //                                     "$cityId",
+      //                                     "");
+      //                               }));
+      //                         },
+      //                         child: Row(
+      //                           children: [
+      //                             Text(
+      //                               "View All",
+      //                               style: TextStyle(
+      //                                   color: MyColors.txtDescColor,
+      //                                   fontSize: 14,
+      //                                   fontWeight: FontWeight.w300),
+      //                             ),
+      //                             SizedBox(
+      //                               width: 5,
+      //                             ),
+      //                             Icon(
+      //                               Icons.arrow_forward,
+      //                               size: 15,
+      //                               color: MyColors.primaryColor,
+      //                             )
+      //                           ],
+      //                         ),
+      //                       ),
+      //                     ],
+      //                   ),
+      //                 ),
+      //               if (!trendingStoreList.isEmpty)
+      //                 TrendingRestruantWidget(trendingStoreList),
+      //               //Trending Restrount end
+      //
+      //               //Top collection start
+      //               if (!recentStoreList.isEmpty)
+      //                 Container(
+      //                   margin: EdgeInsets.only(
+      //                       top: 25, left: 15, right: 15, bottom: 15),
+      //                   child: Row(
+      //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //                     children: [
+      //                       Text(
+      //                         "Recent Joined",
+      //                         style: TextStyle(
+      //                             fontSize: 18, fontWeight: FontWeight.w500),
+      //                       ),
+      //                       InkWell(
+      //                         onTap: () {
+      //                           Navigator.push(context,
+      //                               MaterialPageRoute(builder: (context) {
+      //                                 return AllCouponScreen(
+      //                                     "Recent Joined",
+      //                                     "",
+      //                                     "",
+      //                                     "",
+      //                                     "",
+      //                                     "",
+      //                                     "1",
+      //                                     "",
+      //                                     "$cityId",
+      //                                     "");
+      //                               }));
+      //                         },
+      //                         child: Row(
+      //                           children: [
+      //                             Text(
+      //                               "View All",
+      //                               style: TextStyle(
+      //                                   color: MyColors.txtDescColor,
+      //                                   fontSize: 14,
+      //                                   fontWeight: FontWeight.w300),
+      //                             ),
+      //                             SizedBox(
+      //                               width: 5,
+      //                             ),
+      //                             Icon(
+      //                               Icons.arrow_forward,
+      //                               size: 15,
+      //                               color: MyColors.primaryColor,
+      //                             )
+      //                           ],
+      //                         ),
+      //                       ),
+      //                     ],
+      //                   ),
+      //                 ),
+      //               if (!recentStoreList.isEmpty)
+      //                 RecentJoinedWidget(recentStoreList),
+      //
+      //               if (!topCollectionStoreList.isEmpty)
+      //                 Container(
+      //                   margin: EdgeInsets.only(
+      //                       top: 25, left: 15, right: 15, bottom: 15),
+      //                   child: Row(
+      //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //                     children: [
+      //                       Text(
+      //                         "Top Collections",
+      //                         style: TextStyle(
+      //                             fontSize: 18, fontWeight: FontWeight.w500),
+      //                       ),
+      //                       InkWell(
+      //                         onTap: () {
+      //                           Navigator.push(context,
+      //                               MaterialPageRoute(builder: (context) {
+      //                                 return AllCouponScreen(
+      //                                     "Top Collections",
+      //                                     "",
+      //                                     "",
+      //                                     "",
+      //                                     "",
+      //                                     "",
+      //                                     "",
+      //                                     "1",
+      //                                     "$cityId",
+      //                                     "");
+      //                               }));
+      //                         },
+      //                         child: Row(
+      //                           children: [
+      //                             Text(
+      //                               "View All",
+      //                               style: TextStyle(
+      //                                   color: MyColors.txtDescColor,
+      //                                   fontSize: 14,
+      //                                   fontWeight: FontWeight.w300),
+      //                             ),
+      //                             SizedBox(
+      //                               width: 5,
+      //                             ),
+      //                             Icon(
+      //                               Icons.arrow_forward,
+      //                               size: 15,
+      //                               color: MyColors.primaryColor,
+      //                             )
+      //                           ],
+      //                         ),
+      //                       ),
+      //                     ],
+      //                   ),
+      //                 ),
+      //               if (!topCollectionStoreList.isEmpty)
+      //                 TopCollectionWidget(topCollectionStoreList, 0.0),
+      //
+      //               //TopCollectionWidget(topCollection, 0.0),
+      //               //TopCollectionWidget(topCollection, 0.0),
+      //               //Top collection end
+      //
+      //               SizedBox(
+      //                 height: 50,
+      //               ),
+      //             ],
+      //           ),
+      //         );},childCount: 1
+      //
+      //       ),
+      //     )
+      //   ],
+      // ),
+      ///
+      Container(
         color: MyColors.backgroundBg,
         constraints: BoxConstraints(
             maxWidth: MediaQuery
@@ -260,23 +2000,99 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                 InkWell(
                   onTap: (){
                     widget.bannersDa[0].type=="1"?
-                    navigateToTopSubCategories(
-                        context, "Food", 5):Navigator.push(context, MaterialPageRoute(builder: (context)=>
-                          CouponFullViewScreen("${widget.bannersDa[0].url}")
+                    navigateToAllCouponScreen(
+                        context, widget.bannersDa[0].subcategory_name, widget.bannersDa[0].category_id,widget.bannersDa[0].id):Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                        CouponFullViewScreen("${widget.bannersDa[0].url}")
                     ));
                   },
                   child: Container(
-                    height: heights*0.3,
+                    height: heights*0.46,
                     decoration: BoxDecoration(
                       // color: Colors.red,
-                      image: DecorationImage(image: NetworkImage(widget.bannersDa[0].image),fit: BoxFit.fill),
-                      borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20) )
+                        image: DecorationImage(image: NetworkImage(widget.bannersDa[0].image),fit: BoxFit.fill),
+                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20) )
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 10, left: 20, bottom: 20),
+                      padding: const EdgeInsets.only(top: 40, left: 10, bottom: 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Row(
+                            children: [
+                              GestureDetector(
+                                  onTap: () {
+                                    if (_scaffoldKey.currentState!.isDrawerOpen) {
+                                      _scaffoldKey.currentState!.closeDrawer();
+                                    } else {
+                                      _scaffoldKey.currentState!.openDrawer();
+                                    }
+                                  },
+                                  child: const Icon(Icons.menu,color: MyColors.whiteBG,)),
+                              SizedBox(width: widths*0.05,),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  //
+                                  InkWell(
+                                    onTap: (){
+                                      Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen(type: 2,)));
+
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Icon(LucideIcons.navigation,size: 16,color: MyColors.whiteBG,),
+                                        SizedBox(width: 2,),
+                                        Container(
+                                            width: widths*0.41,
+                                            child: Text(address.toString().split(',')[0],style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis,color: MyColors.whiteBG,),)),
+                                        Icon(Icons.keyboard_arrow_down_outlined,size: 16,color: MyColors.whiteBG,),
+
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                      width: widths*0.41,
+                                      child: Text(address,maxLines: 1,style: TextStyle(fontSize: 12,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis,color: MyColors.whiteBG,),)),
+                                ],
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                "${current_location}",
+                                style:  TextStyle(fontSize: 13, fontWeight: FontWeight.bold,color: MyColors.whiteBG),
+                              ),
+                              const SizedBox(width: 10),
+                              Container(
+                                width: 35,
+                                height: 35,
+                                margin: const EdgeInsets.only(right: 15),
+                                child: Card(
+                                  elevation: 2,
+                                  color: Colors.white,
+                                  shadowColor: MyColors.primaryColorLight,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(40.0),
+                                  ),
+                                  child:  Icon(
+                                    Icons.pin_drop,
+                                    size: 24,
+                                    color: MyColors.primaryColor,
+                                  ),
+                                  // IconButton(
+                                  //   icon: const Icon(
+                                  //     Icons.pin_drop,
+                                  //     size: 24,
+                                  //     color: MyColors.primaryColor,
+                                  //   ),
+                                  //   onPressed: () {
+                                  //     // Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
+                                  //     // AddressScreen();
+                                  //     // _showCityDialog();
+                                  //   },
+                                  // ),
+                                ),
+                              ),
+                            ],
+                          ),
                           Row(
                             children: [
                               Text(
@@ -286,15 +2102,16 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                                     fontWeight: FontWeight.bold,
                                     color: MyColors.whiteBG),
                               ),
+                              Text(
+                                "$userName",
+                                style: TextStyle(
+                                    fontSize: 23,
+                                    fontWeight: FontWeight.w900,
+                                    color: MyColors.whiteBG),
+                              ),
                             ],
                           ),
-                          Text(
-                            "$userName",
-                            style: TextStyle(
-                                fontSize: 23,
-                                fontWeight: FontWeight.w900,
-                                color: MyColors.whiteBG),
-                          ),
+
                           InkWell(
                             onTap: () {
                               _navigateToSearchScreen(context);
@@ -1193,18 +3010,18 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                 //     ),
                 //   ),
                 // ),
-InkWell(
-  onTap: (){
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>NearMeScreen()));
-  },
-  child: Container(
-    margin: EdgeInsets.all(10),
-    height: heights*0.08,
-    width: widths*0.4,
-    decoration: BoxDecoration(
-        image: DecorationImage(image: AssetImage("assets/images/near_me.png"),fit: BoxFit.fill)),
-  ),
-),
+                InkWell(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>NearMeScreen()));
+                  },
+                  child: Container(
+                    margin: EdgeInsets.all(10),
+                    height: heights*0.08,
+                    width: widths*0.4,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(image: AssetImage("assets/images/near_me.png"),fit: BoxFit.fill)),
+                  ),
+                ),
                 Container(
                   margin:
                   EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 15),
@@ -1265,6 +3082,9 @@ InkWell(
                         spotAvailable: "",
                         redeemed: "",
                         onTap: () {
+                          print(subCategoriesModel.category_id);
+                          print(subCategoriesModel.id);
+                          print("subCategoriesModel.id");
                           navigateToAllCouponScreen(
                             context,
                             subCategoriesModel.subcategory_name,
@@ -1545,6 +3365,281 @@ InkWell(
           ),
         ),
       ),
+      drawer: Drawer(
+      backgroundColor: Colors.white,
+      child: ListView(
+        padding: const EdgeInsets.all(0),
+        children: [
+          Container(
+              decoration: BoxDecoration(
+                //color: MyColors.primaryColor.withOpacity(0.0),
+                image: DecorationImage(
+                  image: const AssetImage("assets/images/drawer_bg_img.jpg"),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(
+                    MyColors.primaryColor.withOpacity(0.1),
+                    BlendMode.darken,
+                  ),
+                ),
+              ), //BoxDecoration
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 20, right: 20, top: 50, bottom: 20),
+                    child: Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Card(
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(40),
+                            ),
+                            // Set the clip behavior of the card
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            // Define the child widgets of the card
+                            child: Container(
+                              width: 70,
+                              height: 70,
+                              child: ClipOval(
+                                child: CachedNetworkImage(
+                                  imageUrl: userimage.isNotEmpty
+                                      ? userimage
+                                      : image,
+                                  fit: BoxFit.fill,
+                                  placeholder: (context, url) => Image.asset(
+                                    'assets/images/placeholder.png',
+                                    // Path to your placeholder image asset
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                  const Center(child: Icon(Icons.error)),
+                                ),
+                                // child: Image.network(
+                                //   userimage.isNotEmpty ? userimage : image,
+                                //   loadingBuilder: (BuildContext context,
+                                //       Widget child,
+                                //       ImageChunkEvent? loadingProgress) {
+                                //     if (loadingProgress == null) {
+                                //       return child;
+                                //     } else {
+                                //       return Center(
+                                //         child: CircularProgressIndicator(
+                                //           value: loadingProgress
+                                //                       .expectedTotalBytes !=
+                                //                   null
+                                //               ? loadingProgress
+                                //                       .cumulativeBytesLoaded /
+                                //                   (loadingProgress
+                                //                           .expectedTotalBytes ??
+                                //                       1)
+                                //               : null,
+                                //         ),
+                                //       );
+                                //     }
+                                //   },
+                                //   errorBuilder: (BuildContext context,
+                                //       Object error, StackTrace? stackTrace) {
+                                //     return Icon(Icons
+                                //         .person); // Placeholder icon for error case
+                                //   },
+                                // ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                            height: 10,
+                          ),
+                          Visibility(
+                            visible:
+                            userName.isNotEmpty || userEmail.isNotEmpty,
+                            child: RichText(
+                              text: TextSpan(
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                ),
+                                children: [
+                                  if (userName.isNotEmpty)
+                                    TextSpan(
+                                      text: '$userName\n',
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  if (userName.isNotEmpty &&
+                                      userMobile.isNotEmpty)
+                                    const WidgetSpan(
+                                      child: SizedBox(
+                                          height:
+                                          25), // Adjust the height as needed
+                                    ),
+                                  if (userMobile.isNotEmpty)
+                                    TextSpan(
+                                      text: '$userMobile',
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        color: Colors.black.withOpacity(0.7),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Center(
+                  //   child: SvgPicture.string(
+                  //     "assets/images/drawer_img.xml",
+                  //     width: 500,
+                  //     height: 500,
+                  //   ),
+                  // ),
+                ],
+              )),
+
+          ListTile(
+            leading: const Icon(
+              Icons.home,
+              color: MyColors.drawerIconColor,
+            ),
+            title: const Text(' Home '),
+            onTap: () {
+              _onItemTappedd(0);
+            },
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.account_balance_wallet,
+              color: MyColors.drawerIconColor,
+            ),
+            title: const Text(' Transaction '),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return TransactionScreen();
+              }));
+            },
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.support_agent,
+              color: MyColors.drawerIconColor,
+            ),
+            title: const Text(' Customer Care '),
+            onTap: () {
+              //Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return CustomerCare();
+              }));
+            },
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.settings,
+              color: MyColors.drawerIconColor,
+            ),
+            title: const Text(' How to use app '),
+            onTap: () {
+              //Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return HowItWorksScreen();
+              }));
+            },
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.share_rounded,
+              color: MyColors.drawerIconColor,
+            ),
+            title: const Text(' Share '),
+            onTap: () {
+              _scaffoldKey.currentState?.closeDrawer();
+              shareNetworkImage("$image",
+                  "\nCheck out this store on Discount Deals! \n\n *Download Now* \n\n $playstoreLink");
+              //Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.info_outline,
+              color: MyColors.drawerIconColor,
+            ),
+            title: const Text(' About Us '),
+            onTap: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AboutUsScreen()),
+              );
+
+              // Call the function after returning
+              _handleReturnFromSecondScreen();
+
+            },
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.book,
+              color: MyColors.drawerIconColor,
+            ),
+            title: const Text(' Terms & Condition '),
+            onTap: () {
+              //Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return TermsAndCondition();
+              }));
+            },
+          ),
+          Visibility(
+            visible: user_id != 0,
+            child: ListTile(
+              leading: const Icon(
+                Icons.delete_sweep_rounded,
+                color: MyColors.drawerIconColor,
+              ),
+              title: const Text(' Account Delete '),
+              onTap: () {
+                //Navigator.pop(context);
+
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return DeleteScreen();
+                }));
+
+                //logoutUser();
+              },
+            ),
+          ),
+          ListTile(
+            leading: user_id == 0
+                ? const Icon(
+              Icons.login_outlined,
+              color: MyColors.drawerIconColor,
+            )
+                : const Icon(
+              Icons.logout_outlined,
+              color: MyColors.drawerIconColor,
+            ),
+            title: user_id == 0 ? const Text(' Login ') : const Text(' Logout '),
+            onTap: () {
+              //Navigator.pop(context);
+              if (user_id == 0) {
+                NavigationUtil.navigateToLogin(context);
+              } else {
+                logoutUser();
+              }
+            },
+          ),
+        ],
+      ),
+    ) ,
     ):Center(
       child: CircularProgressIndicator(
         color: MyColors.primary ,
@@ -1569,7 +3664,58 @@ InkWell(
   //   });
   //
   // }
+  Future<void> fetchCity() async {
+    try {
+      final response = await ApiServices.api_show_city(context);
+      print('fetchCity:response  $response');
+      if (response != null &&
+          response.containsKey('res') &&
+          response['res'] == 'success') {
+        final data = response['data'] as List<dynamic>;
 
+        cityList = data.map((e) {
+          return CityModel.fromMap(e);
+        }).toList();
+      } else if (response != null) {
+        String msg = response['msg'];
+
+        // Handle unsuccessful response or missing 'res' field
+        showErrorMessage(context, message: msg);
+      }
+    } catch (e) {
+      print('fetchCity: $e');
+    }
+  }
+  Future<void> currentMembership(String user_id) async {
+    print('current_membership user_id: $user_id');
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final body = {
+        "user_id": user_id,
+      };
+      final response = await ApiServices.api_CurrentMembership(body);
+      print('current_membership response: $response');
+      if (response != null) {
+        setState(() {
+          planName = response.plan_name;
+          left_day = "${response.left_day}";
+        });
+      } else {
+        planName = '';
+        left_day = '';
+      }
+    } catch (e) {
+      print('Error: $e');
+      planName = '';
+      left_day = '';
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
   Future<void> fetchSubCategories(int category_id) async {
     setState(() {
       isLoading = true;

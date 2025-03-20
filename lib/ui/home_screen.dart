@@ -195,33 +195,33 @@ print("dsd ${banners.length}");
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: MyColors.backgroundBg,
-      appBar: AppBar(
+      appBar:_selectedIndex!=0? AppBar(
         backgroundColor: MyColors.backgroundBg,
         leadingWidth: 20,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //
-            InkWell(
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
-
-              },
-              child: Row(
-                children: [
-                  Icon(LucideIcons.navigation,size: 16,color: MyColors.redBG,),
-                  SizedBox(width: 2,),
-                  Container(
-                    width: widths*0.41,
-                      child: Text(address.address,style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),)),
-                  Icon(Icons.keyboard_arrow_down_outlined,size: 16,color: MyColors.redBG,),
-
-                ],
-              ),
-            ),
-            Text(address.area,maxLines: 1,style: TextStyle(fontSize: 11,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),),
-          ],
-        ),
+        // title: Column(
+        //   crossAxisAlignment: CrossAxisAlignment.start,
+        //   children: [
+        //     //
+        //     InkWell(
+        //       onTap: (){
+        //         Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
+        //
+        //       },
+        //       child: Row(
+        //         children: [
+        //           Icon(LucideIcons.navigation,size: 16,color: MyColors.redBG,),
+        //           SizedBox(width: 2,),
+        //           Container(
+        //             width: widths*0.41,
+        //               child: Text(address.address,style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),)),
+        //           Icon(Icons.keyboard_arrow_down_outlined,size: 16,color: MyColors.redBG,),
+        //
+        //         ],
+        //       ),
+        //     ),
+        //     Text(address.area,maxLines: 1,style: TextStyle(fontSize: 11,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),),
+        //   ],
+        // ),
         actions: [
           Text(
             "${current_location}",
@@ -254,7 +254,7 @@ print("dsd ${banners.length}");
             ),
           ),
         ],
-      ),
+      ):null,
       body:banners !=[] && banners.isNotEmpty && banners.length>=1 ?Stack(children: [
         Container(
           constraints: BoxConstraints(
@@ -772,7 +772,7 @@ print("dsd ${banners.length}");
       home_location = n.home_location;
 
       if (user_id != 0) {
-        user_details("${n.id}");
+        user_details("${800}");
         firebaseTokenApi(context, "$token", "$user_id");
         currentMembership("$user_id");
       }
@@ -872,11 +872,12 @@ print("dsd ${banners.length}");
               SharedPref.KEY_IMAGE: user.image,
               SharedPref.KEY_HOME_LOCATION: user.home_location,
               SharedPref.KEY_CURRENT_LOCATION: user.current_location,
+              SharedPref.ADDRESS: user.address,
               SharedPref.KEY_LAT: user.lat,
               SharedPref.KEY_LONG: user.long,
               SharedPref.KEY_CREATED_AT: user.created_at,
               SharedPref.KEY_UPDATED_AT: user.updated_at,
-              SharedPref.KEY_BANNER: jsonEncode(user.banners),
+              // SharedPref.KEY_BANNER: jsonEncode(user.banners),
             });
             Provider.of<UserProvider>(context, listen: false)
                 .updateUserDetails(user);

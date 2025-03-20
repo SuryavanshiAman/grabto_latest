@@ -123,12 +123,17 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:grabto/helper/location_provider.dart';
 import 'package:grabto/main.dart';
+import 'package:grabto/services/api_services.dart';
 import 'package:grabto/theme/theme.dart';
 import 'package:grabto/ui/home_screen.dart';
+import 'package:grabto/ui/select_address_screen.dart';
+import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
+import '../helper/shared_pref.dart';
+import '../model/user_model.dart';
 import 'add_address_bottom_sheet_screen.dart';
 
 class LocationPickerScreen extends StatefulWidget {
@@ -280,7 +285,9 @@ print(url);
 
                   ),
                   onTap: (){
-                    Navigator.pop(context);
+                    // Navigator.pop(context);
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>AddressScreen(type:widget.type)));
+
                   },
                   onChanged: (String value) {
 
@@ -341,15 +348,16 @@ print(url);
                   onPressed: () {
                     address.setAddress(_longName2);
                     address.setArea(_currentAddress);
-                    widget.type==1?
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                      ),
-                      builder: (context) => const AddressBottomSheet(),
-                    ):Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+                    // widget.type==1?
+                    // showModalBottomSheet(
+                    //   context: context,
+                    //   isScrollControlled: true,
+                    //   shape: RoundedRectangleBorder(
+                    //     borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    //   ),
+                    //   builder: (context) => const AddressBottomSheet(),
+                    // ):
+                    confirmAddress(_currentAddress,widget.lat,widget.long);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: MyColors.orange,
@@ -367,5 +375,43 @@ print(url);
       ),
 
     );
+  }
+  bool isLoading = false;
+  Future<void> confirmAddress(String address, dynamic lat, dynamic long,) async {
+    UserModel n = await SharedPref.getUser();
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      final body = {
+        "user_id": n.id.toString(),
+        "address": address,
+        "lat": lat.toString(),
+        "long": long.toString(),
+      };
+      print(body);
+      final response = await ApiServices.confirmAddress(context, body);
+
+      // Check if the response is null or doesn't contain the expected data
+      if (
+          response!['error'] == false) {
+        showSuccessMessage(context, message: response['message']);
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+
+      } else if (response != null) {
+        String msg = response['message'];
+
+        // Handle unsuccessful response or missing 'res' field
+        showErrorMessage(context, message: msg);
+      }
+    } catch (e) {
+      //print('verify_otp error: $e');
+      // Handle error
+      showErrorMessage(context, message: 'An error occurred: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 }

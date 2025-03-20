@@ -156,6 +156,24 @@ print(url);
     }
   }
 
+  static Future<Map<String, dynamic>?> confirmAddress(
+      BuildContext context, Map body) async {
+    final url = '$BASE_URL/user-address-details-add';
+
+    final uri = Uri.parse(url);
+    final response = await http.post(uri, body: body);
+
+    if (response.statusCode == 200) {
+      // Parse the JSON response
+      final jsonResponse = json.decode(response.body) as Map<String, dynamic>;
+      // Print the entire response
+      print('verify_otp response: $jsonResponse');
+
+      return jsonResponse;
+    } else {
+      return null;
+    }
+  }
   static Future<Map<String, dynamic>?> update_profile_image({
     required String userId,
     required File image,

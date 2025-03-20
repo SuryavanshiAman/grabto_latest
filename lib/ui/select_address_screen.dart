@@ -12,6 +12,9 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'map_screen.dart';
 
 class AddressScreen extends StatefulWidget {
+  final int type;
+
+  const AddressScreen({super.key,required this.type});
   @override
   State<AddressScreen> createState() => _AddressScreenState();
 }
@@ -418,7 +421,7 @@ contentPadding: EdgeInsets.only(top: 10),
                             selectedLocation =
                             "${suggestion['description']} (${details['district']}, ${details['pincode']})";
                           });
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>LocationPickerScreen(lat:suggestion['latitude'],long:suggestion['longitude'],type:2)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>LocationPickerScreen(lat:suggestion['latitude'],long:suggestion['longitude'],type:widget.type)));
                           // Navigator.pop(context);
                         }).catchError((e) {
                           ScaffoldMessenger.of(context).showSnackBar(

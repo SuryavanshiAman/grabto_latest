@@ -10,6 +10,7 @@ class SharedPref {
   static const String SHARED_PREF_NAME = "digicodersapp";
 
   static const String KEY_ID = "id";
+  static const String REFFREE = "reffree";
   static const String KEY_CURRENT_MONTH = "current_month";
   static const String KEY_PREMIUM = "premium";
   static const String KEY_STATUS = "status";
@@ -21,8 +22,10 @@ class SharedPref {
   static const String KEY_IMAGE = "image";
   static const String KEY_HOME_LOCATION = "home_location";
   static const String KEY_CURRENT_LOCATION = "current_location";
+  static const String ADDRESS = "address";
   static const String KEY_LAT = "lat";
   static const String KEY_LONG = "long";
+  static const String REASON = "reason";
   static const String KEY_CREATED_AT = "created_at";
   static const String KEY_UPDATED_AT = "updated_at";
   static const String KEY_TOKEN = "token";
@@ -34,6 +37,7 @@ class SharedPref {
   static Future<void> userLogin(Map<String, dynamic> userData) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt(KEY_ID, userData[KEY_ID] ?? 0);
+    await prefs.setString(REFFREE, userData[REFFREE] ?? "");
     await prefs.setString(KEY_CURRENT_MONTH, userData[KEY_CURRENT_MONTH] ?? '');
     await prefs.setString(KEY_PREMIUM, userData[KEY_PREMIUM] ?? '');
     await prefs.setString(KEY_STATUS, userData[KEY_STATUS] ?? '');
@@ -44,10 +48,11 @@ class SharedPref {
     await prefs.setString(KEY_OTP, userData[KEY_OTP] ?? '');
     await prefs.setString(KEY_IMAGE, userData[KEY_IMAGE] ?? '');
     await prefs.setString(KEY_HOME_LOCATION, userData[KEY_HOME_LOCATION] ?? '');
-    await prefs.setString(
-        KEY_CURRENT_LOCATION, userData[KEY_CURRENT_LOCATION] ?? '');
+    await prefs.setString(KEY_CURRENT_LOCATION, userData[KEY_CURRENT_LOCATION] ?? '');
+    await prefs.setString(ADDRESS, userData[ADDRESS] ?? '');
     await prefs.setString(KEY_LAT, userData[KEY_LAT] ?? '');
     await prefs.setString(KEY_LONG, userData[KEY_LONG] ?? '');
+    await prefs.setString(REASON, userData[REASON] ?? '');
     await prefs.setString(KEY_CREATED_AT, userData[KEY_CREATED_AT] ?? '');
     await prefs.setString(KEY_UPDATED_AT, userData[KEY_UPDATED_AT] ?? '');
     String bannerJson = jsonEncode(userData[KEY_BANNER]);
@@ -79,18 +84,55 @@ class SharedPref {
     );
   }
 
+  // static Future<UserModel> getUser() async {
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String? bannerJson = prefs.getString(KEY_BANNER);
+  //   List<BannerModel> banners = [];
+  //
+  //   if (bannerJson != null && bannerJson.isNotEmpty) { // Fix: Check if not empty
+  //     List<dynamic> decodedBanners = jsonDecode(bannerJson??"");
+  //     banners = decodedBanners.map((e) => BannerModel.fromMap(e)).toList();
+  //   }
+  //   return UserModel(
+  //     id: prefs.getInt(KEY_ID) ?? 0,
+  //     current_month: prefs.getString(KEY_CURRENT_MONTH) ?? '',
+  //     premium: prefs.getString(KEY_PREMIUM) ?? '',
+  //     status: prefs.getString(KEY_STATUS) ?? '',
+  //     name: prefs.getString(KEY_NAME) ?? '',
+  //     email: prefs.getString(KEY_EMAIL) ?? '',
+  //     mobile: prefs.getString(KEY_MOBILE) ?? '',
+  //     dob: prefs.getString(KEY_DOB) ?? '',
+  //     otp: prefs.getString(KEY_OTP) ?? '',
+  //     image: prefs.getString(KEY_IMAGE) ?? '',
+  //     home_location: prefs.getString(KEY_HOME_LOCATION) ?? '',
+  //     current_location: prefs.getString(KEY_CURRENT_LOCATION) ?? '',
+  //     lat: prefs.getString(KEY_LAT) ?? '',
+  //     long: prefs.getString(KEY_LONG) ?? '',
+  //     created_at: prefs.getString(KEY_CREATED_AT) ?? '',
+  //     updated_at: prefs.getString(KEY_UPDATED_AT) ?? '',
+  //     banners: banners, reffree: '', address: '', reason: '',
+  //   );
+  // }
   static Future<UserModel> getUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? bannerJson = prefs.getString(KEY_BANNER);
     List<BannerModel> banners = [];
-    if (bannerJson != null) {
-      List<dynamic> decodedBanners = jsonDecode(bannerJson);
-      print(decodedBanners.length);
-      print("decodedBanners.length");
-      banners = decodedBanners.map((e) => BannerModel.fromMap(e)).toList();
+
+    if (bannerJson != null && bannerJson.isNotEmpty) {
+      try {
+        var decoded = jsonDecode(bannerJson);
+        if (decoded is List) {
+          banners = decoded.map((e) => BannerModel.fromMap(e)).toList();
+        }
+      } catch (e) {
+        print("Error decoding banner JSON: $e");
+        // You can log or handle invalid JSON here
+      }
     }
+
     return UserModel(
       id: prefs.getInt(KEY_ID) ?? 0,
+      reffree: prefs.getString(REFFREE) ?? '',
       current_month: prefs.getString(KEY_CURRENT_MONTH) ?? '',
       premium: prefs.getString(KEY_PREMIUM) ?? '',
       status: prefs.getString(KEY_STATUS) ?? '',
@@ -102,11 +144,15 @@ class SharedPref {
       image: prefs.getString(KEY_IMAGE) ?? '',
       home_location: prefs.getString(KEY_HOME_LOCATION) ?? '',
       current_location: prefs.getString(KEY_CURRENT_LOCATION) ?? '',
+      address: prefs.getString(ADDRESS) ?? '',
       lat: prefs.getString(KEY_LAT) ?? '',
       long: prefs.getString(KEY_LONG) ?? '',
+      reason: prefs.getString(REASON) ?? '',
       created_at: prefs.getString(KEY_CREATED_AT) ?? '',
       updated_at: prefs.getString(KEY_UPDATED_AT) ?? '',
       banners: banners,
+
+
     );
   }
 

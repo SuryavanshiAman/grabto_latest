@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:grabto/helper/location_provider.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
+import 'package:provider/provider.dart';
 
 
 
@@ -9,6 +11,7 @@ class AddressBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final address=Provider.of<Address>(context);
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -27,15 +30,15 @@ class AddressBottomSheet extends StatelessWidget {
                   children: [
                     const Icon(Icons.location_on, color: MyColors.redBG),
                     const SizedBox(width: 8),
-                    const Text(
-                      "Sector H",
+                     Text(
+                      address.address,
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  "Sector H, Jankipuram, Lucknow, Uttar Pradesh 226021, India",
+                 Text(
+                  address.area,
                   style: TextStyle(color: MyColors.blackBG),
                 ),
                 const SizedBox(height: 12),
