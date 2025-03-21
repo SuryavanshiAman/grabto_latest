@@ -1,3 +1,8 @@
+import 'dart:convert';
+
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:grabto/helper/location_provider.dart';
 import 'package:grabto/model/user_model.dart';
 import 'package:grabto/ui/otp_screen.dart';
 import 'package:grabto/ui/signup_screen.dart';
@@ -5,10 +10,12 @@ import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 import '../services/api_services.dart';
 import '../theme/theme.dart';
 import '../widget/loader_hud.dart';
+
 
 class LoginScreen extends StatefulWidget {
 
@@ -239,4 +246,5 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     }
   }
+
 }

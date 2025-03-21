@@ -4,11 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:grabto/main.dart';
+import 'package:grabto/model/address_model.dart';
 import 'package:grabto/theme/theme.dart';
+import 'package:grabto/ui/home_screen.dart';
+import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconly/iconly.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../helper/shared_pref.dart';
+import '../model/user_model.dart';
+import '../services/api_services.dart';
 import 'map_screen.dart';
 
 class AddressScreen extends StatefulWidget {
@@ -187,6 +193,12 @@ bool visibility=false;
     }
   }
   String selectedLocation = "Write here my selected location";
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    addressListApi();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -380,28 +392,43 @@ contentPadding: EdgeInsets.only(top: 10),
            ),
          ),
 
-            visibility==false? ListTile(
-              // leading:
-              title: Row(
-                children: [
-            Icon(Icons.home, color: Colors.grey,size: 18,),
-                  Text(
-                    "Home",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
+            visibility==false?
+            Expanded(
+              child: ListView.builder(
+                itemCount: address.length,
+                itemBuilder: (context, index) {
+                  final data = address[index];
+                  return data.status!="Deactive"? ListTile(
+                    // leading:
+                    title: Row(
+                      children: [
+                        Icon(Icons.home, color: Colors.grey,size: 18,),
+                        Text(
+                          "Home",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    subtitle: Text(
+                      data.address??"",
+                      // "B86, Raghuwar Marriage Lawn, Mayur Vihar, Chandanapur, Indira Nagar, Lucknow, Uttar Pradesh...",
+                      style: TextStyle(color: Colors.grey),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    // trailing: Padding(
+                    //   padding: const EdgeInsets.only(bottom: 38.0),
+                    //   child: Icon(Icons.more_vert),
+                    // ),
+                    onTap: (){
+                      confirmAddress( data.address??"", data.lat??"", data.long??"");
+                    },
+                  ):Container();
+
+                },
               ),
-              subtitle: Text(
-                "B86, Raghuwar Marriage Lawn, Mayur Vihar, Chandanapur, Indira Nagar, Lucknow, Uttar Pradesh...",
-                style: TextStyle(color: Colors.grey),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              trailing: Padding(
-                padding: const EdgeInsets.only(bottom: 38.0),
-                child: Icon(Icons.more_vert),
-              ),
-            ):Container(),
+            )
+            :Container(),
             if (isLoading)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
@@ -465,5 +492,68 @@ contentPadding: EdgeInsets.only(top: 10),
         ),
       ),
     );
+  }
+  List<AddressModel>address=[];
+  Future<void> addressListApi() async {
+    UserModel n = await SharedPref.getUser();
+    try {
+      final body = {"user_id":n.id.toString()};
+      final response = await ApiServices.viewAddressList(body);
+      print('👍: response $response');
+      if (response != null) {
+        setState(() {
+          address = response;
+          isLoading = false;
+          print('😶‍🌫️: response ${address[0].address}');
+          // Set isLoading to false when fetching ends
+        });
+      } else {
+        setState(() {
+          isLoading = false; // Set isLoading to false when fetching ends
+        });
+      }
+    } catch (e) {
+      print('Slot: $e');
+      setState(() {
+        isLoading = false; // Set isLoading to false in case of error
+      });
+    }
+  }
+  Future<void> confirmAddress(String address, dynamic lat, dynamic long,) async {
+    UserModel n = await SharedPref.getUser();
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      final body = {
+        "user_id": n.id.toString(),
+        "address": address,
+        "lat": lat.toString(),
+        "long": long.toString(),
+      };
+      print(body);
+      final response = await ApiServices.confirmAddress(context, body);
+
+      // Check if the response is null or doesn't contain the expected data
+      if (
+      response!['error'] == false) {
+        showSuccessMessage(context, message: response['message']);
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+
+      } else if (response != null) {
+        String msg = response['message'];
+
+        // Handle unsuccessful response or missing 'res' field
+        showErrorMessage(context, message: msg);
+      }
+    } catch (e) {
+      //print('verify_otp error: $e');
+      // Handle error
+      showErrorMessage(context, message: 'An error occurred: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 }

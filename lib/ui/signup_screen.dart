@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:grabto/helper/shared_pref.dart';
 import 'package:grabto/model/city_model.dart';
 import 'package:grabto/model/user_model.dart';
@@ -8,10 +12,12 @@ import 'package:grabto/widget/date_picker.dart';
 import 'package:grabto/widget/item_list_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
+import '../helper/location_provider.dart';
 import '../theme/theme.dart';
 import 'package:flutter/services.dart';
-
+import 'package:http/http.dart' as http;
 import '../widget/filter_date-formate.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -635,7 +641,56 @@ class _SignupScreenState extends State<SignupScreen> {
       });
     }
   }
+  late LatLng _currentLocation;
+  GoogleMapController? _mapController;
+  Future<void> _getCurrentLocation() async {
+    LocationPermission permission = await Geolocator.requestPermission();
 
+    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+      return;
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    setState(() {
+      _currentLocation = LatLng(position.latitude, position.longitude);
+    });
+
+    // Fetch and update the address
+    _getAddressFromLatLng(position.latitude, position.longitude);
+
+    _mapController?.animateCamera(CameraUpdate.newLatLng(_currentLocation));
+  }
+  static const String googleApiKey = "AIzaSyCOqfJTgg1Blp1GIeh7o8W8PC1w5dDyhWI";
+  Future<void> _getAddressFromLatLng(double lat, double lng) async {
+    final address=Provider.of<Address>(context,listen: false);
+    try {
+      // final url = Uri.parse("https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lng");
+      final url = Uri.parse("https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$googleApiKey");
+      print(url);
+      final response = await http.get(url,
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        String formattedAddress = data["results"][0]["formatted_address"];
+        List<dynamic> addressComponents = data["results"][0]["address_components"];
+        String longName = addressComponents.isNotEmpty ? addressComponents[0]["long_name"] : "Not Available";
+        String longName2 = addressComponents.isNotEmpty ? addressComponents[1]["long_name"] : "Not Available";
+        address.setArea(formattedAddress);
+        address.setAddress(longName2);
+
+      } else {
+        setState(() {
+        });
+      }
+    } catch (e) {
+      print("Error fetching address: $e");
+      setState(() {
+      });
+    }
+  }
   @override
   void dispose() {
     // _dobController.dispose();

@@ -1,5 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:grabto/helper/location_provider.dart';
 import 'package:grabto/helper/shared_pref.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/model/user_model.dart';
@@ -8,6 +12,8 @@ import 'package:grabto/ui/home_screen.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:grabto/widget/pinput/pinput.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 // import 'package:numeric_keyboard/numeric_keyboard.dart';
 
 import '../theme/theme.dart';
@@ -270,13 +276,10 @@ class _OtpScreenState extends State<OtpScreen> {
             });
 
             // Pop all screens until reaching the first screen
-            Navigator.popUntil(context, (route) => route.isFirst);
-
+            // Navigator.popUntil(context, (route) => route.isFirst);
+            _getCurrentLocation();
             // Replace the current screen with the login screen
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
-            );
+
           } else {
             // Handle null user
             showErrorMessage(context, message: 'User data is invalid');
@@ -351,6 +354,98 @@ class _OtpScreenState extends State<OtpScreen> {
       }
     } catch (e) {
       print('user_login error: $e');
+      // Handle error
+      showErrorMessage(context, message: 'An error occurred: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+  late LatLng _currentLocation;
+  GoogleMapController? _mapController;
+  Future<void> _getCurrentLocation() async {
+    LocationPermission permission = await Geolocator.requestPermission();
+
+    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+      return;
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    setState(() {
+      _currentLocation = LatLng(position.latitude, position.longitude);
+    });
+
+    // Fetch and update the address
+    _getAddressFromLatLng(position.latitude, position.longitude);
+
+    _mapController?.animateCamera(CameraUpdate.newLatLng(_currentLocation));
+  }
+  static const String googleApiKey = "AIzaSyCOqfJTgg1Blp1GIeh7o8W8PC1w5dDyhWI";
+  Future<void> _getAddressFromLatLng(double lat, double lng) async {
+    final address=Provider.of<Address>(context,listen: false);
+    try {
+      // final url = Uri.parse("https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lng");
+      final url = Uri.parse("https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$googleApiKey");
+      print(url);
+      final response = await http.get(url,
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        String formattedAddress = data["results"][0]["formatted_address"];
+        List<dynamic> addressComponents = data["results"][0]["address_components"];
+        String longName = addressComponents.isNotEmpty ? addressComponents[0]["long_name"] : "Not Available";
+        String longName2 = addressComponents.isNotEmpty ? addressComponents[1]["long_name"] : "Not Available";
+        address.setArea(formattedAddress);
+        address.setAddress(longName2);
+        confirmAddress(formattedAddress,lat,lng);
+        print("CCCCCCCCCC:${address.area}");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      } else {
+        setState(() {
+        });
+      }
+    } catch (e) {
+      print("Error fetching address: $e");
+      setState(() {
+      });
+    }
+  }
+  Future<void> confirmAddress(String address, dynamic lat, dynamic long,) async {
+    UserModel n = await SharedPref.getUser();
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      final body = {
+        "user_id": n.id.toString(),
+        "address": address,
+        "lat": lat.toString(),
+        "long": long.toString(),
+      };
+      print(body);
+      final response = await ApiServices.confirmAddress(context, body);
+
+      // Check if the response is null or doesn't contain the expected data
+      if (
+      response!['error'] == false) {
+        showSuccessMessage(context, message: response['message']);
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+
+      } else if (response != null) {
+        String msg = response['message'];
+
+        // Handle unsuccessful response or missing 'res' field
+        showErrorMessage(context, message: msg);
+      }
+    } catch (e) {
+      //print('verify_otp error: $e');
       // Handle error
       showErrorMessage(context, message: 'An error occurred: $e');
     } finally {

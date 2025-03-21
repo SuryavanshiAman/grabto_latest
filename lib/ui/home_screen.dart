@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:grabto/generated/assets.dart';
 import 'package:grabto/helper/shared_pref.dart';
 import 'package:grabto/helper/user_provider.dart';
@@ -93,6 +95,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   @override
+
+
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
       // Call your function when the app resumes
@@ -772,7 +776,7 @@ print("dsd ${banners.length}");
       home_location = n.home_location;
 
       if (user_id != 0) {
-        user_details("${800}");
+        user_details("${user_id}");
         firebaseTokenApi(context, "$token", "$user_id");
         currentMembership("$user_id");
       }

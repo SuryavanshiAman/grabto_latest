@@ -354,11 +354,11 @@ int selectedIndex=0;
                           ),
                         ),
                         SizedBox(height: 16),
-                        SingleChildScrollView(
+                        bookModel.isNotEmpty&&bookModel.toString()!=""? SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
-                            children: List.generate(bookModel[0].weekday?.length??0, (index) {
-                              final data= bookModel[0].weekday?[index];
+                            children: List.generate(bookModel[0].days?.length??0, (index) {
+                              final data= bookModel[0].days?[index];
                               // String endTime = "11:19 PM";
                               // DateTime now = DateTime.now();
                               // DateTime todayEndTime =
@@ -384,9 +384,18 @@ int selectedIndex=0;
                               //
                               double leftMargin = index == 0 ? 16 : 4;
                               double rightMargin = index == 29 ? 16 : 4;
+                              String dateString = data?.date.toString()??"2025-01-25"; // Given date format
+
+                              // Parse the date
+                              DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(dateString);
+
+                              // Format the date to "19-March"
+                              String formattedDate = DateFormat("dd-MMM").format(parsedDate);
 
                               return GestureDetector(
-                                onTap: () => _updateSelectedDate(date),
+                                onTap: () =>data?.status!="Non-Active"? _updateSelectedDate(date): {
+                                  showErrorMessage(context, message: "Booking is close on $formattedDate")
+                                },
                                 child: Container(
                                   width: 65,
                                   height: 75,
@@ -414,10 +423,13 @@ int selectedIndex=0;
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        data?.t05Date.toString()!=null?DateFormat('EEE').format(DateTime.parse(data?.t05Date.toString()??"2025-01-25")):"",
-                                        // data?.t04Weekday.toString()??"",
+                                  // formattedDate,
+                                        data?.status!="Non-Active"?DateFormat('EEE').format(DateTime.parse(parsedDate.toString())):"Booking Off",
+                                        // data?.day.toString()??"",
                                         // dayString,
+                                        textAlign: TextAlign.center,
                                         style: TextStyle(
+
                                           fontSize: 15,
                                           color: _selectedDate.year ==
                                                       date.year &&
@@ -428,9 +440,10 @@ int selectedIndex=0;
                                               : Colors.black,
                                         ),
                                       ),
-                                      Text(
+                                      data?.status!="Non-Active"? Text(
+                                        formattedDate,
                                         // "",
-                                          data?.t05Date.toString()!=null? DateFormat('dd MMM').format(DateTime.parse(data?.t05Date.toString()??"2025-01-25")):"",
+                                        //   data?.date.toString()!=null? DateFormat('dd MMM').format(DateTime.parse("${data?.date.toString()??"2025-01-25"}00:00:00")):"",
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -442,14 +455,14 @@ int selectedIndex=0;
                                               ? MyColors.primary
                                               : Colors.black,
                                         ),
-                                      ),
+                                      ):Container(),
                                     ],
                                   ),
                                 ),
                               );
                             }),
                           ),
-                        ),
+                        ):Center(child: Text("No Data")),
                         Padding(
                           padding: const EdgeInsets.only(
                               left: 16, right: 16, top: 16, bottom: 16),
@@ -459,12 +472,14 @@ int selectedIndex=0;
                                 fontSize: 14, fontWeight: FontWeight.w500),
                           ),
                         ),
-                        bookModel.isNotEmpty&&bookModel.toString()!=""?  ListView.builder(
+                        ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                            itemCount: bookModel[0].weekday![0].meals?.length??0,
+                            // itemCount: bookModel[0].weekday![0].meals?.length??0,
+                            itemCount: bookModel[0].weekday?[0].meals?.length??0,
                             itemBuilder: (ctx,int mealIndex){
                             final mealData =  bookModel[0].weekday![0].meals![mealIndex];
+                            print("SSSSSS:${bookModel[0].weekday?[0].meals?.length??0}");
                           return Container(
                             margin: EdgeInsets.only(
                                 left: 16, right: 16, top: 0, bottom: 16),
@@ -490,17 +505,16 @@ int selectedIndex=0;
                                         crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                         children: [
-                                          mealData.t03FoodType=="Breakfast"||mealData.t03FoodType=="Lunch"
+                                          // mealData.t03FoodType=="Breakfast"||mealData.t03FoodType=="Lunch"
+                                          mealData?.t03FoodType=="Breakfast"||mealData?.t03FoodType=="Lunch"
                                               ? Image.asset(
                                             'assets/images/lunch.png',
                                             width: 40,
                                             height: 40,
-                                            // color: const Color.fromARGB(255, 250, 167, 0), // Optional: Apply tint color
                                           ):Image.asset(
                                           'assets/images/dinner.png',
                                           width: 40,
                                           height: 40,
-                                          // color: const Color.fromARGB(255, 250, 167, 0), // Optional: Apply tint color
                                         ),
                                           SizedBox(width: 10),
                                           Column(
@@ -508,7 +522,7 @@ int selectedIndex=0;
                                             CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                mealData.t03FoodType??"", // Title
+                                                mealData?.t03FoodType??"", // Title
                                                 style: TextStyle(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold,
@@ -567,7 +581,7 @@ int selectedIndex=0;
                                       child: GridView.builder(
                                         physics: NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
-                                        itemCount: mealData.time?.length??0,
+                                        itemCount: mealData?.time?.length??0,
                                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                           crossAxisCount: 3,
                                           crossAxisSpacing: 10,
@@ -575,21 +589,21 @@ int selectedIndex=0;
                                           childAspectRatio: 8/4,
                                         ),
                                         itemBuilder: (BuildContext context, int timeIndex) {
-                                          final data =mealData.time![timeIndex];
+                                          final data =mealData?.time![timeIndex];
                                           return TimeSlotCard(
-                                            timeSlot: data.t01Time.toString()??"",
+                                            timeSlot: data?.t01Time.toString()??"",
                                             isSelected:
-                                            selectedTimeSlot ==  data.t01Time,
+                                            selectedTimeSlot ==  data?.t01Time,
                                             onTap: (){
                                               setState(() {
-                                                availableSeat=data.t02Noofseats??0;
+                                                availableSeat=data?.t02Noofseats??0;
                                               });
                                               selectTimeSlot(
-                                                data.t01Time.toString()??"",
+                                                data?.t01Time.toString()??"",
                                                 widget.category_name ==
                                                     "Salon"
                                                     ? 'Day'
-                                                    : mealData.t03FoodType.toString());}
+                                                    : mealData?.t03FoodType.toString()??"");}
                                           );
                                         },
                                       ),
@@ -668,7 +682,8 @@ int selectedIndex=0;
                               ],
                             ),
                           );
-                        }):Center(child: Text("No Data")),
+                        })
+                            // :Center(child: Text("No Data")),
                         // if (timeSlotsLunch.isNotEmpty)
                         //   Container(
                         //     margin: EdgeInsets.only(
@@ -1103,17 +1118,15 @@ int selectedIndex=0;
     }
   }
   Future<void> timeSlot(String store_id) async {
-    print('BookModel: store_id $store_id');
-    print('😊😊😊');
     try {
       final body = {"store_id": "$store_id"};
       final response = await ApiServices.timeSlot(body);
-      print('BookModel: response $response');
+      print('👍: response $response');
       if (response != null) {
         setState(() {
           bookModel = response;
           isLoading = false;
-          print('BookModel: response ${bookModel[0].weekday?[0].t04Weekday}');
+          print('😶‍🌫️: response ${bookModel[0].weekday?[0].t04Weekday}');
           // Set isLoading to false when fetching ends
         });
       } else {

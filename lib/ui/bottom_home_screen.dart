@@ -293,7 +293,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
 
   @override
   Widget build(BuildContext context) {
-    // final address=Provider.of<Address>(context);
+    final location=Provider.of<Address>(context);
+    print(location.area);
     return  categories.isNotEmpty? Scaffold(
       key: _scaffoldKey,
       backgroundColor: MyColors.backgroundBg,
@@ -2044,7 +2045,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                                         SizedBox(width: 2,),
                                         Container(
                                             width: widths*0.41,
-                                            child: Text(address.toString().split(',')[0],style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis,color: MyColors.whiteBG,),)),
+                                            child: Text(address.toString() !=""?address.toString().split(',')[0]:location.address.toString(),style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis,color: MyColors.whiteBG,),)),
                                         Icon(Icons.keyboard_arrow_down_outlined,size: 16,color: MyColors.whiteBG,),
 
                                       ],
@@ -2052,7 +2053,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                                   ),
                                   Container(
                                       width: widths*0.41,
-                                      child: Text(address,maxLines: 1,style: TextStyle(fontSize: 12,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis,color: MyColors.whiteBG,),)),
+                                      child: Text(address!=""?address:location.area,maxLines: 1,style: TextStyle(fontSize: 12,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis,color: MyColors.whiteBG,),)),
                                 ],
                               ),
                               const SizedBox(width: 10),

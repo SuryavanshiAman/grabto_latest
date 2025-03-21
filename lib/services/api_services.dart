@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:grabto/model/MembershipModel.dart';
+import 'package:grabto/model/address_model.dart';
 import 'package:grabto/model/categories_model.dart';
 import 'package:grabto/model/coupon_model.dart';
 import 'package:grabto/model/features_model.dart';
@@ -376,6 +377,40 @@ print(url);
         } else if (jsonResponse['data'] is Map) {
           return [
             bookTableModel.fromJson(jsonResponse['data'] as Map<String, dynamic>)
+          ];
+        } else {
+          print("Unexpected data format");
+          return null;
+        }
+      } else {
+        print("TimeSlot API Error: $res");
+        return null;
+      }
+    } else {
+      print("HTTP Error: ${response.statusCode}");
+      return null;
+    }
+  }
+  static Future<List<AddressModel>?> viewAddressList(Map<String, dynamic> body) async {
+    const url = '$BASE_URL/get-user-store-details';
+    final uri = Uri.parse(url);
+    final response = await http.post(uri, body: body);
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body) as Map<String, dynamic>;
+      print("API Response: $jsonResponse");
+
+      final bool res = jsonResponse['error'] as bool;
+      if (!res) {
+        print('API Response Data: ${jsonResponse['data']}');
+
+        if (jsonResponse['data'] is List) {
+          return (jsonResponse['data'] as List)
+              .map((e) => AddressModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else if (jsonResponse['data'] is Map) {
+          return [
+            AddressModel.fromJson(jsonResponse['data'] as Map<String, dynamic>)
           ];
         } else {
           print("Unexpected data format");
