@@ -202,6 +202,8 @@ print("dsd ${banners.length}");
       appBar:_selectedIndex!=0? AppBar(
         backgroundColor: MyColors.backgroundBg,
         leadingWidth: 20,
+        centerTitle: true,
+        title:_selectedIndex==1? Text("Category"):_selectedIndex==2? Text("BookMark"): Text("Profile"),
         // title: Column(
         //   crossAxisAlignment: CrossAxisAlignment.start,
         //   children: [
@@ -226,38 +228,38 @@ print("dsd ${banners.length}");
         //     Text(address.area,maxLines: 1,style: TextStyle(fontSize: 11,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),),
         //   ],
         // ),
-        actions: [
-          Text(
-            "${current_location}",
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(width: 10),
-          Container(
-            width: 45,
-            height: 45,
-            margin: const EdgeInsets.only(right: 15),
-            child: Card(
-              elevation: 2,
-              color: Colors.white,
-              shadowColor: MyColors.primaryColorLight,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(40.0),
-              ),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.pin_drop,
-                  size: 24,
-                  color: MyColors.primaryColor,
-                ),
-                onPressed: () {
-                  // Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
-                  // AddressScreen();
-                  _showCityDialog();
-                },
-              ),
-            ),
-          ),
-        ],
+        // actions: [
+        //   Text(
+        //     "${current_location}",
+        //     style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+        //   ),
+        //   const SizedBox(width: 10),
+        //   Container(
+        //     width: 45,
+        //     height: 45,
+        //     margin: const EdgeInsets.only(right: 15),
+        //     child: Card(
+        //       elevation: 2,
+        //       color: Colors.white,
+        //       shadowColor: MyColors.primaryColorLight,
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(40.0),
+        //       ),
+        //       child: IconButton(
+        //         icon: const Icon(
+        //           Icons.pin_drop,
+        //           size: 24,
+        //           color: MyColors.primaryColor,
+        //         ),
+        //         onPressed: () {
+        //           // Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
+        //           // AddressScreen();
+        //           _showCityDialog();
+        //         },
+        //       ),
+        //     ),
+        //   ),
+        // ],
       ):null,
       body:banners !=[] && banners.isNotEmpty && banners.length>=1 ?Stack(children: [
         Container(

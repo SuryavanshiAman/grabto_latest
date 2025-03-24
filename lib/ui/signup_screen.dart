@@ -349,8 +349,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                                   onDateSelected:
                                                       (DateTime selectedDate) {
                                                     setState(() {
-                                                      _selectedDate =
-                                                          selectedDate;
+                                                      _selectedDate = selectedDate;
                                                     });
                                                     // withdraw.withdrawHistoryApi("", "", _selectedDate, context);
                                                     // if (kDebugMode) {
@@ -517,8 +516,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                               // final dob = dobCont.text;
                                               String token =
                                                   await SharedPref.getToken();
+                                              print(_selectedDate);
                                               user_signup(
-                                                  name, mobile, city, DateFormat('dd-MM-yyy').format(selectedDate));
+                                                  name, mobile, city, DateFormat('dd-MM-yyy').format(DateTime.parse(_selectedDate.toString())));
                                             },
                                             child: const Text(
                                               "Sign Up",
@@ -570,6 +570,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Future<void> user_signup(
       String name, String mobile, String city, String dob) async {
+    print(dob);
     if (name.isEmpty) {
       showErrorMessage(context, message: 'Please fill name');
       return;

@@ -103,10 +103,13 @@ class _BookTableScreenState extends State<BookTableScreen> {
 
   void toggleLunchTimeSlotsVisibility() {
     setState(() {
-      isLunchTimeSlotsVisible = !isLunchTimeSlotsVisible; // Toggle visibility
+      isLunchTimeSlotsVisible = !isLunchTimeSlotsVisible;
     });
+    print(isLunchTimeSlotsVisible);
+    print(selectedIndex);
   }
 int selectedIndex=0;
+int isLunchTimeSlotsVisibleIndex=-1;
   void checkTimeSlotsVisibility(DateTime selectedDate) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -216,7 +219,7 @@ int selectedIndex=0;
       );
     }
   }
-
+  int? expandedIndex;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -472,13 +475,14 @@ int selectedIndex=0;
                                 fontSize: 14, fontWeight: FontWeight.w500),
                           ),
                         ),
-                        ListView.builder(
+                        bookModel.isNotEmpty&&bookModel.toString()!=""?  ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                             // itemCount: bookModel[0].weekday![0].meals?.length??0,
                             itemCount: bookModel[0].weekday?[0].meals?.length??0,
                             itemBuilder: (ctx,int mealIndex){
                             final mealData =  bookModel[0].weekday![0].meals![mealIndex];
+                            bool isExpanded = expandedIndex == mealIndex;
                             print("SSSSSS:${bookModel[0].weekday?[0].meals?.length??0}");
                           return Container(
                             margin: EdgeInsets.only(
@@ -506,7 +510,7 @@ int selectedIndex=0;
                                         CrossAxisAlignment.center,
                                         children: [
                                           // mealData.t03FoodType=="Breakfast"||mealData.t03FoodType=="Lunch"
-                                          mealData?.t03FoodType=="Breakfast"||mealData?.t03FoodType=="Lunch"
+                                          mealData.t03FoodType=="Breakfast"||mealData.t03FoodType=="Lunch"
                                               ? Image.asset(
                                             'assets/images/lunch.png',
                                             width: 40,
@@ -522,7 +526,7 @@ int selectedIndex=0;
                                             CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                mealData?.t03FoodType??"", // Title
+                                                mealData.t03FoodType??"", // Title
                                                 style: TextStyle(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold,
@@ -545,9 +549,14 @@ int selectedIndex=0;
                                       GestureDetector(
                                         onTap: (){
                                           setState(() {
-                                            selectedIndex=mealIndex;
+                                            expandedIndex = isExpanded ? null : mealIndex;
+                                            // selectedIndex=mealIndex;
+                                            // isLunchTimeSlotsVisibleIndex=mealIndex;
+                                            // selectedIndex==mealIndex ?
+                                            // toggleLunchTimeSlotsVisibility()
+                                            //     :null;
                                           });
-                                          selectedIndex==mealIndex ? toggleLunchTimeSlotsVisibility():null;
+
 
                                           },
                                         // Toggle lunch time slots on click
@@ -560,8 +569,8 @@ int selectedIndex=0;
                                           ),
                                           child: Icon(
                                             // isLunchTimeSlotsVisible
-                                            selectedIndex==mealIndex&&isLunchTimeSlotsVisible
-                                                ? Icons
+                                            // selectedIndex==mealIndex && isLunchTimeSlotsVisible|| isLunchTimeSlotsVisibleIndex==mealIndex
+                                            isExpanded   ? Icons
                                                 .keyboard_arrow_up_outlined
                                                 : Icons
                                                 .keyboard_arrow_down_outlined,
@@ -573,7 +582,8 @@ int selectedIndex=0;
                                     ],
                                   ),
                                 ),
-                                if (selectedIndex==mealIndex&&isLunchTimeSlotsVisible)
+                                // if (selectedIndex==mealIndex || isLunchTimeSlotsVisible&& isLunchTimeSlotsVisibleIndex==mealIndex)
+                                if (isExpanded )
                                   Padding(
                                     padding: const EdgeInsets.only(top:18.0),
                                     child: SizedBox(
@@ -581,7 +591,7 @@ int selectedIndex=0;
                                       child: GridView.builder(
                                         physics: NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
-                                        itemCount: mealData?.time?.length??0,
+                                        itemCount: mealData.time?.length??0,
                                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                           crossAxisCount: 3,
                                           crossAxisSpacing: 10,
@@ -589,21 +599,21 @@ int selectedIndex=0;
                                           childAspectRatio: 8/4,
                                         ),
                                         itemBuilder: (BuildContext context, int timeIndex) {
-                                          final data =mealData?.time![timeIndex];
+                                          final data =mealData.time![timeIndex];
                                           return TimeSlotCard(
-                                            timeSlot: data?.t01Time.toString()??"",
+                                            timeSlot: data.t01Time.toString()??"",
                                             isSelected:
-                                            selectedTimeSlot ==  data?.t01Time,
+                                            selectedTimeSlot ==  data.t01Time,
                                             onTap: (){
                                               setState(() {
-                                                availableSeat=data?.t02Noofseats??0;
+                                                availableSeat=data.t02Noofseats??0;
                                               });
                                               selectTimeSlot(
-                                                data?.t01Time.toString()??"",
+                                                data.t01Time.toString()??"",
                                                 widget.category_name ==
                                                     "Salon"
                                                     ? 'Day'
-                                                    : mealData?.t03FoodType.toString()??"");}
+                                                    : mealData.t03FoodType.toString()??"");}
                                           );
                                         },
                                       ),
@@ -682,7 +692,7 @@ int selectedIndex=0;
                               ],
                             ),
                           );
-                        })
+                        }):Center(child: Text("No Data")),
                             // :Center(child: Text("No Data")),
                         // if (timeSlotsLunch.isNotEmpty)
                         //   Container(
@@ -1118,6 +1128,9 @@ int selectedIndex=0;
     }
   }
   Future<void> timeSlot(String store_id) async {
+    setState(() {
+      isLoading=true;
+    });
     try {
       final body = {"store_id": "$store_id"};
       final response = await ApiServices.timeSlot(body);
