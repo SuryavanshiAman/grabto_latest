@@ -168,7 +168,7 @@ int isLunchTimeSlotsVisibleIndex=-1;
   void initState() {
     // TODO: implement initState
     super.initState();
-    timeSlot(widget.store_id);
+    timeSlot(widget.store_id,"","");
     // startLunch = widget.startTime ?? "10:00 AM";
     // endDinner = widget.endTime ?? "10:00 PM";
     //
@@ -396,8 +396,11 @@ int isLunchTimeSlotsVisibleIndex=-1;
                               String formattedDate = DateFormat("dd-MMM").format(parsedDate);
 
                               return GestureDetector(
-                                onTap: () =>data?.status!="Non-Active"? _updateSelectedDate(date): {
-                                  showErrorMessage(context, message: "Booking is close on $formattedDate")
+                                onTap: (){
+                                timeSlot(widget.store_id,data?.date,data?.day);
+                                  data?.status!="Non-Active"? _updateSelectedDate(parsedDate):
+                                    showErrorMessage(context, message: "Booking is close on $formattedDate");
+
                                 },
                                 child: Container(
                                   width: 65,
@@ -1127,12 +1130,16 @@ int isLunchTimeSlotsVisibleIndex=-1;
       });
     }
   }
-  Future<void> timeSlot(String store_id) async {
+  Future<void> timeSlot(String store_id,dynamic date,dynamic day) async {
     setState(() {
       isLoading=true;
     });
     try {
-      final body = {"store_id": "$store_id"};
+      final body = {
+        "store_id": "$store_id",
+        "date": "$date",
+        "day": "$day",
+      };
       final response = await ApiServices.timeSlot(body);
       print('👍: response $response');
       if (response != null) {
@@ -1156,6 +1163,54 @@ int isLunchTimeSlotsVisibleIndex=-1;
   }
 }
 
+// class TimeSlotCard extends StatelessWidget {
+//   final String timeSlot;
+//   final bool isSelected;
+//   final VoidCallback onTap;
+//
+//   TimeSlotCard({
+//     required this.timeSlot,
+//     required this.isSelected,
+//     required this.onTap,
+//   });
+//   DateTime date =
+//   DateTime.now();
+//   @override
+//   Widget build(BuildContext context) {
+//     print(date);
+//     // print("😊😊${(DateFormat("HH:mm").parse(date.toString()))}");
+//     print("😊😊${timeSlot}");
+//     return GestureDetector(
+//       onTap: onTap,
+//       child: Container(
+//         alignment: Alignment.center,
+//         padding: EdgeInsets.all(10.0),
+//         decoration: BoxDecoration(
+//           color: isSelected
+//               ? MyColors.primaryColor.withOpacity(0.2)
+//               : Colors.white,
+//           border: Border.all(
+//               color: isSelected ? MyColors.primaryColor : Colors.grey),
+//           borderRadius: BorderRadius.circular(10.0),
+//         ),
+//         child: Text(
+//
+//           // "😊😊${(DateFormat("HH:mm").parse(date.toString()))}",
+//           timeSlot,
+//           style: TextStyle(
+//             fontSize: 12.0,
+//             fontWeight: FontWeight.bold,
+//             color: isSelected ? MyColors.primaryColor : Colors.black,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
 class TimeSlotCard extends StatelessWidget {
   final String timeSlot;
   final bool isSelected;
@@ -1169,25 +1224,45 @@ class TimeSlotCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+
+    // Convert `timeSlot` (String) to `DateTime` with today's date
+    DateTime formattedSlotTime;
+    try {
+      formattedSlotTime = DateFormat("h:mm a").parse(timeSlot); // Handles "1:30 PM" format
+      formattedSlotTime = DateTime(now.year, now.month, now.day, formattedSlotTime.hour, formattedSlotTime.minute);
+    } catch (e) {
+      print("Error parsing timeSlot: $timeSlot - $e");
+      return Container(); // Avoid crash by returning an empty widget
+    }
+
+    // Get the current time
+    DateTime currentTime = DateTime(now.year, now.month, now.day, now.hour, now.minute);
+
+    bool isPast = formattedSlotTime.isBefore(currentTime);
+
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        alignment: Alignment.center,
-        padding: EdgeInsets.all(10.0),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? MyColors.primaryColor.withOpacity(0.2)
-              : Colors.white,
-          border: Border.all(
-              color: isSelected ? MyColors.primaryColor : Colors.grey),
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: Text(
-          timeSlot,
-          style: TextStyle(
-            fontSize: 12.0,
-            fontWeight: FontWeight.bold,
-            color: isSelected ? MyColors.primaryColor : Colors.black,
+      onTap: isPast ? null : onTap, // Disable tap if past time
+      child: Opacity(
+        opacity: isPast ? 0.5 : 1.0, // Fade past time slots
+        child: Container(
+          alignment: Alignment.center,
+          padding: EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? MyColors.primaryColor.withOpacity(0.2)
+                : Colors.white,
+            border: Border.all(
+                color: isSelected ? MyColors.primaryColor : Colors.grey),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Text(
+            timeSlot,
+            style: TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.bold,
+              color: isPast ? Colors.grey : (isSelected ? MyColors.primaryColor : Colors.black),
+            ),
           ),
         ),
       ),

@@ -352,31 +352,34 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                                   },
                                   child: const Icon(Icons.menu,color: MyColors.whiteBG,)),
                               SizedBox(width: widths*0.05,),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  //
-                                  InkWell(
-                                    onTap: (){
-                                      Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen(type: 2,)));
+                              InkWell(
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen(type: 2,)));
 
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Icon(LucideIcons.navigation,size: 16,color: MyColors.whiteBG,),
-                                        SizedBox(width: 2,),
-                                        Container(
-                                            width: widths*0.6,
-                                            child: Text(address.toString() !=""?address.toString().split(',')[0]:location.address.toString(),style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis,color: MyColors.whiteBG,),)),
-                                        Icon(Icons.keyboard_arrow_down_outlined,size: 16,color: MyColors.whiteBG,),
+                                },
+                                child: Container(
+                                  width: widths*0.8,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      //
+                                      Row(
+                                        children: [
+                                          Icon(LucideIcons.navigation,size: 16,color: MyColors.whiteBG,),
+                                          SizedBox(width: 2,),
+                                          Container(
+                                              width: widths*0.6,
+                                              child: Text(address.toString() !=""?address.toString().split(',')[0]:location.address.toString(),style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis,color: MyColors.whiteBG,),)),
+                                          Icon(Icons.keyboard_arrow_down_outlined,size: 16,color: MyColors.whiteBG,),
 
-                                      ],
-                                    ),
+                                        ],
+                                      ),
+                                      Container(
+                                          width: widths*0.7,
+                                          child: Text(address!=""?address:location.area,maxLines: 1,style: TextStyle(fontSize: 12,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis,color: MyColors.whiteBG,),)),
+                                    ],
                                   ),
-                                  Container(
-                                      width: widths*0.7,
-                                      child: Text(address!=""?address:location.area,maxLines: 1,style: TextStyle(fontSize: 12,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis,color: MyColors.whiteBG,),)),
-                                ],
+                                ),
                               ),
                               // const SizedBox(width: 10),
                               // Text(
@@ -1375,8 +1378,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                   },
                   child: Container(
                     margin: EdgeInsets.all(10),
-                    height: heights*0.08,
-                    width: widths*0.4,
+                    height: heights*0.15,
+                    width: widths,
                     decoration: BoxDecoration(
                         image: DecorationImage(image: AssetImage("assets/images/near_me.png"),fit: BoxFit.fill)),
                   ),

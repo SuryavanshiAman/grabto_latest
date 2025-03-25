@@ -360,6 +360,7 @@ print(url);
   static Future<List<bookTableModel>?> timeSlot(Map<String, dynamic> body) async {
     const url = '$BASE_URL/get-store-time-list';
     final uri = Uri.parse(url);
+    print(url);
     final response = await http.post(uri, body: body);
 
     if (response.statusCode == 200) {
