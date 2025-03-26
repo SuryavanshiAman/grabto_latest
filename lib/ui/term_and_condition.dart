@@ -62,16 +62,16 @@ class TermsAndConditionsCard extends StatelessWidget {
           ),
           child: Column(
             children: [
-              IconTextWidget(
-                iconData: Icons.circle,
-                text:
-                    "As a Prime Member of Grabto you can get discount / Benefits from our Participating Brands in Various Field. The Number of Participating Brands May be Changed and Modified.",
-              ),
-              IconTextWidget(
-                iconData: Icons.circle,
-                text:
-                    "All Offers Cannot be Combined With any other Offers, Discount of Advertised Special. Offer Valid Only for items which are included in the Scheme; you have to pay for costs and charges not covered in the offers.",
-              ),
+              // IconTextWidget(
+              //   iconData: Icons.circle,
+              //   text:
+              //       "As a Prime Member of Grabto you can get discount / Benefits from our Participating Brands in Various Field. The Number of Participating Brands May be Changed and Modified.",
+              // ),
+              // IconTextWidget(
+              //   iconData: Icons.circle,
+              //   text:
+              //       "All Offers Cannot be Combined With any other Offers, Discount of Advertised Special. Offer Valid Only for items which are included in the Scheme; you have to pay for costs and charges not covered in the offers.",
+              // ),
               IconTextWidget(
                 iconData: Icons.circle,
                 text:

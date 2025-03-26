@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:grabto/theme/theme.dart';
 
+import '../helper/shared_pref.dart';
 import '../main.dart';
+import '../model/features_model.dart';
+import '../model/filtered_data_model.dart';
+import '../model/sub_categories_model.dart';
+import '../model/user_model.dart';
+import '../services/api_services.dart';
+import '../utils/snackbar_helper.dart';
+import 'home_screen.dart';
 
 // void showFilterBottomSheet(BuildContext context) {
 //   List<String> categories = [
@@ -433,47 +441,43 @@ import '../main.dart';
 //     },
 //   );
 // }
-void showFilterBottomSheet(BuildContext context) {
+void showFilterBottomSheet(BuildContext context,dynamic lat,dynamic long, List<FeaturesModel> featureData,List<SubCategoriesModel> subCategoriesData) {
   List<String> categories = [
-    "Sort",
-    "GIRF",
+
     "Distance",
     "Ratings",
     "Restaurant Category",
-    "Dietary Preferences",
     "Discount",
     "Amenities",
-    "Cost for two",
-    "More filters",
-    "Cuisines"
   ];
-
+  String selectedData="";
+  String selectedCheckValueData="";
+List<FilteredDataModel>data=[];
   Map<String, List<String>> subCategories = {
-    "Sort": [
-      "Relevance",
-      "Distance: Nearby to Far",
-      "Popularity: High to Low",
-      "Cost for two: Low to High",
-      "Cost for two: High to Low"
-    ],
-    "GIRF": ["GIRF"],
+    // "Sort": [
+    //   "Relevance",
+    //   "Distance: Nearby to Far",
+    //   "Popularity: High to Low",
+    //   "Cost for two: Low to High",
+    //   "Cost for two: High to Low"
+    // ],
+    // "GIRF": ["GIRF"],
     "Distance": ["Within 5km", "All", "Within 2km", "Within 10km", "Within 15km"],
     "Ratings": ["Rating 4.5+", "Rating 4+", "Rating 3.5"],
     "Restaurant Category": [
       "5 star", "Bakery", "Bar", "Bistro", "Cafe", "Dessert Parlour",
       "Fine Dining", "Food Court", "Lounge", "Microbrewery", "Nightlife", "Restobar"
     ],
-    "Dietary Preferences": [
-      "Jain Food", "Serves Halal", "Vegan Friendly", "Pure Veg", "Non Vegetarian"
-    ],
+    // "Dietary Preferences": [
+    //   "Jain Food", "Serves Halal", "Vegan Friendly", "Pure Veg", "Non Vegetarian"
+    // ],
     "Discount": ["Up to 10% off"],
     "Amenities": [
       "4/5 Star", "Air Conditioned", "All Day Breakfast", "Available For Functions",
       "Breakfast", "Brunch", "Budget Friendly", "Buffet", "Celebrity Frequented", "DJ"
     ],
-    "Cost for two": ["Less than ₹1000", "₹1000-₹2000", "₹2000-₹3000", "₹3000-₹4000"]
   };
-
+bool isLoading=false;
   ValueNotifier<String?> selectedCategory = ValueNotifier(categories[0]);
   ValueNotifier<String?> selectedSubCategory = ValueNotifier("Relevance");
   Set<String> selectedRestaurantCategories = {};
@@ -487,7 +491,36 @@ void showFilterBottomSheet(BuildContext context) {
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
     builder: (context) {
+
       return StatefulBuilder(builder: (context, setModalState) {
+        Future<void> filterApi(dynamic lat, dynamic long,dynamic rating,dynamic discount,dynamic distance,dynamic categoryId ) async {
+          setModalState(() {
+            isLoading = true;
+          });
+          try {
+            final body = {
+              "latitude": lat,
+              "longitude": long,
+              "rating": rating,
+              "discount": discount,
+              "distance": distance,
+              "category_id": categoryId
+            };
+            final response = await ApiServices.filterApi(body);
+            if (response != null) {
+              print("Amannnn:$response");
+              setModalState(() {
+                data = response;
+              });
+            }
+          } catch (e) {
+            print('fetchSubCategories: $e');
+          } finally {
+            setModalState(() {
+              isLoading = false;
+            });
+          }
+        }
         return Container(
           height: MediaQuery.of(context).size.height * 0.75,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -518,7 +551,6 @@ void showFilterBottomSheet(BuildContext context) {
               Expanded(
                 child: Row(
                   children: [
-                    // Left Category List with dot indicator
                     SizedBox(
                       width: 130,
                       child: ValueListenableBuilder(
@@ -529,7 +561,6 @@ void showFilterBottomSheet(BuildContext context) {
                             itemBuilder: (context, index) {
                               bool isSelected = categories[index] == value;
                               hasSelectedSubcategory = selectedCategories.contains(categories[index]);
-print(hasSelectedSubcategory);
                               return GestureDetector(
                                 onTap: () {
                                   selectedCategory.value = categories[index];
@@ -571,8 +602,6 @@ print(hasSelectedSubcategory);
                       ),
                     ),
                     Container(width: 1, height: MediaQuery.of(context).size.height, color: Colors.grey.withOpacity(0.3)),
-
-                    // Right Subcategory List
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 10),
@@ -580,7 +609,6 @@ print(hasSelectedSubcategory);
                           valueListenable: selectedCategory,
                           builder: (context, value, _) {
                             List<String> subList = subCategories[value] ?? [];
-
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -591,11 +619,10 @@ print(hasSelectedSubcategory);
                                 const SizedBox(height: 10),
                                 Expanded(
                                   child: ListView.builder(
-                                    itemCount: subList.length,
+                                    itemCount:value == "Restaurant Category"?subCategoriesData.length:value == "Amenities"? featureData.length:subList.length,
                                     itemBuilder: (context, index) {
                                       bool isMultiSelectCategory = value == "Restaurant Category" || value == "Amenities";
-                                      bool isSelected = selectedRestaurantCategories.contains(subList[index]);
-
+                                      bool isSelected = selectedRestaurantCategories.contains(value == "Restaurant Category"?subCategoriesData[index].subcategory_name:value == "Amenities"? featureData[index].name:subList[index]);
                                       return GestureDetector(
                                         onTap: () {
                                           setModalState(() {
@@ -609,9 +636,9 @@ print(hasSelectedSubcategory);
                                               selectedSubCategory.value = subList[index];
                                             }
 
-                                            // Update selected categories list
                                             if (selectedRestaurantCategories.isNotEmpty || selectedSubCategory.value != null) {
                                               selectedCategories.add(value!);
+
                                             } else {
                                               selectedCategories.remove(value!);
                                             }
@@ -627,17 +654,17 @@ print(hasSelectedSubcategory);
                                               onChanged: (bool? checked) {
                                                 setModalState(() {
                                                   if (checked == true) {
-                                                    selectedRestaurantCategories.add(subList[index]);
+                                                    selectedRestaurantCategories.add(value == "Restaurant Category"?subCategoriesData[index].subcategory_name.toString():value == "Amenities"? featureData[index].name.toString():subList[index]);
                                                   } else {
-                                                    selectedRestaurantCategories.remove(subList[index]);
+                                                    selectedRestaurantCategories.remove(value == "Restaurant Category"?subCategoriesData[index].subcategory_name.toString():value == "Amenities"? featureData[index].name.toString():subList[index]);
                                                   }
-
-                                                  // Update selected categories list
                                                   if (selectedRestaurantCategories.isNotEmpty) {
                                                     selectedCategories.add(value!);
                                                   } else {
                                                     selectedCategories.remove(value!);
                                                   }
+                                                  print("Selected Restaurant Categories: $selectedRestaurantCategories");
+                                                  print("Selected Categories: $selectedCategories");
                                                 });
                                               },
                                             )
@@ -647,13 +674,16 @@ print(hasSelectedSubcategory);
                                               activeColor: MyColors.orange,
                                               onChanged: (String? newValue) {
                                                 setModalState(() {
+
                                                   selectedSubCategory.value = newValue!;
                                                   selectedCategories.add(value!);
+                                                  selectedData=selectedSubCategory.value??"";
+
                                                 });
                                               },
                                             ),
                                             Text(
-                                              subList[index],
+                                              value == "Restaurant Category"?subCategoriesData[index].subcategory_name:value == "Amenities"? featureData[index].name.toString():subList[index],
                                               style: TextStyle(
                                                 fontSize: 12,
                                                 fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
@@ -676,7 +706,6 @@ print(hasSelectedSubcategory);
                 ),
               ),
           const Divider(),
-          // Clear & Apply Buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -687,8 +716,6 @@ print(hasSelectedSubcategory);
                     selectedCategories.clear();
                     hasSelectedSubcategory=false;
                   });
-                  // selectedSubCategory.value = null;
-                  // Navigator.pop(context);
                 },
                 child: const Text(
                   "Clear Filters",
@@ -698,7 +725,9 @@ print(hasSelectedSubcategory);
               ),
               ElevatedButton(
                 onPressed: () {
+                  // filterApi(lat,long);
                   Navigator.pop(context);
+
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: MyColors.orange,
@@ -713,4 +742,5 @@ print(hasSelectedSubcategory);
       });
     },
   );
+
 }

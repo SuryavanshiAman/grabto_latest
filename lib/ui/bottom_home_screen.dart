@@ -2087,6 +2087,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
       final body = {"category_id": "$category_id"};
       final response = await ApiServices.fetchSubCategories(body);
       if (response != null) {
+        print("Amannnn:$body");
         print("Amannnn:$response");
         setState(() {
           subCategoriesList = response;

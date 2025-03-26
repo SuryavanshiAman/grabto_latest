@@ -217,8 +217,10 @@ bool visibility=false;
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Search Box
             SizedBox(
@@ -288,11 +290,11 @@ contentPadding: EdgeInsets.only(top: 10),
                 height: heights*0.05,
                 child:Row(
                   children: [
-                    Icon(Icons.navigation_rounded, color: Colors.red,size: 18,),
+                    Icon(Icons.navigation_rounded, color:  MyColors.redBG,size: 18,),
                     Text(
                       "Use my current location",
                       style: TextStyle(
-                          color: Colors.red, fontWeight: FontWeight.w600),
+                          color:  MyColors.redBG, fontWeight: FontWeight.w600),
                     ),
                     Spacer(),
                     Icon(Icons.arrow_forward_ios_rounded,size: 14,)
@@ -337,11 +339,11 @@ contentPadding: EdgeInsets.only(top: 10),
                 height: heights*0.05,
                 child:Row(
                   children: [
-                    Icon(LucideIcons.plus, color: Colors.red,size: 18,weight: 50,),
+                    Icon(LucideIcons.plus, color:  MyColors.redBG,size: 18,weight: 50,),
                     Text(
                       "Add new address",
                       style: TextStyle(
-                          color: Colors.red, fontWeight:  FontWeight.w600),
+                          color: MyColors.redBG, fontWeight:  FontWeight.w600),
                     ),
                   ],
                 ),
@@ -376,7 +378,7 @@ contentPadding: EdgeInsets.only(top: 10),
                 "SAVED ADDRESSES",
                 style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey,
+                    color: Colors.black,
                     fontWeight: FontWeight.w500),
               ),
             ):Padding(
@@ -387,32 +389,62 @@ contentPadding: EdgeInsets.only(top: 10),
                  fontSize: 12,
                  wordSpacing: 2,
                  letterSpacing: 2,
-                 color: Colors.grey,
+                 color: Colors.black,
                  fontWeight: FontWeight.w500),
            ),
          ),
 
             visibility==false?
-            Expanded(
+            Container(
+              height: heights*0.55,
               child: ListView.builder(
+                // physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
                 itemCount: address.length,
                 itemBuilder: (context, index) {
                   final data = address[index];
-                  return data.status!="Deactive"? ListTile(
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
                     // leading:
-                    title: Row(
+                    title:data.status=="Active"? Row(
                       children: [
-                        Icon(Icons.home, color: Colors.grey,size: 18,),
-                        Text(
-                          "Home",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        Icon(IconlyBold.location,color: MyColors.redBG,),
+                        Text(data.address?.split(',')[1]??"",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500),),
+                        SizedBox(width: widths*0.05,),
+                        Container(
+                          width:widths*0.35 ,
+                          alignment: Alignment.center,
+                          // margin: EdgeInsets.only(right: widths),
+                          padding: EdgeInsets.symmetric(vertical: 2),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color: Color(0xffc5f7e2)
+                          ),
+                          child: Text("CURRENTLY SELECTED",style: TextStyle(color: Color(0xff40ab83),fontSize: 10,fontWeight: FontWeight.w500),),
                         ),
+                      ],
+                    ):Row(
+                      children: [
+                        Icon(IconlyBold.location,color: MyColors.redBG,),
+                        Text(data.address!.split(',').length > 1?data.address?.split(',')[1]??"":data.address?.split(',')[0]??"",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500),),
+                        // SizedBox(width: widths*0.05,),
+                        // Container(
+                        //   width:widths*0.35 ,
+                        //   alignment: Alignment.center,
+                        //   // margin: EdgeInsets.only(right: widths),
+                        //   padding: EdgeInsets.symmetric(vertical: 2),
+                        //   decoration: BoxDecoration(
+                        //       borderRadius: BorderRadius.circular(5),
+                        //       color: Color(0xffc5f7e2)
+                        //   ),
+                        //   child: Text("CURRENTLY SELECTED",style: TextStyle(color: Color(0xff40ab83),fontSize: 10,fontWeight: FontWeight.w500),),
+                        // ),
                       ],
                     ),
                     subtitle: Text(
                       data.address??"",
                       // "B86, Raghuwar Marriage Lawn, Mayur Vihar, Chandanapur, Indira Nagar, Lucknow, Uttar Pradesh...",
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(color: Color(0Xff919191),fontWeight: FontWeight.w400),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -423,19 +455,19 @@ contentPadding: EdgeInsets.only(top: 10),
                     onTap: (){
                       confirmAddress( data.address??"", data.lat??"", data.long??"");
                     },
-                  ):Container();
+                  );
 
                 },
               ),
             )
             :Container(),
             if (isLoading)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: CircularProgressIndicator(),
-              ),
-            Expanded(
+              Center(child: CircularProgressIndicator(color: MyColors.redBG,)),
+            Container(
+              height: heights*0.5,
               child: ListView.builder(
+                // physics: NeverScrollableScrollPhysics(),
+
                 itemCount: suggestions.length,
                 itemBuilder: (context, index) {
                   final suggestion = suggestions[index];

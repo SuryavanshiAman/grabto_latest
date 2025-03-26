@@ -26,6 +26,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 import '../model/book_table_model.dart';
+import '../model/filtered_data_model.dart';
 
 class ApiServices {
   //================================================
@@ -168,13 +169,67 @@ print(url);
       // Parse the JSON response
       final jsonResponse = json.decode(response.body) as Map<String, dynamic>;
       // Print the entire response
-      print('verify_otp response: $jsonResponse');
+      print('confirmAddress response: $jsonResponse');
 
       return jsonResponse;
     } else {
       return null;
     }
   }
+
+  static Future<List<FilteredDataModel>?> filterApi( Map body) async {
+    const url = '$BASE_URL/filter-Stores';
+    final uri = Uri.parse(url);
+    final response = await http.post(uri, body: body);
+
+    if (response.statusCode == 200) {
+      // Parse the JSON response
+      final jsonResponse = json.decode(response.body) as Map;
+      final res = jsonResponse['res'] as String;
+      if (res == "success") {
+        print('api_show_category: $jsonResponse');
+        final data = jsonResponse['data'] as List<dynamic>;
+
+        final FilteredData = data.map((e) {
+          return FilteredDataModel.fromJson(e);
+        }).toList();
+
+        return FilteredData;
+      } else {
+        print("filter-Stores: $res");
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+  static Future<List<FeaturesModel>?> getFeatureApi() async {
+    const url = '$BASE_URL/get-feature';
+    final uri = Uri.parse(url);
+    final response = await http.get(uri,);
+
+    if (response.statusCode == 200) {
+      // Parse the JSON response
+      final jsonResponse = json.decode(response.body) as Map;
+      final res = jsonResponse['res'] as String;
+      if (res == "success") {
+        print('api_show_category: $jsonResponse');
+        final data = jsonResponse['data'] as List<dynamic>;
+
+        final feature = data.map((e) {
+          return FeaturesModel.fromMap(e);
+        }).toList();
+
+        return feature;
+      } else {
+        print("get-feature: $res");
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
   static Future<Map<String, dynamic>?> update_profile_image({
     required String userId,
     required File image,

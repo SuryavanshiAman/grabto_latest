@@ -163,12 +163,12 @@ int isLunchTimeSlotsVisibleIndex=-1;
     super.dispose();
     _scrollController.dispose();
   }
-
+  DateTime now = DateTime.now();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    timeSlot(widget.store_id,"","");
+    timeSlot(widget.store_id, DateFormat('dd-MM-yyyy').format(now), DateFormat('EEEE').format(now),);
     // startLunch = widget.startTime ?? "10:00 AM";
     // endDinner = widget.endTime ?? "10:00 PM";
     //
@@ -513,11 +513,15 @@ int isLunchTimeSlotsVisibleIndex=-1;
                                         CrossAxisAlignment.center,
                                         children: [
                                           // mealData.t03FoodType=="Breakfast"||mealData.t03FoodType=="Lunch"
-                                          mealData.t03FoodType=="Breakfast"||mealData.t03FoodType=="Lunch"
+                                          mealData.t03FoodType=="Breakfast"
                                               ? Image.asset(
                                             'assets/images/lunch.png',
                                             width: 40,
                                             height: 40,
+                                          ):mealData.t03FoodType=="Lunch"?Image.asset(
+                                            'assets/images/breakfast.png',
+                                            width: 30,
+                                            height: 30,
                                           ):Image.asset(
                                           'assets/images/dinner.png',
                                           width: 40,
@@ -536,10 +540,8 @@ int isLunchTimeSlotsVisibleIndex=-1;
                                                 ),
                                               ),
                                               Text(
-                                                timeSlotsLunch.isNotEmpty
-                                                    ? '${timeSlotsLunch.first} to $endLunch'
-                                                    : "$startLunch to $endLunch",
-                                                // Time
+                                                  "${ DateFormat('hh:mm a').format(DateTime.parse(mealData.time?.first.t01Time.toString()??"") )
+                                                  } to ${DateFormat('hh:mm a').format(DateTime.parse(mealData.time?.last.t01Time.toString()??"") )} ",
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   color: Colors.grey[600],
@@ -1131,6 +1133,9 @@ int isLunchTimeSlotsVisibleIndex=-1;
     }
   }
   Future<void> timeSlot(String store_id,dynamic date,dynamic day) async {
+    print(date);
+    print(day);
+    print("MMMMM");
     setState(() {
       isLoading=true;
     });
@@ -1211,6 +1216,65 @@ int isLunchTimeSlotsVisibleIndex=-1;
 
 
 
+// class TimeSlotCard extends StatelessWidget {
+//   final String timeSlot;
+//   final bool isSelected;
+//   final VoidCallback onTap;
+//
+//   TimeSlotCard({
+//     required this.timeSlot,
+//     required this.isSelected,
+//     required this.onTap,
+//   });
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     DateTime now = DateTime.now();
+//
+//     // Convert `timeSlot` (String) to `DateTime` with today's date
+//     DateTime formattedSlotTime;
+//     try {
+//       formattedSlotTime = DateFormat("h:mm a").parse(timeSlot); // Handles "1:30 PM" format
+//       formattedSlotTime = DateTime(now.year, now.month, now.day, formattedSlotTime.hour, formattedSlotTime.minute);
+//     } catch (e) {
+//       print("Error parsing timeSlot: $timeSlot - $e");
+//       return Container(); // Avoid crash by returning an empty widget
+//     }
+//
+//     // Get the current time
+//     DateTime currentTime = DateTime(now.year, now.month, now.day, now.hour, now.minute);
+//
+//     bool isPast = formattedSlotTime.isBefore(currentTime);
+//
+//     return GestureDetector(
+//       onTap: isPast ? null : onTap, // Disable tap if past time
+//       child: Opacity(
+//         opacity: isPast ? 0.5 : 1.0, // Fade past time slots
+//         child: Container(
+//           alignment: Alignment.center,
+//           padding: EdgeInsets.all(10.0),
+//           decoration: BoxDecoration(
+//             color: isSelected
+//                 ? MyColors.primaryColor.withOpacity(0.2)
+//                 : Colors.white,
+//             border: Border.all(
+//                 color: isSelected ? MyColors.primaryColor : Colors.grey),
+//             borderRadius: BorderRadius.circular(10.0),
+//           ),
+//           child: Text(
+//             timeSlot,
+//             style: TextStyle(
+//               fontSize: 12.0,
+//               fontWeight: FontWeight.bold,
+//               color: isPast ? Colors.grey : (isSelected ? MyColors.primaryColor : Colors.black),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
 class TimeSlotCard extends StatelessWidget {
   final String timeSlot;
   final bool isSelected;
@@ -1226,14 +1290,13 @@ class TimeSlotCard extends StatelessWidget {
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
 
-    // Convert `timeSlot` (String) to `DateTime` with today's date
+    // Convert `timeSlot` (String) to `DateTime`
     DateTime formattedSlotTime;
     try {
-      formattedSlotTime = DateFormat("h:mm a").parse(timeSlot); // Handles "1:30 PM" format
-      formattedSlotTime = DateTime(now.year, now.month, now.day, formattedSlotTime.hour, formattedSlotTime.minute);
+      formattedSlotTime = DateTime.parse(timeSlot); // Fix: Directly parse DateTime
     } catch (e) {
       print("Error parsing timeSlot: $timeSlot - $e");
-      return Container(); // Avoid crash by returning an empty widget
+      return Container(); // Avoid crash
     }
 
     // Get the current time
@@ -1257,7 +1320,8 @@ class TimeSlotCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(10.0),
           ),
           child: Text(
-            timeSlot,
+            DateFormat('hh:mm a').format(DateTime.parse(timeSlot))
+            , // Keep original format
             style: TextStyle(
               fontSize: 12.0,
               fontWeight: FontWeight.bold,

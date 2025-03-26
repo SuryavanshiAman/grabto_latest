@@ -133,6 +133,7 @@ import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import '../helper/shared_pref.dart';
+import '../helper/user_provider.dart';
 import '../model/user_model.dart';
 import 'add_address_bottom_sheet_screen.dart';
 
@@ -315,7 +316,7 @@ print(url);
               children: [
                 Row(
                   children: [
-                    Icon(IconlyBold.location,color: MyColors.orange,),
+                    Icon(IconlyBold.location,color: MyColors.redBG,),
                     Text(
                       _longName.toString(),
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -343,30 +344,22 @@ print(url);
                   textAlign: TextAlign.left,
                 ),
                 SizedBox(height: 15),
-                ElevatedButton(
-
-                  onPressed: () {
-                    address.setAddress(_longName2);
-                    address.setArea(_currentAddress);
-                    // widget.type==1?
-                    // showModalBottomSheet(
-                    //   context: context,
-                    //   isScrollControlled: true,
-                    //   shape: RoundedRectangleBorder(
-                    //     borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                    //   ),
-                    //   builder: (context) => const AddressBottomSheet(),
-                    // ):
-                    confirmAddress(_currentAddress,widget.lat,widget.long);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: MyColors.orange,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      address.setAddress(_longName2);
+                      address.setArea(_currentAddress);
+                      confirmAddress(_currentAddress,widget.lat,widget.long);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: MyColors.orange,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 12,horizontal:100),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 12,horizontal:100),
+                    child: Text("CONFIRM LOCATION", style: TextStyle(fontSize: 14,color: MyColors.whiteBG)),
                   ),
-                  child: Text("CONFIRM LOCATION", style: TextStyle(fontSize: 14,color: MyColors.whiteBG)),
                 ),
               ],
             ),
@@ -391,12 +384,12 @@ print(url);
       };
       print(body);
       final response = await ApiServices.confirmAddress(context, body);
-
+print(response);
       // Check if the response is null or doesn't contain the expected data
       if (
           response!['error'] == false) {
+        user_details(  n.id.toString());
         showSuccessMessage(context, message: response['message']);
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
 
       } else if (response != null) {
         String msg = response['message'];
@@ -414,4 +407,72 @@ print(url);
       });
     }
   }
+  List<BannerModel> banners=[];
+  Future<void> user_details(String user_id) async {
+    try {
+      final body = {
+        "user_id": user_id,
+      };
+      final response = await ApiServices.user_details(context, body);
+
+      // Check if the response is null or doesn't contain the expected data
+      if (response != null &&
+          response.containsKey('res') &&
+          response['res'] == 'success') {
+        final data = response['data'];
+        // Ensure that the response data is in the expected format
+        if (data != null && data is Map<String, dynamic>) {
+          final user = UserModel.fromMap(data);
+          print(user.banners.length);
+          print("user.banners.length");
+          setState(() {
+            banners= user.banners;
+          });
+          print(banners.length);
+          if (user != null) {
+            await SharedPref.userLogin({
+              SharedPref.KEY_ID: user.id,
+              SharedPref.KEY_CURRENT_MONTH: user.current_month,
+              SharedPref.KEY_PREMIUM: user.premium,
+              SharedPref.KEY_STATUS: user.status,
+              SharedPref.KEY_NAME: user.name,
+              SharedPref.KEY_EMAIL: user.email,
+              SharedPref.KEY_MOBILE: user.mobile,
+              SharedPref.KEY_DOB: user.dob,
+              SharedPref.KEY_OTP: user.otp,
+              SharedPref.KEY_IMAGE: user.image,
+              SharedPref.KEY_HOME_LOCATION: user.home_location,
+              SharedPref.KEY_CURRENT_LOCATION: user.current_location,
+              SharedPref.ADDRESS: user.address,
+              SharedPref.KEY_LAT: user.lat,
+              SharedPref.KEY_LONG: user.long,
+              SharedPref.KEY_CREATED_AT: user.created_at,
+              SharedPref.KEY_UPDATED_AT: user.updated_at,
+              // SharedPref.KEY_BANNER: jsonEncode(user.banners),
+            });
+            Provider.of<UserProvider>(context, listen: false)
+                .updateUserDetails(user);
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+
+          } else {
+            // Handle null user
+            showErrorMessage(context, message: 'User data is invalid');
+          }
+        } else {
+          // Handle invalid response data format
+          showErrorMessage(context, message: 'Invalid response data format');
+        }
+      } else if (response != null) {
+        String msg = response['msg'];
+
+        // Handle unsuccessful response or missing 'res' field
+        showErrorMessage(context, message: msg);
+      }
+    } catch (e) {
+      //print('verify_otp error: $e');
+      // Handle error
+      //showErrorMessage(context, message: 'An error occurred: $e');
+    } finally {}
+  }
+
 }

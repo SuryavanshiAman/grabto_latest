@@ -202,7 +202,7 @@ class _GalleryGridState extends State<GalleryGrid> {
           crossAxisCount: 3,
           crossAxisSpacing: 8,
           mainAxisSpacing: 8,
-          childAspectRatio: 3 / 4,
+          childAspectRatio: 4 / 4,
         ),
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(

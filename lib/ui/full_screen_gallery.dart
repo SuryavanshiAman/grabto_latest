@@ -14,14 +14,22 @@ class FullScreenGallery extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColors.backgroundBg,
+      appBar: AppBar(
+        backgroundColor:Colors.black,
+        leading: InkWell(
+            onTap: (){Navigator.pop(context);},
+            child: Icon(Icons.arrow_back,color: MyColors.whiteBG,)),
+      ),
       body: Container(
+        color: Colors.black,
         child: PhotoViewGallery.builder(
           itemCount: images.length,
           builder: (context, index) {
             return PhotoViewGalleryPageOptions(
+
               imageProvider: NetworkImage(images[index]),
-              minScale: PhotoViewComputedScale.contained * 0.8,
-              maxScale: PhotoViewComputedScale.covered * 2,
+              // minScale: PhotoViewComputedScale.contained * 0.8,
+              maxScale: PhotoViewComputedScale.covered,
             );
           },
           scrollPhysics: const BouncingScrollPhysics(),

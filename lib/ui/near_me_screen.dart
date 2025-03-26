@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
 
+import '../helper/shared_pref.dart';
+import '../model/features_model.dart';
+import '../model/sub_categories_model.dart';
+import '../model/user_model.dart';
 import '../services/api_services.dart';
 import 'filter_boottom_sheet.dart';
 
@@ -44,15 +48,8 @@ class _NearMeScreenState extends State<NearMeScreen> {
   bool _showTitle = true;
   List<FirstList> list = [
     FirstList("Filter"),
-    FirstList("Sort by"),
-    FirstList("GIRF"),
     FirstList("Rating 4+"),
-    FirstList("Open now"),
-    FirstList("Serves Alcohol"),
-    FirstList("Open till late"),
     FirstList("Within 5km"),
-    FirstList("Pure Veg"),
-    FirstList("Cuisines"),
   ];
   final List<Restaurant> restaurants = [
     Restaurant(
@@ -156,6 +153,9 @@ class _NearMeScreenState extends State<NearMeScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_handleScroll);
+    getUserDetails();
+    feature();
+    fetchSubCategories(5);
   }
 
   void _handleScroll() {
@@ -167,7 +167,15 @@ class _NearMeScreenState extends State<NearMeScreen> {
       }
     });
   }
-
+  String lat="";
+  String long="";
+  Future<void> getUserDetails() async {
+    UserModel n = await SharedPref.getUser();
+    setState(() {
+      lat=n.lat;
+      long = n.long;
+    });
+  }
   int selectedIndices = 1;
   String selectedName = "";
   @override
@@ -277,7 +285,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
                               toggleSelection(item);
                               selectedName = list[index].name;
                               print("item");
-                              index==0?showFilterBottomSheet(context):null;
+                              index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):null;
                             });
                           },
                           child: Container(
@@ -341,6 +349,50 @@ class _NearMeScreenState extends State<NearMeScreen> {
         ],
       ),
     );
+  }
+  List<SubCategoriesModel> subCategoriesList = [];
+  List<FeaturesModel>featureData=[];
+  bool isLoading=false;
+  Future<void> feature() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final response = await ApiServices.getFeatureApi();
+      if (response != null) {
+        setState(() {
+          featureData = response;
+        });
+      }
+    } catch (e) {
+      print('getFeatureApi: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+  Future<void> fetchSubCategories(int category_id) async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final body = {"category_id": "$category_id"};
+      final response = await ApiServices.fetchSubCategories(body);
+      if (response != null) {
+        print("Amannnn:$body");
+        print("Amannnn:$response");
+        setState(() {
+          subCategoriesList = response;
+        });
+      }
+    } catch (e) {
+      print('fetchSubCategories: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 }
 
