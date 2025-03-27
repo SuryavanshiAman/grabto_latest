@@ -38,10 +38,12 @@ import 'dart:async';
 
 import '../helper/location_provider.dart';
 import '../model/city_model.dart';
+import '../model/features_model.dart';
 import '../services/api.dart';
 import '../widget/sub_categories_card_widget.dart';
 import 'about_us_screen.dart';
 import 'customer_care.dart';
+import 'filter_boottom_sheet.dart';
 import 'how_it_works.dart';
 import 'package:http/http.dart'as http;
 import 'package:flutter/services.dart';
@@ -87,6 +89,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
 
   static _HomeBottamScreenState? _instance;
   List<SubCategoriesModel> subCategoriesList = [];
+
   @override
   void initState() {
     // TODO: implement initState
@@ -136,6 +139,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
   String left_day = '';
   String gatewayStatus = '';
   String externalStatus = '';
+  String lat="";
+  String long="";
   Future<void> getUserDetails() async {
     setState(() {
       isLoading = true;
@@ -156,6 +161,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
       address = n.address;
       current_location = n.current_location;
       home_location = n.home_location;
+      lat=n.lat;
+      long = n.long;
     });
     await allApiCall(cityId);
   }
@@ -283,24 +290,132 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
   bool _showTitle = true;
   void _handleScroll() {
     setState(() {
-      if (_scrollController.position.pixels > 100) {
+      if (_scrollController.position.pixels > 1500) {
         _showTitle = false;
       } else {
         _showTitle = true;
       }
     });
   }
-
+  List<FirstList> list = [
+    FirstList("Filter"),
+    FirstList("Rating 4+"),
+    FirstList("Within 5km"),
+  ];
+  String selectedName = "";
+  final List<Restaurant> restaurants = [
+    Restaurant(
+      name: "Rocca By Hyatt Regency",
+      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
+      cuisine: "Continental, North Indian",
+      rating: 4.0,
+      price: "₹1500 for two", // Example image URL
+      offers: [
+        "Flat 50% off on pre-booking"
+            "                 +4 offers",
+        "Get extra 10% off using GIRFNEXT150",
+      ],
+    ),
+    Restaurant(
+      name: "Que",
+      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
+      cuisine: "Continental, North Indian",
+      rating: 4.0,
+      price: "₹1500 for two", // Example image URL
+      offers: [
+        "Flat 50% off on pre-booking",
+        "Get extra 10% off using GIRFNEXT150",
+        "+4 offers"
+      ],
+    ),
+    Restaurant(
+      name: "Que",
+      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
+      cuisine: "Continental, North Indian",
+      rating: 4.0,
+      price: "₹1500 for two", // Example image URL
+      offers: [
+        "Flat 50% off on pre-booking",
+        "Get extra 10% off using GIRFNEXT150",
+        "+4 offers"
+      ],
+    ),
+    Restaurant(
+      name: "Que",
+      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
+      cuisine: "Continental, North Indian",
+      rating: 4.0,
+      price: "₹1500 for two", // Example image URL
+      offers: [
+        "Flat 50% off on pre-booking",
+        "Get extra 10% off using GIRFNEXT150",
+        "+4 offers"
+      ],
+    ),
+    Restaurant(
+      name: "Que",
+      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
+      cuisine: "Continental, North Indian",
+      rating: 4.0,
+      price: "₹1500 for two", // Example image URL
+      offers: [
+        "Flat 50% off on pre-booking",
+        "Get extra 10% off using GIRFNEXT150",
+        "+4 offers"
+      ],
+    ),
+    Restaurant(
+      name: "Que",
+      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
+      cuisine: "Continental, North Indian",
+      rating: 4.0,
+      price: "₹1500 for two", // Example image URL
+      offers: [
+        "Flat 50% off on pre-booking",
+        "Get extra 10% off using GIRFNEXT150",
+        "+4 offers"
+      ],
+    ),
+    Restaurant(
+      name: "Que",
+      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
+      cuisine: "Continental, North Indian",
+      rating: 4.0,
+      price: "₹1500 for two", // Example image URL
+      offers: [
+        "Flat 50% off on pre-booking",
+        "Get extra 10% off using GIRFNEXT150",
+        "+4 offers"
+      ],
+    ),
+    // Add more restaurants here
+  ];
+  List<FirstList> selectedList = [];
+  void toggleSelection(FirstList item) {
+    setState(() {
+      if (selectedList.contains(item)) {
+        selectedList.remove(item);
+      } else {
+        selectedList.add(item);
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
+    List<FirstList> orderedList = [
+      list[0], // Fixed index 0
+      list[1], // Fixed index 1
+      ...selectedList, // Selected items start from index 2
+      ...list
+          .sublist(2)
+          .where((e) => !selectedList.contains(e)) // Remaining unselected items
+    ];
     final location=Provider.of<Address>(context);
     print(location.area);
     return  categories.isNotEmpty? Scaffold(
       key: _scaffoldKey,
       backgroundColor: MyColors.backgroundBg,
-      body:
-      ///
-      Container(
+      body: Container(
         color: MyColors.backgroundBg,
         constraints: BoxConstraints(
             maxWidth: MediaQuery
@@ -316,10 +431,10 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
           backgroundColor: MyColors.primaryColor,
           onRefresh: _handleRefresh,
           child: SingleChildScrollView(
+            controller: _scrollController,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //Name Layout start
                 InkWell(
                   onTap: (){
                     widget.bannersDa[0].type=="1"?
@@ -381,77 +496,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                                   ),
                                 ),
                               ),
-                              // const SizedBox(width: 10),
-                              // Text(
-                              //   "${current_location}",
-                              //   style:  TextStyle(fontSize: 13, fontWeight: FontWeight.bold,color: MyColors.whiteBG),
-                              // ),
-                              // const SizedBox(width: 10),
-                              // Container(
-                              //   width: 35,
-                              //   height: 35,
-                              //   margin: const EdgeInsets.only(right: 15),
-                              //   child: Card(
-                              //     elevation: 2,
-                              //     color: Colors.white,
-                              //     shadowColor: MyColors.primaryColorLight,
-                              //     shape: RoundedRectangleBorder(
-                              //       borderRadius: BorderRadius.circular(40.0),
-                              //     ),
-                              //     child:  Icon(
-                              //       Icons.pin_drop,
-                              //       size: 24,
-                              //       color: MyColors.primaryColor,
-                              //     ),
-                              //     // IconButton(
-                              //     //   icon: const Icon(
-                              //     //     Icons.pin_drop,
-                              //     //     size: 24,
-                              //     //     color: MyColors.primaryColor,
-                              //     //   ),
-                              //     //   onPressed: () {
-                              //     //     // Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
-                              //     //     // AddressScreen();
-                              //     //     // _showCityDialog();
-                              //     //   },
-                              //     // ),
-                              //   ),
-                              // ),const SizedBox(width: 10),
-                              // Text(
-                              //   "${current_location}",
-                              //   style:  TextStyle(fontSize: 13, fontWeight: FontWeight.bold,color: MyColors.whiteBG),
-                              // ),
-                              // const SizedBox(width: 10),
-                              // Container(
-                              //   width: 35,
-                              //   height: 35,
-                              //   margin: const EdgeInsets.only(right: 15),
-                              //   child: Card(
-                              //     elevation: 2,
-                              //     color: Colors.white,
-                              //     shadowColor: MyColors.primaryColorLight,
-                              //     shape: RoundedRectangleBorder(
-                              //       borderRadius: BorderRadius.circular(40.0),
-                              //     ),
-                              //     child:  Icon(
-                              //       Icons.pin_drop,
-                              //       size: 24,
-                              //       color: MyColors.primaryColor,
-                              //     ),
-                              //     // IconButton(
-                              //     //   icon: const Icon(
-                              //     //     Icons.pin_drop,
-                              //     //     size: 24,
-                              //     //     color: MyColors.primaryColor,
-                              //     //   ),
-                              //     //   onPressed: () {
-                              //     //     // Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
-                              //     //     // AddressScreen();
-                              //     //     // _showCityDialog();
-                              //     //   },
-                              //     // ),
-                              //   ),
-                              // ),
                             ],
                           ),
                           Row(
@@ -558,96 +602,9 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                     ),
                   ),
                 ),
-                //Name Layout end
-
-                //Search bar start
-                // InkWell(
-                //   onTap: () {
-                //     _navigateToSearchScreen(context);
-                //   },
-                //   child: Container(
-                //     width: MediaQuery
-                //         .of(context)
-                //         .size
-                //         .width,
-                //     margin: EdgeInsets.symmetric(horizontal: 15),
-                //     height: 46,
-                //     child: Material(
-                //       elevation: 1, // Set the elevation value as needed
-                //       shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.circular(20),
-                //       ),
-                //       child: Container(
-                //         height: 55,
-                //         padding: const EdgeInsets.all(10),
-                //         decoration: ShapeDecoration(
-                //           color: MyColors.searchBg,
-                //           shape: RoundedRectangleBorder(
-                //             borderRadius: BorderRadius.circular(20),
-                //           ),
-                //         ),
-                //         child: Row(
-                //           mainAxisSize: MainAxisSize.min,
-                //           mainAxisAlignment: MainAxisAlignment.start,
-                //           crossAxisAlignment: CrossAxisAlignment.center,
-                //           children: [
-                //             Container(
-                //               width: 28,
-                //               height: 28,
-                //               margin: EdgeInsets.only(right: 10),
-                //               clipBehavior: Clip.antiAlias,
-                //               decoration: BoxDecoration(),
-                //               child: Row(
-                //                 mainAxisSize: MainAxisSize.min,
-                //                 mainAxisAlignment: MainAxisAlignment.center,
-                //                 crossAxisAlignment: CrossAxisAlignment.center,
-                //                 children: [
-                //                   SizedBox(
-                //                       width: 28,
-                //                       height: 28,
-                //                       child: Icon(
-                //                         Icons.search,
-                //                         color: MyColors.primaryColor,
-                //                       )),
-                //                 ],
-                //               ),
-                //             ),
-                //             SizedBox(
-                //               child: Text(
-                //                 'Search',
-                //                 style: TextStyle(
-                //                   color: Color(0x993C3C43),
-                //                   fontSize: 17,
-                //                   fontFamily: 'SF Pro Text',
-                //                   fontWeight: FontWeight.w400,
-                //                   height: 0.08,
-                //                   letterSpacing: -0.41,
-                //                 ),
-                //               ),
-                //             ),
-                //             Container(
-                //               width: 18,
-                //               height: 18,
-                //               child: Row(
-                //                 mainAxisSize: MainAxisSize.min,
-                //                 mainAxisAlignment: MainAxisAlignment.center,
-                //                 crossAxisAlignment: CrossAxisAlignment.center,
-                //                 children: [],
-                //               ),
-                //             ),
-                //           ],
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                //Search bar start
-
                 SizedBox(
                   height: 25,
                 ),
-
-                //Slider bar start
                 Visibility(
                   visible: imageSlider.isNotEmpty,
                   child: Center(
@@ -712,9 +669,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                     ),
                   ),
                 ),
-                //Slider bar end
-
-                //categories start
                 if(prebookofferlistHistory.isNotEmpty)
                   Container(
                     margin:
@@ -730,647 +684,11 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                       ],
                     ),
                   ),
-                // Container(
-                //   margin: EdgeInsets.symmetric(horizontal: 10),
-                //   child: ClipPath(
-                //     clipper: CouponClipper(
-                //       borderRadius: 20,
-                //       curveRadius: 20,
-                //       curvePosition: 150,
-                //       curveAxis: Axis.horizontal,
-                //       clockwise: false,
-                //     ),
-                //     child: Container(
-                //       height: 305,
-                //       color: Color(0xFFf2f2f2),
-                //       padding: EdgeInsets.all(15),
-                //       child: Column(
-                //         mainAxisAlignment: MainAxisAlignment.start,
-                //         children: [
-                //           Row(
-                //             children: [
-                //               Text(
-                //                 "Confirmed",
-                //                 style: TextStyle(color: Colors.green,
-                //                     fontSize: 14, fontWeight: FontWeight.bold),
-                //               ),
-                //             ],
-                //           ),
-                //           Row(
-                //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //             children: [
-                //               TitleDescriptionWidget(
-                //                 title: 'Today',
-                //                 description: '18 Oct 2024',
-                //                 titleFontSize: 18,
-                //                 descriptionFontSize: 14,
-                //               ),
-                //               TitleDescriptionWidget(
-                //                 title: 'Dinner',
-                //                 description: '06:30 PM',
-                //                 titleFontSize: 18,
-                //                 descriptionFontSize: 14,
-                //               ),
-                //               TitleDescriptionWidget(
-                //                 title: 'for 2',
-                //                 description: 'guests',
-                //                 titleFontSize: 18,
-                //                 descriptionFontSize: 14,
-                //               ),
-                //             ],
-                //           ),
-                //           SizedBox(height: 15),
-                //           Row(
-                //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //             children: [
-                //               TitleDescriptionWidget(
-                //                 title: 'Bombay Mezbaan',
-                //                 description: 'Vikas Nagar, Lucknow',
-                //                 titleFontSize: 16,
-                //                 descriptionFontSize: 13,
-                //               ),
-                //               Row(
-                //                 children: [
-                //                   // First icon in a circular container
-                //                   Container(
-                //                     margin: EdgeInsets.only(left: 8.0), // Space between the icons
-                //                     decoration: BoxDecoration(
-                //                       shape: BoxShape.circle,
-                //                       color: Colors.red.shade100, // Light background color
-                //                     ),
-                //                     padding: EdgeInsets.all(8.0), // Padding for the icon
-                //                     child: Icon(
-                //                       Icons.phone, // Icon
-                //                       color: Colors.red, // Icon color
-                //                       size: 20, // Icon size
-                //                     ),
-                //                   ),
-                //                   // Second icon in a circular container
-                //                   Container(
-                //                     margin: EdgeInsets.only(left: 8.0),
-                //                     decoration: BoxDecoration(
-                //                       shape: BoxShape.circle,
-                //                       color: Colors.red.shade100, // Light background color
-                //                     ),
-                //                     padding: EdgeInsets.all(8.0), // Padding for the icon
-                //                     child: Icon(
-                //                       Icons.location_pin, // Icon
-                //                       color: Colors.red, // Icon color
-                //                       size: 20, // Icon size
-                //                     ),
-                //                   ),
-                //                 ],
-                //               ),
-                //             ],
-                //           ),
-                //
-                //
-                //           DashedLine(
-                //             color: MyColors.txtDescColor2,
-                //             margin: EdgeInsets.symmetric(vertical: 22, horizontal: 10),
-                //           ),
-                //           Container(
-                //             height: 45,
-                //             decoration: BoxDecoration(
-                //               border: Border.all(color: MyColors.primary, width: 1.0),
-                //               borderRadius: BorderRadius.circular(10),
-                //             ),
-                //             padding: const EdgeInsets.only(
-                //                 left: 15, right: 15, top: 5, bottom: 5),
-                //             child: Row(
-                //               crossAxisAlignment: CrossAxisAlignment.center,
-                //               children: [
-                //                 Expanded(
-                //                   child: Text(
-                //                     "Flat 20% Off on Total Bill",
-                //                     style: TextStyle(
-                //                       fontSize: 16,
-                //                       fontWeight: FontWeight.bold,
-                //                     ),
-                //                   ),
-                //                 ),
-                //               ],
-                //             ),
-                //           ),
-                //           SizedBox(height: 15),
-                //           Row(
-                //             mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space the buttons evenly
-                //             children: [
-                //               // First button
-                //               Expanded(
-                //                 child: GestureDetector(
-                //                   onTap: (){
-                //                     Navigator.push(
-                //                       context,
-                //                       MaterialPageRoute(
-                //                           builder: (context) => BookedTableScreen()),
-                //                     );
-                //                   },
-                //                   child: Container(
-                //                     margin: EdgeInsets.only(right: 10), // Space between the buttons
-                //                     decoration: BoxDecoration(
-                //                       color: MyColors.primaryColorLight, // Background color of the button
-                //                       borderRadius: BorderRadius.circular(10), // Rounded corners
-                //                     ),
-                //                     padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20), // Padding inside the button
-                //                     child: Center(
-                //                       child: Text(
-                //                         'View details', // Button text
-                //                         style: TextStyle(
-                //                           fontWeight: FontWeight.bold,
-                //                           color: MyColors.primaryColor, // Text color
-                //                           fontSize: 16,
-                //                         ),
-                //                       ),
-                //                     ),
-                //                   ),
-                //                 ),
-                //               ),
-                //               // Second button
-                //               Expanded(
-                //                 child: Container(
-                //                   margin: EdgeInsets.only(left: 10), // Space between the buttons
-                //                   decoration: BoxDecoration(
-                //                     color: Colors.grey.shade300, // Light background color for the button
-                //                     borderRadius: BorderRadius.circular(10), // Rounded corners
-                //                   ),
-                //                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20), // Padding inside the button
-                //                   child: Center(
-                //                     child: Text(
-                //                       'Pay bill now', // Button text
-                //                       style: TextStyle(
-                //                         fontWeight: FontWeight.bold,
-                //                         color: Colors.grey, // Gray text color
-                //                         fontSize: 16, // Text size
-                //                       ),
-                //                     ),
-                //                   ),
-                //                 ),
-                //               ),
-                //
-                //             ],
-                //           ),
-                //
-                //
-                //         ],
-                //       ),
-                //     ),
-                //   ),
-                // ),
                 if(prebookofferlistHistory.isNotEmpty)
                   Container(
                     height: 300,
                     child: _buildOfferCard(prebookofferlistHistory),
                   ),
-
-                // Column(
-                //   children: [
-                //     Container(
-                //       height: 45,
-                //       margin: EdgeInsets.symmetric(horizontal: 10),
-                //       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                //       width: double.infinity,
-                //       decoration: BoxDecoration(
-                //         color: MyColors.offerCardColor,
-                //         borderRadius: BorderRadius.only(
-                //           topLeft: Radius.circular(20),
-                //           topRight: Radius.circular(20),
-                //           bottomLeft: Radius.circular(20),
-                //           bottomRight: Radius.circular(20),
-                //         ), // Side rounded corners
-                //       ),
-                //       child: Row(
-                //         crossAxisAlignment: CrossAxisAlignment.center,
-                //         mainAxisAlignment: MainAxisAlignment.center,
-                //         children: [
-                //           Text(
-                //             "Flat 20% Off on Total Bill",
-                //             style: TextStyle(
-                //               fontSize: 18,
-                //               fontWeight: FontWeight.bold,
-                //               color: Color(
-                //                   0xFFFFFFFF), // Black text color
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //     ),
-                //     Container(
-                //       margin: EdgeInsets.symmetric(horizontal: 30),
-                //       padding: EdgeInsets.all(12.0),
-                //       width: double.infinity,
-                //       decoration: BoxDecoration(
-                //         color: Colors.white, // Background color
-                //         border: Border(
-                //           left: BorderSide(color: MyColors.offerCardColor),  // Left border
-                //           right: BorderSide(color:MyColors.offerCardColor), // Right border
-                //           bottom: BorderSide(color: MyColors.offerCardColor), // Bottom border
-                //           // No top border specified
-                //         ),
-                //         borderRadius: BorderRadius.only(
-                //           topLeft: Radius.circular(0),
-                //           topRight: Radius.circular(0),
-                //           bottomLeft: Radius.circular(20),
-                //           bottomRight: Radius.circular(20),
-                //         ), // Bottom rounded corners
-                //       ),
-                //       child: Column(
-                //         children: [
-                //           Row(
-                //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //             children: [
-                //               TitleDescriptionWidget(
-                //                 title: 'Bombay Mezbaan',
-                //                 description: 'Vikas Nagar, Lucknow',
-                //                 titleFontSize: 16,
-                //                 descriptionFontSize: 13,
-                //               ),
-                //               Row(
-                //                 children: [
-                //                   // First icon in a circular container
-                //                   Container(
-                //                     margin: EdgeInsets.only(left: 8.0),
-                //                     decoration: BoxDecoration(
-                //                       shape: BoxShape.circle,
-                //                       color: Color(
-                //                           0xFF6200EE), // Light background color
-                //                     ),
-                //                     padding: EdgeInsets.all(8.0),
-                //                     child: Icon(
-                //                       Icons.phone,
-                //                       color: Colors.white,
-                //                       // Secondary color for icons
-                //                       size: 20,
-                //                     ),
-                //                   ),
-                //                   // Second icon in a circular container
-                //                   Container(
-                //                     margin: EdgeInsets.only(left: 8.0),
-                //                     decoration: BoxDecoration(
-                //                       shape: BoxShape.circle,
-                //                       color: Color(
-                //                           0xFF6200EE), // Light background color
-                //                     ),
-                //                     padding: EdgeInsets.all(8.0),
-                //                     child: Icon(
-                //                       Icons.location_on,
-                //                       // Corrected to Icons.location_on
-                //                       color: Colors.white,
-                //                       // Secondary color for icons
-                //                       size: 20,
-                //                     ),
-                //                   ),
-                //                 ],
-                //               ),
-                //             ],
-                //           ),
-                //           SizedBox(height: 15),
-                //           DashedLine(
-                //             color: Color(0xFF757575),
-                //             // Text description color
-                //             margin: EdgeInsets.symmetric(
-                //                 vertical: 0, horizontal: 10),
-                //           ),
-                //           SizedBox(height: 10),
-                //           Row(
-                //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //             children: [
-                //               Column(
-                //                 children: [
-                //                   Row(
-                //                     mainAxisAlignment: MainAxisAlignment.start, // Aligns the content to the start
-                //                     children: [
-                //                       Icon(
-                //                         Icons.man, // Icon of your choice
-                //                         color: MyColors.offerCardColor, // Icon color
-                //                         size: 18.0, // Icon size
-                //                       ),
-                //                       SizedBox(width: 8.0), // Space between icon and text
-                //                       Text(
-                //                         "Numbers of guest's 2", // Text next to the icon
-                //                         style: TextStyle(
-                //                           fontSize: 14,
-                //                           fontWeight: FontWeight.w500,
-                //                           color: Colors.black, // Text color
-                //                         ),
-                //                       ),
-                //                     ],
-                //                   ),
-                //                   SizedBox(height: 5),
-                //                   Row(
-                //                     mainAxisAlignment: MainAxisAlignment.start, // Aligns the content to the start
-                //                     children: [
-                //                       Icon(
-                //                         Icons.calendar_month, // Icon of your choice
-                //                         color: MyColors.offerCardColor, // Icon color
-                //                         size: 18.0, // Icon size
-                //                       ),
-                //                       SizedBox(width: 8.0), // Space between icon and text
-                //                       Text(
-                //                         "08 Nov at 08:30 PM", // Text next to the icon
-                //                         style: TextStyle(
-                //                           fontSize: 14,
-                //                           fontWeight: FontWeight.w500,
-                //                           color: Colors.black, // Text color
-                //                         ),
-                //                       ),
-                //                     ],
-                //                   ),
-                //                 ],
-                //               ),
-                //               TitleDescriptionWidget(
-                //                 title: 'Status',
-                //                 description: 'Confirmed',
-                //                 titleFontSize: 14,
-                //                 descriptionFontSize: 12,
-                //                 titleFontWeight: FontWeight.w400,
-                //                 descriptionFontWeight: FontWeight.bold,
-                //                 descriptionColor: MyColors.offerCardColor,
-                //               ),
-                //             ],
-                //           ),
-
-                //           SizedBox(height: 15),
-                //           Row(
-                //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //             children: [
-                //               // First button
-                //               Expanded(
-                //                 child: GestureDetector(
-                //                   onTap: () {
-                //                     Navigator.push(
-                //                       context,
-                //                       MaterialPageRoute(
-                //                         builder: (context) =>
-                //                             BookedTableScreen(),
-                //                       ),
-                //                     );
-                //                   },
-                //                   child: Container(
-                //                     margin: EdgeInsets.only(right: 10),
-                //                     decoration: BoxDecoration(
-                //                       color: MyColors.offerCardColor,
-                //                       // Primary button color
-                //                       borderRadius: BorderRadius.circular(10),
-                //                     ),
-                //                     padding: EdgeInsets.symmetric(
-                //                         vertical: 10, horizontal: 20),
-                //                     child: Center(
-                //                       child: Text(
-                //                         'View details',
-                //                         style: TextStyle(
-                //                           fontWeight: FontWeight.bold,
-                //                           color: Color(0xFFFFFFFF),
-                //                           // White text color
-                //                           fontSize: 12,
-                //                         ),
-                //                       ),
-                //                     ),
-                //                   ),
-                //                 ),
-                //               ),
-                //               // Second button
-                //               Expanded(
-                //                 child: Container(
-                //                   margin: EdgeInsets.only(left: 10),
-                //                   decoration: BoxDecoration(
-                //                     color: Colors.grey.shade300,
-                //                     // Light background color for the button
-                //                     borderRadius: BorderRadius.circular(10),
-                //                   ),
-                //                   padding: EdgeInsets.symmetric(
-                //                       vertical: 10, horizontal: 20),
-                //                   child: Center(
-                //                     child: Text(
-                //                       'Pay bill',
-                //                       style: TextStyle(
-                //                         fontWeight: FontWeight.bold,
-                //                         color: Colors.grey, // Gray text color
-                //                         fontSize: 12,
-                //                       ),
-                //                     ),
-                //                   ),
-                //                 ),
-                //               ),
-                //             ],
-                //           ),
-
-
-                //         ],
-                //       )
-                //     ),
-                //   ],
-                // ),
-                // Container(
-                //   margin: EdgeInsets.symmetric(horizontal: 10),
-                //   child: ClipPath(
-                //     clipper: CouponClipper(
-                //       borderRadius: 20,
-                //       curveRadius: 20,
-                //       curvePosition: 150,
-                //       curveAxis: Axis.horizontal,
-                //       clockwise: false,
-                //     ),
-                //     child: Material(
-                //       elevation: 4,
-                //       // Add elevation here
-                //       borderRadius: BorderRadius.circular(20),
-                //       // Match the border radius with the clipper
-                //       child: Container(
-                //         height: 305,
-                //         color: Colors.green.shade50,
-                //         // Background color for the card
-                //         padding: EdgeInsets.all(15),
-                //         child: Column(
-                //           mainAxisAlignment: MainAxisAlignment.start,
-                //           children: [
-                //             Row(
-                //               children: [
-                //                 Text(
-                //                   "Confirmed",
-                //                   style: TextStyle(
-                //                     color: Color(0xFF6200EE),
-                //                     // Secondary color for text
-                //                     fontSize: 14,
-                //                     fontWeight: FontWeight.bold,
-                //                   ),
-                //                 ),
-                //               ],
-                //             ),
-                //             Row(
-                //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //               children: [
-                //                 TitleDescriptionWidget(
-                //                   title: 'Bombay Mezbaan',
-                //                   description: 'Vikas Nagar, Lucknow',
-                //                   titleFontSize: 16,
-                //                   descriptionFontSize: 13,
-                //                 ),
-                //                 Row(
-                //                   children: [
-                //                     // First icon in a circular container
-                //                     Container(
-                //                       margin: EdgeInsets.only(left: 8.0),
-                //                       decoration: BoxDecoration(
-                //                         shape: BoxShape.circle,
-                //                         color: Color(
-                //                             0xFF6200EE), // Light background color
-                //                       ),
-                //                       padding: EdgeInsets.all(8.0),
-                //                       child: Icon(
-                //                         Icons.phone,
-                //                         color: Colors.white,
-                //                         // Secondary color for icons
-                //                         size: 20,
-                //                       ),
-                //                     ),
-                //                     // Second icon in a circular container
-                //                     Container(
-                //                       margin: EdgeInsets.only(left: 8.0),
-                //                       decoration: BoxDecoration(
-                //                         shape: BoxShape.circle,
-                //                         color: Color(
-                //                             0xFF6200EE), // Light background color
-                //                       ),
-                //                       padding: EdgeInsets.all(8.0),
-                //                       child: Icon(
-                //                         Icons.location_on,
-                //                         // Corrected to Icons.location_on
-                //                         color: Colors.white,
-                //                         // Secondary color for icons
-                //                         size: 20,
-                //                       ),
-                //                     ),
-                //                   ],
-                //                 ),
-                //               ],
-                //             ),
-                //             SizedBox(height: 15),
-                //             Row(
-                //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //               children: [
-                //                 TitleDescriptionWidget(
-                //                   title: 'Today',
-                //                   description: '18 Oct 2024',
-                //                   titleFontSize: 18,
-                //                   descriptionFontSize: 14,
-                //                 ),
-                //                 TitleDescriptionWidget(
-                //                   title: 'Dinner',
-                //                   description: '06:30 PM',
-                //                   titleFontSize: 18,
-                //                   descriptionFontSize: 14,
-                //                 ),
-                //                 TitleDescriptionWidget(
-                //                   title: 'for 2',
-                //                   description: 'guests',
-                //                   titleFontSize: 18,
-                //                   descriptionFontSize: 14,
-                //                 ),
-                //               ],
-                //             ),
-                //             DashedLine(
-                //               color: Color(0xFF757575),
-                //               // Text description color
-                //               margin: EdgeInsets.symmetric(
-                //                   vertical: 22, horizontal: 10),
-                //             ),
-                //             Container(
-                //               height: 45,
-                //               decoration: BoxDecoration(
-                //                 border: Border.all(
-                //                     color: Color(0xFF6200EE), width: 1.0),
-                //                 // Primary border color
-                //                 borderRadius: BorderRadius.circular(10),
-                //               ),
-                //               padding: const EdgeInsets.all(5),
-                //               child: Row(
-                //                 crossAxisAlignment: CrossAxisAlignment.center,
-                //                 children: [
-                //                   Expanded(
-                //                     child: Text(
-                //                       "Flat 20% Off on Total Bill",
-                //                       style: TextStyle(
-                //                         fontSize: 16,
-                //                         fontWeight: FontWeight.bold,
-                //                         color: Color(
-                //                             0xFF000000), // Black text color
-                //                       ),
-                //                     ),
-                //                   ),
-                //                 ],
-                //               ),
-                //             ),
-                //             SizedBox(height: 15),
-                //             Row(
-                //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //               children: [
-                //                 // First button
-                //                 Expanded(
-                //                   child: GestureDetector(
-                //                     onTap: () {
-                //                       Navigator.push(
-                //                         context,
-                //                         MaterialPageRoute(
-                //                           builder: (context) =>
-                //                               BookedTableScreen(),
-                //                         ),
-                //                       );
-                //                     },
-                //                     child: Container(
-                //                       margin: EdgeInsets.only(right: 10),
-                //                       decoration: BoxDecoration(
-                //                         color: Color(0xFF6200EE),
-                //                         // Primary button color
-                //                         borderRadius: BorderRadius.circular(10),
-                //                       ),
-                //                       padding: EdgeInsets.symmetric(
-                //                           vertical: 10, horizontal: 20),
-                //                       child: Center(
-                //                         child: Text(
-                //                           'View details',
-                //                           style: TextStyle(
-                //                             fontWeight: FontWeight.bold,
-                //                             color: Color(0xFFFFFFFF),
-                //                             // White text color
-                //                             fontSize: 16,
-                //                           ),
-                //                         ),
-                //                       ),
-                //                     ),
-                //                   ),
-                //                 ),
-                //                 // Second button
-                //                 Expanded(
-                //                   child: Container(
-                //                     margin: EdgeInsets.only(left: 10),
-                //                     decoration: BoxDecoration(
-                //                       color: Colors.grey.shade300,
-                //                       // Light background color for the button
-                //                       borderRadius: BorderRadius.circular(10),
-                //                     ),
-                //                     padding: EdgeInsets.symmetric(
-                //                         vertical: 10, horizontal: 20),
-                //                     child: Center(
-                //                       child: Text(
-                //                         'Pay bill now',
-                //                         style: TextStyle(
-                //                           fontWeight: FontWeight.bold,
-                //                           color: Colors.grey, // Gray text color
-                //                           fontSize: 16,
-                //                         ),
-                //                       ),
-                //                     ),
-                //                   ),
-                //                 ),
-                //               ],
-                //             ),
-                //           ],
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
                 /// abhi kholna hai
                 InkWell(
                   onTap: (){
@@ -1459,56 +777,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                     },
                   ),
                 ),
-
-                // categories.isNotEmpty?    Container(
-                //   height: 125,
-                //   child: ListView.builder(
-                //     itemBuilder: (context, index) {
-                //       CategoriesModel category = categories[index];
-                //       return CategoriesCardWidget(
-                //         imgUrl: category.image,
-                //         cateName: category.category_name,
-                //         onTap: () {
-                //           navigateToTopSubCategories(
-                //               context, category.category_name, category.id);
-                //         },
-                //       );
-                //     },
-                //     itemCount: categories.length,
-                //     //reverse: true,
-                //     //itemExtent: 100,
-                //     scrollDirection: Axis.horizontal,
-                //   ),
-                // ):CircularProgressIndicator(),
-                ///
-
-                //categories end
-
-                //Great Offers start
-                ///
-                // if (!greatOfferList1.isEmpty)
-                //   Container(
-                //     margin: EdgeInsets.only(
-                //         top: 25, left: 15, right: 15, bottom: 15),
-                //     child: Row(
-                //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //       children: [
-                //         Text(
-                //           "Great Offers",
-                //           style: TextStyle(
-                //               fontSize: 18, fontWeight: FontWeight.w500),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // if (!greatOfferList1.isEmpty)
-                //   GreatOffersWidget(greatOfferList1, "${cityId}"),
-                ///
-                // SizedBox(
-                //   height: 10,
-                // ),
-                // GreatOffersWidget(greatOfferList2),
-
                 if (!localtiyList.isEmpty)
                   Container(
                     margin: EdgeInsets.only(
@@ -1525,30 +793,9 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                     ),
                   ),
                 if (!localtiyList.isEmpty) LocationWidget(localtiyList),
-
                 SizedBox(
                   height: 0,
                 ),
-                //GreatOffersWidget(greatOfferList2),
-                //Great Offers end
-
-                // //What your choice start
-                // Container(
-                //   margin: EdgeInsets.only(top: 25, left: 15, right: 15, bottom: 15),
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //     children: [
-                //       Text(
-                //         "What your choice's",
-                //         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                // YourChoiceHomeWidget(wahtyourchoicList),
-                //What your choice start end
-
-                //Trending Restrount start
                 if (!trendingStoreList.isEmpty)
                   Container(
                     margin: EdgeInsets.only(
@@ -1603,9 +850,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                   ),
                 if (!trendingStoreList.isEmpty)
                   TrendingRestruantWidget(trendingStoreList),
-                //Trending Restrount end
-
-                //Top collection start
                 if (!recentStoreList.isEmpty)
                   Container(
                     margin: EdgeInsets.only(
@@ -1660,7 +904,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                   ),
                 if (!recentStoreList.isEmpty)
                   RecentJoinedWidget(recentStoreList),
-
                 if (!topCollectionStoreList.isEmpty)
                   Container(
                     margin: EdgeInsets.only(
@@ -1715,19 +958,157 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                   ),
                 if (!topCollectionStoreList.isEmpty)
                   TopCollectionWidget(topCollectionStoreList, 0.0),
-
-                //TopCollectionWidget(topCollection, 0.0),
-                //TopCollectionWidget(topCollection, 0.0),
-                //Top collection end
-
                 SizedBox(
-                  height: 50,
+                  height: 20,
+                ),
+               Container(
+                  color: MyColors.whiteBG,
+                  child: SizedBox(
+                    height: 55,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: orderedList.length,
+                      itemBuilder: (context, index) {
+                        FirstList item = orderedList[index];
+                        bool isSelected = selectedList.contains(item);
+
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              toggleSelection(item);
+                              selectedName = list[index].name;
+                              print("item");
+                              index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):null;
+                            });
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 5, vertical: 10),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8, ),
+                            decoration: BoxDecoration(
+                                color: isSelected
+                                    ? Colors.grey.withOpacity(0.3)
+                                    : MyColors.whiteBG,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                    color: isSelected
+                                        ? MyColors.blackBG
+                                        : Colors.grey.withOpacity(0.5))),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Center(
+                                  child: Text(
+                                    item.name,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: widths*0.02,),
+                                index == 0
+                                    ? Icon(Icons.tune_outlined,size: 18,)
+                                    : index == 1
+                                    ? Icon(
+                                  Icons.keyboard_arrow_down_outlined,size: 20,)
+                                    : isSelected
+                                    ? Icon(Icons.close,size: 16,)
+                                    : Container()
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    itemCount: restaurants.length,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return RestaurantCard(
+                          restaurant: restaurants[index], name: selectedName);
+                    },
+                  ),
                 ),
               ],
             ),
           ),
         ),
       ),
+      bottomSheet: _showTitle==false?  Container(
+        color: MyColors.whiteBG,
+        child: SizedBox(
+          height: 55,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: orderedList.length,
+            itemBuilder: (context, index) {
+              FirstList item = orderedList[index];
+              bool isSelected = selectedList.contains(item);
+
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    toggleSelection(item);
+                    selectedName = list[index].name;
+                    print("item");
+                    index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):null;
+                  });
+                },
+                child: Container(
+                  margin: EdgeInsets.symmetric(
+                      horizontal: 5, vertical: 10),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 8, ),
+                  decoration: BoxDecoration(
+                      color: isSelected
+                          ? Colors.grey.withOpacity(0.3)
+                          : MyColors.whiteBG,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                          color: isSelected
+                              ? MyColors.blackBG
+                              : Colors.grey.withOpacity(0.5))),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Center(
+                        child: Text(
+                          item.name,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: widths*0.02,),
+                      index == 0
+                          ? Icon(Icons.tune_outlined,size: 18,)
+                          : index == 1
+                          ? Icon(
+                        Icons.keyboard_arrow_down_outlined,size: 20,)
+                          : isSelected
+                          ? Icon(Icons.close,size: 16,)
+                          : Container()
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ):Text("") ,
       drawer: Drawer(
       backgroundColor: Colors.white,
       child: ListView(
@@ -2009,6 +1390,27 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
       ),
     );
   }
+  List<FeaturesModel>featureData=[];
+  // bool isLoading=false;
+  Future<void> feature() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final response = await ApiServices.getFeatureApi();
+      if (response != null) {
+        setState(() {
+          featureData = response;
+        });
+      }
+    } catch (e) {
+      print('getFeatureApi: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
   Future<void> navigateToAllCouponScreen(BuildContext context,
       String subCategoryName, String category_id, int subcategory_id) async {
     final route = MaterialPageRoute(
@@ -2016,17 +1418,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
             "$category_id", "$subcategory_id", "", "", "", "","$cityId",""));
     await Navigator.push(context, route);
   }
-  //
-  // Future<void> getUserDetails() async {
-  //   // SharedPref sharedPref=new SharedPref();
-  //   // userName = (await SharedPref.getUser()).name;
-  //   UserModel n = await SharedPref.getUser();
-  //   print("getUserDetails: " + n.name);
-  //   setState(() {
-  //     cityId = n.home_location;
-  //   });
-  //
-  // }
   Future<void> fetchCity() async {
     try {
       final response = await ApiServices.api_show_city(context);
@@ -3077,141 +2468,6 @@ class TrendingRestruantWidget extends StatelessWidget {
 // }
 }
 
-//RecentJoined
-// class RecentJoinedWidget extends StatelessWidget {
-//   final List<StoreModel> stores; // Renamed from restaurantsItems
-//
-//   RecentJoinedWidget(this.stores);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       height: 180,
-//       child: ListView.builder(
-//         itemBuilder: (context, index) {
-//           return buildStoreWidget(
-//             context,
-//             stores[index].id,
-//             stores[index].banner, // Accessing the logo field of StoreModel
-//             stores[index].storeName,
-//             // Accessing the store_name field of StoreModel
-//             stores[index].address, // Accessing the address field of StoreModel
-//             stores[index]
-//                 .distance, // Accessing the distance field of StoreModel
-//           );
-//         },
-//         itemCount: stores.length,
-//         scrollDirection: Axis.horizontal,
-//       ),
-//     );
-//   }
-//
-//   Widget buildStoreWidget(BuildContext context, int id, String imgUrl,
-//       String storeName, String location, String distance) {
-//     return Container(
-//       margin: EdgeInsets.only(left: 10, right: 5),
-//       child: InkWell(
-//         onTap: () {
-//           Navigator.push(context, MaterialPageRoute(builder: (context) {
-//             return CouponFullViewScreen("$id");
-//           }));
-//         },
-//         child: Card(
-//           borderOnForeground: true,
-//           //color: Colors.white,
-//           elevation: 3,
-//           shape: RoundedRectangleBorder(
-//             borderRadius: BorderRadius.circular(8),
-//           ),
-//           clipBehavior: Clip.antiAliasWithSaveLayer,
-//           child: Container(
-//             color: Colors.white,
-//             padding: EdgeInsets.all(8),
-//             width: 170,
-//             child: Column(
-//               children: [
-//                 Container(
-//                   height: 105,
-//                   decoration: BoxDecoration(
-//                     image: DecorationImage(
-//                       image: NetworkImage(imgUrl),
-//                       fit: BoxFit.fill,
-//                     ),
-//                   ),
-//                 ),
-//                 Container(
-//                   margin: EdgeInsets.only(top: 8),
-//                   child: Row(
-//                     children: [
-//                       Container(
-//                         width: 150,
-//                         child: Container(
-//                           child: Text(
-//                             storeName,
-//                             style: TextStyle(
-//                               fontWeight: FontWeight.bold,
-//                               color: Colors.black, // Modify color as needed
-//                               fontSize: 13.5,
-//                               overflow: TextOverflow.ellipsis,
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//                 Container(
-//                   child: Container(
-//                     width: 160,
-//                     margin: EdgeInsets.only(top: 2),
-//                     child: Row(
-//                       children: [
-//                         Container(
-//                           child: Text(
-//                             location,
-//                             style: TextStyle(
-//                               fontWeight: FontWeight.bold,
-//                               color: Colors.grey, // Modify color as needed
-//                               fontSize: 12,
-//                               overflow: TextOverflow.ellipsis,
-//                             ),
-//                           ),
-//                         ),
-//                         Container(
-//                           margin: EdgeInsets.symmetric(horizontal: 5),
-//                           width: 1,
-//                           height: 10,
-//
-//                           color: distance == ''
-//                               ? Colors.transparent
-//                               : Colors.grey, // Modify color as needed
-//                         ),
-//                         Text(
-//                           "$distance km",
-//                           style: TextStyle(
-//                             color: distance == ''
-//                                 ? Colors.transparent
-//                                 : Colors.red,
-//                             // Set color to transparent when distance is 0
-//                             fontSize: 12,
-//                             overflow: TextOverflow.ellipsis,
-//                           ),
-//                         )
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// new RecentJoined
-
 class RecentJoinedWidget extends StatelessWidget {
   final List<StoreModel> stores; // Renamed from restaurantsItems
 
@@ -3724,5 +2980,219 @@ class TopCollectionWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+
+class RestaurantCard extends StatefulWidget {
+  final Restaurant restaurant;
+  final String name;
+
+  RestaurantCard({required this.restaurant, required this.name});
+
+  @override
+  State<RestaurantCard> createState() => _RestaurantCardState();
+}
+
+class _RestaurantCardState extends State<RestaurantCard> {
+  List ambienceList = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchGalleryImagesAmbience("177", "ambience");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 5,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image with overlay
+          Stack(
+            children: [
+              CarouselSlider(
+                items: ambienceList.map((json) {
+                  return GestureDetector(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10)),
+                      child: CachedNetworkImage(
+                        imageUrl: json['image'],
+                        fit: BoxFit.fill,
+                        placeholder: (context, url) => Image.asset(
+                          'assets/images/placeholder.png',
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                        ),
+                        errorWidget: (context, url, error) =>
+                        const Center(child: Icon(Icons.error)),
+                      ),
+                    ),
+                  );
+                }).toList(),
+                options: CarouselOptions(
+                  height: heights * 0.22,
+                  enlargeCenterPage: true,
+                  autoPlay: true,
+                  reverse: true,
+                  disableCenter: true,
+                  aspectRatio: 1 / 9,
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  enableInfiniteScroll: true,
+                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                  viewportFraction: 1,
+                ),
+              ),
+              Positioned(
+                top: 10,
+                left: 10,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Text(
+                    widget.name.toString(),
+                    style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 10,
+                right: 10,
+                child: Icon(Icons.favorite_border, color: Colors.white),
+              ),
+            ],
+          ),
+
+          Padding(
+            padding: EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: widths * 0.66,
+                      // color: Colors.red,
+                      child: Text(
+                        widget.restaurant.name,
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Spacer(),
+                    CircleAvatar(
+                        radius: 9,
+                        backgroundColor: MyColors.darkGreen,
+                        child: Icon(Icons.star,
+                            color: MyColors.whiteBG, size: 12)),
+                    SizedBox(width: 4),
+                    Text(
+                      widget.restaurant.rating.toString(),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: MyColors.blackBG),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 4),
+                Text(
+                  widget.restaurant.location,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  "${widget.restaurant.cuisine} • ${widget.restaurant.price}",
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
+                SizedBox(height: 6),
+                Row(
+                  children: [
+                    Container(
+                        padding: EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_month_outlined,
+                              color: Colors.grey[600],
+                              size: 12,
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              "Table Booking",
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black.withOpacity(0.5)),
+                            ),
+                          ],
+                        )),
+                  ],
+                ),
+                Divider(),
+                Wrap(
+                  children: widget.restaurant.offers.map((offer) {
+                    return Container(
+                      padding: EdgeInsets.symmetric(horizontal: 1, vertical: 1),
+                      decoration: BoxDecoration(),
+                      child: Text(offer,
+                          style: TextStyle(
+                            color: Colors.black.withOpacity(0.6),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                          )),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool isLoading = true;
+
+  Future<void> fetchGalleryImagesAmbience(
+      String store_id, String food_type) async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final body = {"store_id": "$store_id", "food_type": "$food_type"};
+      final response = await ApiServices.store_multiple_galleryJson(body);
+      print("object: $response");
+      if (response != null) {
+        setState(() {
+          ambienceList = response;
+
+          print('fetchGalleryImagesAmbience: $response');
+        });
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      print('fetchGalleryImagesAmbience: $e');
+    } finally {
+      isLoading = false;
+    }
   }
 }
