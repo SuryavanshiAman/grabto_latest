@@ -269,6 +269,34 @@ class _FilterDateFormatState extends State<FilterDateFormat> {
           ),
         ),
 
+        // Expanded(
+        //   child: CupertinoPicker(
+        //     selectionOverlay: const CupertinoPickerDefaultSelectionOverlay(
+        //       background: CupertinoDynamicColor.withBrightness(
+        //         color: Colors.transparent,
+        //         darkColor: Colors.transparent,
+        //       ),
+        //     ),
+        //     scrollController: FixedExtentScrollController(
+        //       initialItem: _selectedDate.year - 1885, // Start from 1885
+        //     ),
+        //     itemExtent: 40,
+        //     onSelectedItemChanged: (yearIndex) {
+        //       setState(() {
+        //         _selectedDate = DateTime(1885 + yearIndex, _selectedDate.month, _selectedDate.day);
+        //       });
+        //     },
+        //     children: List.generate(DateTime.now().year - 1885 + 1, (yearIndex) {
+        //       final year = 1885 + yearIndex;
+        //       return Center(
+        //         child: Text(
+        //           year.toString(),
+        //           style: const TextStyle(fontSize: 17, color: Colors.white),
+        //         ),
+        //       );
+        //     }),
+        //   ),
+        // ),
         Expanded(
           child: CupertinoPicker(
             selectionOverlay: const CupertinoPickerDefaultSelectionOverlay(
@@ -278,120 +306,38 @@ class _FilterDateFormatState extends State<FilterDateFormat> {
               ),
             ),
             scrollController: FixedExtentScrollController(
-              initialItem: _selectedDate.year - 1885, // Start from 1885
+              initialItem: _selectedDate.year - 1885, // Ensure correct year selection
             ),
             itemExtent: 40,
             onSelectedItemChanged: (yearIndex) {
               setState(() {
-                _selectedDate = DateTime(1885 + yearIndex, _selectedDate.month, _selectedDate.day);
+                _selectedDate = DateTime(
+                  1885 + yearIndex, // Corrected year calculation
+                  _selectedDate.month,
+                  _selectedDate.day,
+                );
               });
             },
-            children: List.generate(DateTime.now().year - 1885 + 1, (yearIndex) {
-              final year = 1885 + yearIndex;
-              return Center(
-                child: Text(
-                  year.toString(),
-                  style: const TextStyle(fontSize: 17, color: Colors.white),
-                ),
-              );
-            }),
+            children: List.generate(
+              (DateTime.now().year - 16) - 1885 + 1,
+                  (index) {
+                final year = 1885 + index;
+                return Center(
+                  child: Text(
+                    year.toString(),
+                    style: const TextStyle(fontSize: 17, color: Colors.white),
+                  ),
+                );
+              },
+            ),
           ),
         ),
+
+
+
       ],
     );
   }
 
-  // Widget _buildMonthPicker() {
-  //   int daysInMonth = DateTime(_selectedDate.year, _selectedDate.month + 1, 0).day;
-  //
-  //   return Row(
-  //     children: [
-  //       Expanded(
-  //         child: CupertinoPicker(
-  //           selectionOverlay: const CupertinoPickerDefaultSelectionOverlay(
-  //             background: CupertinoDynamicColor.withBrightness(
-  //               color: Colors.transparent,
-  //               darkColor: Colors.transparent,
-  //             ),
-  //           ),
-  //           scrollController: FixedExtentScrollController(
-  //             initialItem: _selectedDate.year - 1885, // Set the scroll to the current year
-  //           ),
-  //           itemExtent: 40,
-  //           onSelectedItemChanged: (yearIndex) {
-  //             setState(() {
-  //               _selectedDate = DateTime(1885 + yearIndex, _selectedDate.month, _selectedDate.day);
-  //             });
-  //           },
-  //           children: List.generate(2050 - 1885 + 1, (yearIndex) {
-  //             final year = 1885 + yearIndex;
-  //             return Center(
-  //               child: Text(
-  //                 year.toString(),
-  //                 style: const TextStyle(fontSize: 17, color: Colors.white),
-  //               ),
-  //             );
-  //           }),
-  //         ),
-  //       ),
-  //
-  //       Expanded(
-  //         child: CupertinoPicker(
-  //           scrollController: FixedExtentScrollController(
-  //             initialItem: _selectedDate.month - 1, // Set the scroll to the current month
-  //           ),
-  //           itemExtent: 40,
-  //           onSelectedItemChanged: (monthIndex) {
-  //             setState(() {
-  //               _selectedDate = DateTime(_selectedDate.year, monthIndex + 1, _selectedDate.day);
-  //             });
-  //           },
-  //           selectionOverlay: const CupertinoPickerDefaultSelectionOverlay(
-  //             background: CupertinoDynamicColor.withBrightness(
-  //               color: Colors.transparent,
-  //               darkColor: Colors.transparent,
-  //             ),
-  //           ),
-  //           children: List.generate(12, (monthIndex) {
-  //             return Center(
-  //               child: Text(
-  //                 DateFormat('MM').format(DateTime(_selectedDate.year, monthIndex + 1)),
-  //                 style: const TextStyle(fontSize: 17, color: Colors.white),
-  //               ),
-  //             );
-  //           }),
-  //         ),
-  //       ),
-  //
-  //       Expanded(
-  //         child: CupertinoPicker(
-  //           scrollController: FixedExtentScrollController(
-  //             initialItem: _selectedDate.day - 1, // Set the scroll to the current day
-  //           ),
-  //           itemExtent: 40,
-  //           onSelectedItemChanged: (dayIndex) {
-  //             setState(() {
-  //               _selectedDate = DateTime(_selectedDate.year, _selectedDate.month, dayIndex + 1);
-  //             });
-  //           },
-  //           selectionOverlay: const CupertinoPickerDefaultSelectionOverlay(
-  //             background: CupertinoDynamicColor.withBrightness(
-  //               color: Colors.transparent,
-  //               darkColor: Colors.transparent,
-  //             ),
-  //           ),
-  //           children: List.generate(daysInMonth, (dayIndex) {
-  //             return Center(
-  //               child: Text(
-  //                 (dayIndex + 1).toString(),
-  //                 style: const TextStyle(fontSize: 17, color: Colors.white),
-  //               ),
-  //             );
-  //           }),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
 
 }

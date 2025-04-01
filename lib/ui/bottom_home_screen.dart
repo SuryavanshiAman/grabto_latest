@@ -690,18 +690,18 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                     child: _buildOfferCard(prebookofferlistHistory),
                   ),
                 /// abhi kholna hai
-                InkWell(
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>NearMeScreen()));
-                  },
-                  child: Container(
-                    margin: EdgeInsets.all(10),
-                    height: heights*0.15,
-                    width: widths,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(image: AssetImage("assets/images/near_me.png"),fit: BoxFit.fill)),
-                  ),
-                ),
+                // InkWell(
+                //   onTap: (){
+                //     Navigator.push(context, MaterialPageRoute(builder: (context)=>NearMeScreen()));
+                //   },
+                //   child: Container(
+                //     margin: EdgeInsets.all(10),
+                //     height: heights*0.15,
+                //     width: widths,
+                //     decoration: BoxDecoration(
+                //         image: DecorationImage(image: AssetImage("assets/images/near_me.png"),fit: BoxFit.fill)),
+                //   ),
+                // ),
                 Container(
                   margin:
                   EdgeInsets.only(top: 10, left: 15, right: 15,),
@@ -958,157 +958,158 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                   ),
                 if (!topCollectionStoreList.isEmpty)
                   TopCollectionWidget(topCollectionStoreList, 0.0),
+               /// abhi kholna hai
+               //  SizedBox(
+               //    height: 20,
+               //  ),
+               // Container(
+               //    color: MyColors.whiteBG,
+               //    child: SizedBox(
+               //      height: 55,
+               //      child: ListView.builder(
+               //        scrollDirection: Axis.horizontal,
+               //        itemCount: orderedList.length,
+               //        itemBuilder: (context, index) {
+               //          FirstList item = orderedList[index];
+               //          bool isSelected = selectedList.contains(item);
+               //
+               //          return GestureDetector(
+               //            onTap: () {
+               //              setState(() {
+               //                toggleSelection(item);
+               //                selectedName = list[index].name;
+               //                print("item");
+               //                index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):null;
+               //              });
+               //            },
+               //            child: Container(
+               //              margin: EdgeInsets.symmetric(
+               //                  horizontal: 5, vertical: 10),
+               //              padding: EdgeInsets.symmetric(
+               //                horizontal: 8, ),
+               //              decoration: BoxDecoration(
+               //                  color: isSelected
+               //                      ? Colors.grey.withOpacity(0.3)
+               //                      : MyColors.whiteBG,
+               //                  borderRadius: BorderRadius.circular(20),
+               //                  border: Border.all(
+               //                      color: isSelected
+               //                          ? MyColors.blackBG
+               //                          : Colors.grey.withOpacity(0.5))),
+               //              child: Row(
+               //                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+               //                children: [
+               //                  Center(
+               //                    child: Text(
+               //                      item.name,
+               //                      style: TextStyle(
+               //                          color: Colors.black,
+               //                          fontSize: 13,
+               //                          fontWeight: FontWeight.w500
+               //                      ),
+               //                    ),
+               //                  ),
+               //                  SizedBox(width: widths*0.02,),
+               //                  index == 0
+               //                      ? Icon(Icons.tune_outlined,size: 18,)
+               //                      : index == 1
+               //                      ? Icon(
+               //                    Icons.keyboard_arrow_down_outlined,size: 20,)
+               //                      : isSelected
+               //                      ? Icon(Icons.close,size: 16,)
+               //                      : Container()
+               //                ],
+               //              ),
+               //            ),
+               //          );
+               //        },
+               //      ),
+               //    ),
+               //  ),
                 SizedBox(
                   height: 20,
                 ),
-               Container(
-                  color: MyColors.whiteBG,
-                  child: SizedBox(
-                    height: 55,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: orderedList.length,
-                      itemBuilder: (context, index) {
-                        FirstList item = orderedList[index];
-                        bool isSelected = selectedList.contains(item);
-
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              toggleSelection(item);
-                              selectedName = list[index].name;
-                              print("item");
-                              index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):null;
-                            });
-                          },
-                          child: Container(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 10),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 8, ),
-                            decoration: BoxDecoration(
-                                color: isSelected
-                                    ? Colors.grey.withOpacity(0.3)
-                                    : MyColors.whiteBG,
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                    color: isSelected
-                                        ? MyColors.blackBG
-                                        : Colors.grey.withOpacity(0.5))),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Center(
-                                  child: Text(
-                                    item.name,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: widths*0.02,),
-                                index == 0
-                                    ? Icon(Icons.tune_outlined,size: 18,)
-                                    : index == 1
-                                    ? Icon(
-                                  Icons.keyboard_arrow_down_outlined,size: 20,)
-                                    : isSelected
-                                    ? Icon(Icons.close,size: 16,)
-                                    : Container()
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    itemCount: restaurants.length,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return RestaurantCard(
-                          restaurant: restaurants[index], name: selectedName);
-                    },
-                  ),
-                ),
+                // Container(
+                //   child: ListView.builder(
+                //     padding: EdgeInsets.zero,
+                //     shrinkWrap: true,
+                //     itemCount: restaurants.length,
+                //     physics: NeverScrollableScrollPhysics(),
+                //     itemBuilder: (context, index) {
+                //       return RestaurantCard(
+                //           restaurant: restaurants[index], name: selectedName);
+                //     },
+                //   ),
+                // ),
               ],
             ),
           ),
         ),
       ),
-      bottomSheet: _showTitle==false?  Container(
-        color: MyColors.whiteBG,
-        child: SizedBox(
-          height: 55,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: orderedList.length,
-            itemBuilder: (context, index) {
-              FirstList item = orderedList[index];
-              bool isSelected = selectedList.contains(item);
-
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    toggleSelection(item);
-                    selectedName = list[index].name;
-                    print("item");
-                    index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):null;
-                  });
-                },
-                child: Container(
-                  margin: EdgeInsets.symmetric(
-                      horizontal: 5, vertical: 10),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 8, ),
-                  decoration: BoxDecoration(
-                      color: isSelected
-                          ? Colors.grey.withOpacity(0.3)
-                          : MyColors.whiteBG,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                          color: isSelected
-                              ? MyColors.blackBG
-                              : Colors.grey.withOpacity(0.5))),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Center(
-                        child: Text(
-                          item.name,
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: widths*0.02,),
-                      index == 0
-                          ? Icon(Icons.tune_outlined,size: 18,)
-                          : index == 1
-                          ? Icon(
-                        Icons.keyboard_arrow_down_outlined,size: 20,)
-                          : isSelected
-                          ? Icon(Icons.close,size: 16,)
-                          : Container()
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ):Text("") ,
+      // bottomSheet: _showTitle==false?  Container(
+      //   color: MyColors.whiteBG,
+      //   child: SizedBox(
+      //     height: 55,
+      //     child: ListView.builder(
+      //       scrollDirection: Axis.horizontal,
+      //       itemCount: orderedList.length,
+      //       itemBuilder: (context, index) {
+      //         FirstList item = orderedList[index];
+      //         bool isSelected = selectedList.contains(item);
+      //
+      //         return GestureDetector(
+      //           onTap: () {
+      //             setState(() {
+      //               toggleSelection(item);
+      //               selectedName = list[index].name;
+      //               print("item");
+      //               index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):null;
+      //             });
+      //           },
+      //           child: Container(
+      //             margin: EdgeInsets.symmetric(
+      //                 horizontal: 5, vertical: 10),
+      //             padding: EdgeInsets.symmetric(
+      //               horizontal: 8, ),
+      //             decoration: BoxDecoration(
+      //                 color: isSelected
+      //                     ? Colors.grey.withOpacity(0.3)
+      //                     : MyColors.whiteBG,
+      //                 borderRadius: BorderRadius.circular(20),
+      //                 border: Border.all(
+      //                     color: isSelected
+      //                         ? MyColors.blackBG
+      //                         : Colors.grey.withOpacity(0.5))),
+      //             child: Row(
+      //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //               children: [
+      //                 Center(
+      //                   child: Text(
+      //                     item.name,
+      //                     style: TextStyle(
+      //                         color: Colors.black,
+      //                         fontSize: 13,
+      //                         fontWeight: FontWeight.w500
+      //                     ),
+      //                   ),
+      //                 ),
+      //                 SizedBox(width: widths*0.02,),
+      //                 index == 0
+      //                     ? Icon(Icons.tune_outlined,size: 18,)
+      //                     : index == 1
+      //                     ? Icon(
+      //                   Icons.keyboard_arrow_down_outlined,size: 20,)
+      //                     : isSelected
+      //                     ? Icon(Icons.close,size: 16,)
+      //                     : Container()
+      //               ],
+      //             ),
+      //           ),
+      //         );
+      //       },
+      //     ),
+      //   ),
+      // ):Text("") ,
       drawer: Drawer(
       backgroundColor: Colors.white,
       child: ListView(
