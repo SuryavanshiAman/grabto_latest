@@ -23,6 +23,8 @@ class SubCategoriesCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: heights*0.16,
+      width: widths*0.2,
       child: InkWell(
         onTap: onTap,
         child: Card(
@@ -40,7 +42,7 @@ class SubCategoriesCardWidget extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     SizedBox(
-                      height: heights*0.12,
+                      height: heights*0.15,
                       width: double.infinity,
                       child: CachedNetworkImage(
                         imageUrl: imgUrl,
@@ -57,42 +59,27 @@ class SubCategoriesCardWidget extends StatelessWidget {
 
                     ),
 
-                    // FadeInImage with placeholder
-                    // FadeInImage(
-                    //   placeholder:
-                    //       AssetImage('assets/images/placeholder.png'),
-                    //   image: NetworkImage(imgUrl),
-                    //   fit: BoxFit.fill,
-                    //   height: 140,
-                    //   width: double.infinity,
-                    //
-                    //   // Optional: You can add a fade duration if needed
-                    //   fadeInDuration: Duration(milliseconds: 100),
-                    //
-                    //   // Use this callback to hide the loader when the image is fully loaded
-                    //   imageErrorBuilder: (context, error, stackTrace) {
-                    //     return Container(); // Return an empty container to hide the loader
-                    //   },
-                    // ),
-
                     Container(
-                      height: heights*0.12,
+                      height: heights*0.15,
                       decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0x30000000),
-                            blurRadius: 20.0,
-                          ),
-                        ],
+                        // boxShadow: [
+                        //   BoxShadow(
+                        //     color: Color(0x30000000),
+                        //     blurRadius: 20.0,
+                        //   ),
+                        // ],
                       ),
-                      child: Center(
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        width: widths*0.2,
+                        // color: Colors.red,
                         child: Text(
                           subcategoryName,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: MyColors.whiteBG,
-                            fontSize: 14,
-                            overflow: TextOverflow.ellipsis,
+                            fontSize: 12,
+                            // overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ),

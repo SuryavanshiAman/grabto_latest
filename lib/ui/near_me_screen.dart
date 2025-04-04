@@ -61,7 +61,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
       offers: [
         "Flat 50% off on pre-booking"
             "                 +4 offers",
-        "Get extra 10% off using GIRFNEXT150",
+        // "Get extra 10% off using GIRFNEXT150",
       ],
     ),
     Restaurant(
@@ -72,7 +72,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
       price: "₹1500 for two", // Example image URL
       offers: [
         "Flat 50% off on pre-booking",
-        "Get extra 10% off using GIRFNEXT150",
+        // "Get extra 10% off using GIRFNEXT150",
         "+4 offers"
       ],
     ),
@@ -84,7 +84,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
       price: "₹1500 for two", // Example image URL
       offers: [
         "Flat 50% off on pre-booking",
-        "Get extra 10% off using GIRFNEXT150",
+        // "Get extra 10% off using GIRFNEXT150",
         "+4 offers"
       ],
     ),
@@ -96,7 +96,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
       price: "₹1500 for two", // Example image URL
       offers: [
         "Flat 50% off on pre-booking",
-        "Get extra 10% off using GIRFNEXT150",
+        // "Get extra 10% off using GIRFNEXT150",
         "+4 offers"
       ],
     ),
@@ -108,7 +108,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
       price: "₹1500 for two", // Example image URL
       offers: [
         "Flat 50% off on pre-booking",
-        "Get extra 10% off using GIRFNEXT150",
+        // "Get extra 10% off using GIRFNEXT150",
         "+4 offers"
       ],
     ),
@@ -120,7 +120,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
       price: "₹1500 for two", // Example image URL
       offers: [
         "Flat 50% off on pre-booking",
-        "Get extra 10% off using GIRFNEXT150",
+        // "Get extra 10% off using GIRFNEXT150",
         "+4 offers"
       ],
     ),
@@ -132,7 +132,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
       price: "₹1500 for two", // Example image URL
       offers: [
         "Flat 50% off on pre-booking",
-        "Get extra 10% off using GIRFNEXT150",
+        // "Get extra 10% off using GIRFNEXT150",
         "+4 offers"
       ],
     ),

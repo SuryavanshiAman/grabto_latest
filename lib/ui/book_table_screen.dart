@@ -187,7 +187,7 @@ int isLunchTimeSlotsVisibleIndex=-1;
     //   _selectedDate = DateTime(now.year, now.month, now.day); // Aaj ki date
     // }
 
-    prebookoffer(widget.store_id);
+    prebookoffer(widget.store_id,"");
     print("😋😋😋😋${widget.store_id}");
     fetchStoresTermCondition();
     checkTimeSlotsVisibility(_selectedDate);
@@ -605,14 +605,17 @@ int isLunchTimeSlotsVisibleIndex=-1;
                                         ),
                                         itemBuilder: (BuildContext context, int timeIndex) {
                                           final data =mealData.time![timeIndex];
+
                                           return TimeSlotCard(
                                             timeSlot: data.t01Time.toString()??"",
                                             isSelected:
                                             selectedTimeSlot ==  data.t01Time,
                                             onTap: (){
                                               setState(() {
+                                                // availableSeat=data.t02Noofseats??0;
                                                 availableSeat=data.t02Noofseats??0;
                                               });
+                                              prebookoffer(widget.store_id,data.to2Id.toString());
                                               selectTimeSlot(
                                                 data.t01Time.toString()??"",
                                                 widget.category_name ==
@@ -1108,11 +1111,11 @@ int isLunchTimeSlotsVisibleIndex=-1;
     }
   }
 
-  Future<void> prebookoffer(String store_id) async {
+  Future<void> prebookoffer(String store_id,dynamic time_id) async {
     print('prebookoffer: store_id $store_id');
     print('😊😊😊');
     try {
-      final body = {"store_id": "$store_id"};
+      final body = {"store_id": "$store_id","time_id":time_id};
       final response = await ApiServices.PreBookOffer(body);
       print('prebookoffer: response $response');
       if (response != null) {
@@ -1136,6 +1139,7 @@ int isLunchTimeSlotsVisibleIndex=-1;
     print(date);
     print(day);
     print("MMMMM");
+    print("MMM3333333MM");
     setState(() {
       isLoading=true;
     });
@@ -1355,11 +1359,14 @@ class BookingInfoCard extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
+            Container(
+              width: widths*0.53,
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -1445,6 +1452,8 @@ class _PrebookOfferListWidgetState extends State<PrebookOfferListWidget> {
                 context,
                 widget.prebookofferlist[index],
                 selectedItemId == widget.prebookofferlist[index].id,
+                widget.prebookofferlist[index].available_seat
+
               ),
             ),
           ),
@@ -1454,7 +1463,7 @@ class _PrebookOfferListWidgetState extends State<PrebookOfferListWidget> {
   }
 
   Widget _buildPrebookOfferWidget(
-      BuildContext context, PreBookTable prebooktable, bool isSelected) {
+      BuildContext context, PreBookTable prebooktable, bool isSelected,dynamic available) {
     return Container(
       margin: EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 16),
       decoration: BoxDecoration(
@@ -1488,7 +1497,7 @@ class _PrebookOfferListWidgetState extends State<PrebookOfferListWidget> {
             child: BookingInfoCard(
               title: prebooktable.title,
               bookingFee: prebooktable.booking_fee,
-              availableSeat: widget.availableSeat,
+              availableSeat: int.parse(available),
             ),
           ),
         ],

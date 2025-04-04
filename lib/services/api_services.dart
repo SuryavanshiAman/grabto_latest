@@ -47,7 +47,23 @@ class ApiServices {
       return null;
     }
   }
+  static Future<Map<String, dynamic>?> send_otp(
+      BuildContext context, Map body) async {
+    const url = '$BASE_URL/user_send_otp';
+    final uri = Uri.parse(url);
+    final response = await http.post(uri, body: body);
 
+    if (response.statusCode == 200) {
+      // Parse the JSON response
+      final jsonResponse = json.decode(response.body) as Map<String, dynamic>;
+      // Print the entire response
+      debugPrint('user_send_otp response: $jsonResponse');
+
+      return jsonResponse;
+    } else {
+      return null;
+    }
+  }
   static Future<Map<String, dynamic>?> verify_otp(
       BuildContext context, Map body) async {
     const url = '$BASE_URL/verify_otp';

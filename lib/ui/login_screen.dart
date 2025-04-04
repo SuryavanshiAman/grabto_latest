@@ -143,7 +143,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       onPressed: () {
                                         final mobile =
                                             mobileControllerLogin.text;
-                                        user_login(mobile);
+                                        // user_login(mobile);
+                                        Navigator.push(context,
+                                            MaterialPageRoute(builder: (context) => OtpScreen(mobile: mobile,)));
                                       },
                                       child: Text(
                                         "Login",

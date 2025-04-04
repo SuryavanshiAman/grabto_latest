@@ -508,17 +508,31 @@ class _SignupScreenState extends State<SignupScreen> {
                                           // ),
                                           ElevatedButton(
                                             onPressed: () async {
+                                              if (_selectedDate==null) {
+                                                showErrorMessage(context, message: 'Please fill Date of birth');
+                                                return;
+                                              }
                                               final name = nameController.text;
-                                              final mobile =
-                                                  mobileController.text;
+                                              final mobile = mobileController.text;
                                               final city = "$cityId";
-                                              // final dob = _dobController.text;
+                                              final dob =  DateFormat('dd-MM-yyy').format(DateTime.parse(_selectedDate.toString()??""));
                                               // final dob = dobCont.text;
+
                                               String token =
                                                   await SharedPref.getToken();
-                                              print(_selectedDate);
-                                              user_signup(
-                                                  name, mobile, city, DateFormat('dd-MM-yyy').format(DateTime.parse(_selectedDate.toString())));
+                                              print("llll:${_selectedDate}");
+                                              // user_signup(
+                                              //     name, mobile, city,dob);
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) => OtpScreen(
+                                                        name:name,
+                                                        mobile: mobile,
+                                                        dob:dob,
+                                                        city:city,
+                                                        type:"2"
+                                                      )));
                                             },
                                             child: const Text(
                                               "Sign Up",
@@ -571,6 +585,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Future<void> user_signup(
       String name, String mobile, String city, String dob) async {
     print(dob);
+    print("dob");
     if (name.isEmpty) {
       showErrorMessage(context, message: 'Please fill name');
       return;
@@ -581,7 +596,7 @@ class _SignupScreenState extends State<SignupScreen> {
       showErrorMessage(context,
           message: 'Please fill only 10 digit mobile number');
       return;
-    } else if (dob.isEmpty) {
+    } else if (dob==null) {
       showErrorMessage(context, message: 'Please fill Date of birth');
       return;
     } else if (city == "0") {
@@ -616,8 +631,8 @@ class _SignupScreenState extends State<SignupScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => OtpScreen(
-                          mobile: mobile,
-                        )));
+                      mobile: mobile,
+                    )));
           } else {
             // Handle null user
             showErrorMessage(context, message: 'User data is invalid');

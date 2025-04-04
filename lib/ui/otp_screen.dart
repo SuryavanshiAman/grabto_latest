@@ -19,9 +19,13 @@ import 'package:http/http.dart' as http;
 import '../theme/theme.dart';
 
 class OtpScreen extends StatefulWidget {
+  final String ?name;
   String mobile;
+  final String ?dob;
+  final String ?city;
+  final String ?type;
 
-  OtpScreen({required this.mobile});
+  OtpScreen({this.name,required this.mobile,this.dob,this.city,this.type});
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -70,6 +74,7 @@ class _OtpScreenState extends State<OtpScreen> {
     // TODO: implement initState
     super.initState();
     startTimer();
+    send_otp(widget.mobile);
   }
   void startTimer() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -183,8 +188,8 @@ class _OtpScreenState extends State<OtpScreen> {
                 child: ElevatedButton(
                   onPressed: () {
 
-                    resendOtp==false? verify_otp(widget.mobile, otpCon.text):
-                    user_login(widget.mobile);
+                     verify_otp(widget.mobile, otpCon.text);
+                    // user_login(widget.mobile);
                   },
                   child: Text(
                     resendOtp==false?  "Verify":"Resend OTP",
@@ -227,6 +232,34 @@ class _OtpScreenState extends State<OtpScreen> {
     );
   }
 
+  Future<void> send_otp(String mobile) async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      final body = {"mobile": mobile};
+      final response = await ApiServices.send_otp(context, body);
+
+      // Check if the response is null or doesn't contain the expected data
+      if (response != null &&
+          response.containsKey('res') &&
+          response['res'] == 'success') {
+showSuccessMessage(context, message: response['msg']);
+      } else if (response == null) {
+        String msg = response!['msg'];
+
+        // Handle unsuccessful response or missing 'res' field
+        showErrorMessage(context, message: msg);
+      }
+    } catch (e) {
+      print('send error: $e');
+      showErrorMessage(context, message: 'An error occurred: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
   Future<void> verify_otp(String mobile, String otp) async {
     if (mobile.isEmpty) {
       showErrorMessage(context, message: 'Please fill mobile number');
@@ -249,9 +282,11 @@ class _OtpScreenState extends State<OtpScreen> {
           response['res'] == 'success') {
         final data = response['data'];
         // Ensure that the response data is in the expected format
+
         if (data != null && data is Map<String, dynamic>) {
           //print('verify_otp data: $data');
           final user = UserModel.fromMap(data);
+          widget.type=="2"?  user_signup(widget.name??"", widget.mobile, widget.city??"", widget.dob??""):user_login(mobile);
 
           if (user != null) {
             //print('verify_otp data: 1');
@@ -274,10 +309,9 @@ class _OtpScreenState extends State<OtpScreen> {
               SharedPref.KEY_CREATED_AT: user.created_at,
               SharedPref.KEY_UPDATED_AT: user.updated_at,
             });
-
             // Pop all screens until reaching the first screen
             // Navigator.popUntil(context, (route) => route.isFirst);
-            _getCurrentLocation();
+
             // Replace the current screen with the login screen
 
           } else {
@@ -298,6 +332,100 @@ class _OtpScreenState extends State<OtpScreen> {
       //print('verify_otp error: $e');
       // Handle error
       //showErrorMessage(context, message: 'An error occurred: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+  Future<void> user_signup(
+      String name, String mobile, String city, String dob) async {
+    print(dob);
+    print("dob");
+    if (name.isEmpty) {
+      showErrorMessage(context, message: 'Please fill name');
+      return;
+    } else if (mobile.isEmpty) {
+      showErrorMessage(context, message: 'Please fill mobile number');
+      return;
+    } else if (mobile.length != 10) {
+      showErrorMessage(context,
+          message: 'Please fill only 10 digit mobile number');
+      return;
+    } else if (dob==null) {
+      showErrorMessage(context, message: 'Please fill Date of birth');
+      return;
+    } else if (city == "0") {
+      showErrorMessage(context, message: 'Please fill city');
+      return;
+    }
+
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      final body = {
+        "name": name,
+        "mobile": mobile,
+        "current_location": city,
+        "dob": dob,
+      };
+      final response = await ApiServices.user_signup(context, body);
+
+      // Check if the response is null or doesn't contain the expected data
+      if (response != null &&
+          response.containsKey('res') &&
+          response['res'] == 'success') {
+        final data = response['data'];
+        // Ensure that the response data is in the expected format
+        if (data != null && data is Map<String, dynamic>) {
+          //print('user_signup data: $data');
+          final user = UserModel.fromMap(data);
+
+          if (user != null) {
+            await SharedPref.userLogin({
+              SharedPref.KEY_ID: user.id,
+              SharedPref.KEY_CURRENT_MONTH: user.current_month,
+              SharedPref.KEY_PREMIUM: user.premium,
+              SharedPref.KEY_STATUS: user.status,
+              SharedPref.KEY_NAME: user.name,
+              SharedPref.KEY_EMAIL: user.email,
+              SharedPref.KEY_MOBILE: user.mobile,
+              SharedPref.KEY_DOB: user.dob,
+              SharedPref.KEY_OTP: user.otp,
+              SharedPref.KEY_IMAGE: user.image,
+              SharedPref.KEY_HOME_LOCATION: user.home_location,
+              SharedPref.KEY_CURRENT_LOCATION: user.current_location,
+              SharedPref.KEY_LAT: user.lat,
+              SharedPref.KEY_LONG: user.long,
+              SharedPref.KEY_CREATED_AT: user.created_at,
+              SharedPref.KEY_UPDATED_AT: user.updated_at,
+            });
+            _getCurrentLocation();
+            // Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //         builder: (context) => OtpScreen(
+            //           mobile: mobile,
+            //         )));
+          } else {
+            // Handle null user
+            showErrorMessage(context, message: 'User data is invalid');
+          }
+        } else {
+          // Handle invalid response data format
+          showErrorMessage(context, message: 'Invalid response data format');
+        }
+      } else if (response != null) {
+        String msg = response['msg'];
+
+        // Handle unsuccessful response or missing 'res' field
+        showErrorMessage(context, message: msg);
+      }
+    } catch (e) {
+      //print('user_signup error: $e');
+      // Handle error
+      showErrorMessage(context, message: 'An error occurred: $e');
     } finally {
       setState(() {
         isLoading = false;
@@ -332,8 +460,27 @@ class _OtpScreenState extends State<OtpScreen> {
           final user = UserModel.fromMap(data);
 
           if (user != null) {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => OtpScreen(mobile: mobile,)));
+            await SharedPref.userLogin({
+              SharedPref.KEY_ID: user.id,
+              SharedPref.KEY_CURRENT_MONTH: user.current_month,
+              SharedPref.KEY_PREMIUM: user.premium,
+              SharedPref.KEY_STATUS: user.status,
+              SharedPref.KEY_NAME: user.name,
+              SharedPref.KEY_EMAIL: user.email,
+              SharedPref.KEY_MOBILE: user.mobile,
+              SharedPref.KEY_DOB: user.dob,
+              SharedPref.KEY_OTP: user.otp,
+              SharedPref.KEY_IMAGE: user.image,
+              SharedPref.KEY_HOME_LOCATION: user.home_location,
+              SharedPref.KEY_CURRENT_LOCATION: user.current_location,
+              SharedPref.KEY_LAT: user.lat,
+              SharedPref.KEY_LONG: user.long,
+              SharedPref.KEY_CREATED_AT: user.created_at,
+              SharedPref.KEY_UPDATED_AT: user.updated_at,
+            });
+            _getCurrentLocation();
+            // Navigator.push(context,
+            //     MaterialPageRoute(builder: (context) => OtpScreen(mobile: mobile,)));
           } else {
             // Handle null user
             showErrorMessage(context, message: 'User data is invalid');
