@@ -24,7 +24,8 @@ class SubCategoriesCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: heights*0.16,
-      width: widths*0.2,
+      width: widths*0.23,
+
       child: InkWell(
         onTap: onTap,
         child: Card(

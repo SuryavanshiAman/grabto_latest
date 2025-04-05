@@ -9,6 +9,7 @@ import 'package:grabto/main.dart';
 import 'package:grabto/model/user_model.dart';
 import 'package:grabto/services/api_services.dart';
 import 'package:grabto/ui/home_screen.dart';
+import 'package:grabto/ui/signup_screen.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:grabto/widget/pinput/pinput.dart';
@@ -494,8 +495,8 @@ showSuccessMessage(context, message: response['msg']);
         showErrorMessage(context, message: 'Mobile no. is not registered.');
         showErrorMessage(context, message: msg);
         print("Aman");
-        // Navigator.push(context,
-        //     MaterialPageRoute(builder: (context) => SignupScreen(mobile:mobile)));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => SignupScreen(mobile:mobile)));
         // Handle unsuccessful response or missing 'res' field
 
       }

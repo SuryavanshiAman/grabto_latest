@@ -10,11 +10,11 @@ class FeatureTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 100, // Set a fixed height for consistent grid items
-      child: Row(
+      child: Column(
         children: [
           Container(
-            width: 18,
-            height: 18,
+            width: 22.22,
+            height: 20,
             child: Image.network(
               image,
               fit: BoxFit.cover,
@@ -24,7 +24,7 @@ class FeatureTile extends StatelessWidget {
               },
             ),
           ),
-          SizedBox(width: 8), // Add space between image and text
+          SizedBox(width: 8),
           Expanded(
             child: Text(
               title,

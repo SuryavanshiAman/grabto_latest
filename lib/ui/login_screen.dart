@@ -208,8 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final response = await ApiServices.apiUserLogin(context, body);
 
       // Check if the response is null or doesn't contain the expected data
-      if (response != null &&
-          response.containsKey('res') &&
+      if (response != null && response.containsKey('res') &&
           response['res'] == 'success') {
         final data = response['data'];
         // Ensure that the response data is in the expected format

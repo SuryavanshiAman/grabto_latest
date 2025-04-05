@@ -764,7 +764,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                 ),
                 Container(
                   height: heights*0.162,
-                  margin: EdgeInsets.only(left: widths*0.02),
+                  margin: EdgeInsets.only(left: widths*0.03),
                   // color: Colors.red,
                   child: ListView.builder(
                     padding: EdgeInsets.zero,

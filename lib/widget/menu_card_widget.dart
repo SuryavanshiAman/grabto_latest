@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:grabto/main.dart';
 import 'package:grabto/model/menu_model.dart';
 import 'package:grabto/theme/theme.dart';
 import 'package:grabto/ui/full_screen_gallery.dart';
@@ -12,7 +13,9 @@ class MenuWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 155,
+      padding: EdgeInsets.fromLTRB(8,0,8,12),
+      height: 210,
+      color: Color(0xff1e1f16),
       child: ListView.builder(
         itemBuilder: (context, index) {
           final menu = menuList[index];
@@ -21,6 +24,7 @@ class MenuWidget extends StatelessWidget {
               _showImageFullScreen(context, index);
             },
             child: Container(
+              width: widths*0.45,
               margin: EdgeInsets.only(left: 10),
               child: buildMenuWidget(context,
                   menu.image), // Access 'image' property from MenuModel
