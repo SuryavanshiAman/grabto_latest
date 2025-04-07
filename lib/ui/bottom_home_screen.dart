@@ -3519,7 +3519,8 @@ class _RestaurantCardState extends State<RestaurantCard> {
                         color: Color(0xff00bd62),
                         borderRadius: BorderRadius.circular(3)
                       ),
-                      child: Text(offer,
+                      child: Text(
+                          offer,
                           style: TextStyle(
                             color:MyColors.whiteBG,
                             fontWeight: FontWeight.w500,

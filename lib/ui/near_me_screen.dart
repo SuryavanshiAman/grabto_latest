@@ -6,6 +6,7 @@ import 'package:grabto/theme/theme.dart';
 
 import '../helper/shared_pref.dart';
 import '../model/features_model.dart';
+import '../model/filtered_data_model.dart';
 import '../model/sub_categories_model.dart';
 import '../model/user_model.dart';
 import '../services/api_services.dart';
@@ -50,6 +51,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
     FirstList("Filter"),
     FirstList("Rating 4+"),
     FirstList("Within 5km"),
+    FirstList("Up to 10% off"),
   ];
   final List<Restaurant> restaurants = [
     Restaurant(
@@ -156,6 +158,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
     getUserDetails();
     feature();
     fetchSubCategories(5);
+
   }
 
   void _handleScroll() {
@@ -175,6 +178,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
       lat=n.lat;
       long = n.long;
     });
+    filterApi(lat, long,"","","");
   }
   int selectedIndices = 1;
   String selectedName = "";
@@ -285,7 +289,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
                               toggleSelection(item);
                               selectedName = list[index].name;
                               print("item");
-                              index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):null;
+                              index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):index==1?filterApi(lat, long,"4","",""):index==2?filterApi(lat, long,"","5",""):filterApi(lat, long,"","","10");
                             });
                           },
                           child: Container(
@@ -335,13 +339,15 @@ class _NearMeScreenState extends State<NearMeScreen> {
           ),
           SliverToBoxAdapter(
             child: Container(
+              color: Color(0xffffffff),
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: restaurants.length,
+                padding: EdgeInsets.zero,
+                itemCount: data.length??0,
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  return RestaurantCard(
-                      restaurant: restaurants[index], name: selectedName);
+                  return
+                    data.length==0?Container(): RestaurantCard(name: selectedName,filter:data[index]);
                 },
               ),
             ),
@@ -349,6 +355,44 @@ class _NearMeScreenState extends State<NearMeScreen> {
         ],
       ),
     );
+  }
+  List<FilteredDataModel> data = [];
+  Future<void> filterApi(
+      dynamic lat,
+      dynamic long,
+      dynamic rating,
+      dynamic distance,
+      dynamic discount,
+      ) async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final body = {
+        "latitude": lat,
+        "longitude": long,
+        "rating": rating,
+        "discount": discount,
+        "distance": distance,
+        "amenities": "",
+        "subcategory_id": "",       };
+      print("Amannnn:$body");
+      final response = await ApiServices.filterApi(body,context);
+      if (response != null) {
+        print("Amannnn:$response");
+        setState(() {
+          data = response;
+        });
+      }else{
+        // showErrorMessage(context, message: "message");
+      }
+    } catch (e) {
+      print('fetchSubCategories: $e');
+    } finally {
+      // setModalState(() {
+      //   isLoading = false;
+      // });
+    }
   }
   List<SubCategoriesModel> subCategoriesList = [];
   List<FeaturesModel>featureData=[];
@@ -397,10 +441,11 @@ class _NearMeScreenState extends State<NearMeScreen> {
 }
 
 class RestaurantCard extends StatefulWidget {
-  final Restaurant restaurant;
+  // final Restaurant restaurant;
   final String name;
+  final FilteredDataModel filter;
 
-  RestaurantCard({required this.restaurant, required this.name});
+  RestaurantCard({ required this.name, required this.filter});
 
   @override
   State<RestaurantCard> createState() => _RestaurantCardState();
@@ -413,14 +458,26 @@ class _RestaurantCardState extends State<RestaurantCard> {
     // TODO: implement initState
     super.initState();
     fetchGalleryImagesAmbience("177", "ambience");
+    print("Totaaaaa:${widget.name}");
   }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      elevation: 5,
+    return Container(
+      margin: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        // color: MyColors.whiteBG,
+        color: Color(0xffffffff),
+        borderRadius: BorderRadius.circular(10),
+        // color: Colors.red
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 5,
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -444,7 +501,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           height: double.infinity,
                         ),
                         errorWidget: (context, url, error) =>
-                            const Center(child: Icon(Icons.error)),
+                        const Center(child: Icon(Icons.error)),
                       ),
                     ),
                   );
@@ -465,29 +522,58 @@ class _RestaurantCardState extends State<RestaurantCard> {
               Positioned(
                 top: 10,
                 left: 10,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Text(
-                    widget.name.toString(),
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12),
-                  ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Text(
+                        widget.name.toString(),
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12),
+                      ),
+                    ),
+                    // Spacer(),
+                    SizedBox(width: widths*0.65,),
+                    Container(
+                      margin: EdgeInsets.only(right: 8),
+                      padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Text(
+                        "${widget.filter.avgRating}/5",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    CircleAvatar(
+                        radius: 12,
+                        backgroundColor: MyColors.whiteBG,
+                        child: Icon(Icons.favorite_border, color: MyColors.blackBG,size: 16,))
+                    // Icon(Icons.favorite_border, color: Colors.white),
+                  ],
                 ),
               ),
-              Positioned(
-                top: 10,
-                right: 10,
-                child: Icon(Icons.favorite_border, color: Colors.white),
-              ),
+              // Positioned(
+              //   top: 10,
+              //   right: 10,
+              //   child: CircleAvatar(
+              //       radius: 12,
+              //       child: Icon(Icons.favorite_border, color: Colors.white,size: 16,)),
+              // ),
             ],
           ),
-
+      
           Padding(
             padding: EdgeInsets.all(12),
             child: Column(
@@ -499,78 +585,93 @@ class _RestaurantCardState extends State<RestaurantCard> {
                       width: widths * 0.66,
                       // color: Colors.red,
                       child: Text(
-                        widget.restaurant.name,
+                        widget.filter.storeName,
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                            fontSize: 16, fontWeight: FontWeight.w500),
                       ),
                     ),
                     Spacer(),
-                    CircleAvatar(
-                        radius: 9,
-                        backgroundColor: MyColors.darkGreen,
-                        child: Icon(Icons.star,
-                            color: MyColors.whiteBG, size: 12)),
-                    SizedBox(width: 4),
-                    Text(
-                      widget.restaurant.rating.toString(),
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: MyColors.blackBG),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 4),
-                Text(
-                  widget.restaurant.location,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  "${widget.restaurant.cuisine} • ${widget.restaurant.price}",
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                ),
-                SizedBox(height: 6),
-                Row(
-                  children: [
                     Container(
-                        padding: EdgeInsets.all(3),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.calendar_month_outlined,
-                              color: Colors.grey[600],
-                              size: 12,
-                            ),
-                            SizedBox(width: 6),
-                            Text(
-                              "Table Booking",
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black.withOpacity(0.5)),
-                            ),
-                          ],
-                        )),
+                      padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                          // color: Color(0xff00bd62),
+                          borderRadius: BorderRadius.circular(3)
+                      ),
+                      child: Text("⭐⭐⭐",
+                          style: TextStyle(
+                            color:MyColors.whiteBG,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12,
+                          )),
+                    ),
+                    // CircleAvatar(
+                    //     radius: 9,
+                    //     backgroundColor: MyColors.darkGreen,
+                    //     child: Icon(Icons.star,
+                    //         color: MyColors.whiteBG, size: 12)),
+                    // SizedBox(width: 4),
+                    // Text(
+                    //   widget.restaurant.rating.toString(),
+                    //   style: TextStyle(
+                    //       fontSize: 20,
+                    //       fontWeight: FontWeight.bold,
+                    //       color: MyColors.blackBG),
+                    // ),
                   ],
                 ),
+                SizedBox(height: 4),
+                Text(
+                  widget.filter.address,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
+                SizedBox(height: 4),
+                // Text(
+                //   "${widget.restaurant.cuisine} • ${widget.restaurant.price}",
+                //   style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                // ),
+                SizedBox(height: 6),
+                // Row(
+                //   children: [
+                //     Container(
+                //         padding: EdgeInsets.all(3),
+                //         decoration: BoxDecoration(
+                //           color: Colors.grey.withOpacity(0.3),
+                //           borderRadius: BorderRadius.circular(10),
+                //         ),
+                //         child: Row(
+                //           children: [
+                //             Icon(
+                //               Icons.calendar_month_outlined,
+                //               color: Colors.grey[600],
+                //               size: 12,
+                //             ),
+                //             SizedBox(width: 6),
+                //             Text(
+                //               "Table Booking",
+                //               style: TextStyle(
+                //                   fontSize: 12,
+                //                   color: Colors.black.withOpacity(0.5)),
+                //             ),
+                //           ],
+                //         )),
+                //   ],
+                // ),
                 Divider(),
-                Wrap(
-                  children: widget.restaurant.offers.map((offer) {
-                    return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 1, vertical: 1),
-                      decoration: BoxDecoration(),
-                      child: Text(offer,
-                          style: TextStyle(
-                            color: Colors.black.withOpacity(0.6),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                          )),
-                    );
-                  }).toList(),
+                Container(
+          padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+          decoration: BoxDecoration(
+          color: Color(0xff00bd62),
+          borderRadius: BorderRadius.circular(3)
+          ),
+          child: Text(
+        "Flat 50% off on pre-booking       +${widget.filter.offers} offers",
+          style: TextStyle(
+          color:MyColors.whiteBG,
+          fontWeight: FontWeight.w500,
+          fontSize: 14,
+          )),
+      
                 ),
               ],
             ),

@@ -23,6 +23,7 @@ import 'package:grabto/model/terms_condition_model.dart';
 import 'package:grabto/model/time_model.dart';
 import 'package:grabto/services/api.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:http/http.dart' as http;
 
 import '../model/book_table_model.dart';
@@ -193,7 +194,7 @@ print(url);
     }
   }
 
-  static Future<List<FilteredDataModel>?> filterApi( Map body) async {
+  static Future<List<FilteredDataModel>?> filterApi( Map body,context) async {
     const url = '$BASE_URL/filter-Stores';
     final uri = Uri.parse(url);
     final response = await http.post(uri, body: body);
@@ -213,6 +214,7 @@ print(url);
         return FilteredData;
       } else {
         print("filter-Stores: $res");
+        showErrorMessage(context, message: jsonResponse['msg'].toString());
         return null;
       }
     } else {
