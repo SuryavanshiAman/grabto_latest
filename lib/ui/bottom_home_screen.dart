@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:grabto/helper/shared_pref.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/model/categories_model.dart';
+import 'package:grabto/model/filtered_data_model.dart';
 import 'package:grabto/model/great_offer_model.dart';
 import 'package:grabto/model/locality_model.dart';
 import 'package:grabto/model/store_model.dart';
@@ -26,6 +27,7 @@ import 'package:grabto/ui/transaction_screen.dart';
 import 'package:grabto/utils/dashed_line.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:grabto/utils/time_slot.dart';
+import 'package:grabto/view_model/filter_view_model.dart';
 import 'package:grabto/widget/title_description_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -45,14 +47,15 @@ import 'about_us_screen.dart';
 import 'customer_care.dart';
 import 'filter_boottom_sheet.dart';
 import 'how_it_works.dart';
-import 'package:http/http.dart'as http;
+import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 class HomeBottamScreen extends StatefulWidget {
   final Future<void> Function(String) onFetchMembership;
   final List<BannerModel> bannersDa;
-  HomeBottamScreen({super.key, required this.onFetchMembership, required this.bannersDa});
+  HomeBottamScreen(
+      {super.key, required this.onFetchMembership, required this.bannersDa});
 
   @override
   State<HomeBottamScreen> createState() => _HomeBottamScreenState();
@@ -62,7 +65,8 @@ class HomeBottamScreen extends StatefulWidget {
       _HomeBottamScreenState.instance;
 }
 
-class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBindingObserver{
+class _HomeBottamScreenState extends State<HomeBottamScreen>
+    with WidgetsBindingObserver {
   final CarouselSliderController _controller = CarouselSliderController();
 
   List imageSlider = [];
@@ -84,7 +88,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
   bool isLoading = false;
   String cityId = "";
   List<PreBookTableHistoryModel> prebookofferlistHistory = [];
-  int user_id=0;
+  int user_id = 0;
   var topCategoriesController = TextEditingController();
 
   static _HomeBottamScreenState? _instance;
@@ -101,14 +105,15 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
     getUserDetails();
     fetchSubCategories(5);
     getBanners();
+
     // fetchSubCategories()
   }
+
   @override
   void dispose() {
     // Unregistering the observer
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
-
   }
 
   @override
@@ -139,8 +144,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
   String left_day = '';
   String gatewayStatus = '';
   String externalStatus = '';
-  String lat="";
-  String long="";
+  String lat = "";
+  String long = "";
   Future<void> getUserDetails() async {
     setState(() {
       isLoading = true;
@@ -151,7 +156,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
     print("getUserDetails: bottomHomeScreen " + n.home_location);
     UserPreBookTableHistory("${n.id}");
     setState(() {
-      user_id=n.id;
+      user_id = n.id;
       cityId = n.home_location;
       user_id = n.id;
       userName = n.name;
@@ -161,9 +166,11 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
       address = n.address;
       current_location = n.current_location;
       home_location = n.home_location;
-      lat=n.lat;
+      lat = n.lat;
       long = n.long;
     });
+    Provider.of<FilterViewModel>(context, listen: false)
+        .filterApi(context, lat, long, "", "", "", [], []);
     await allApiCall(cityId);
   }
 
@@ -187,6 +194,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
       isLoading = false;
     });
   }
+
   Future<void> allApiCall(String _cityId) async {
     setState(() {
       isLoading = true;
@@ -198,39 +206,10 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
 
       fetchShowSlider("${_cityId}");
       fetchCategories();
-      fetchTrendingStore(
-          "",
-          "10",
-          "",
-          "",
-          "",
-          "1",
-          "",
-          "",
-          "${_cityId}",
-          "");
-      fetchRecentStore(
-          "",
-          "10",
-          "",
-          "",
-          "",
-          "",
-          "1",
-          "",
-          "${_cityId}",
-          "");
+      fetchTrendingStore("", "10", "", "", "", "1", "", "", "${_cityId}", "");
+      fetchRecentStore("", "10", "", "", "", "", "1", "", "${_cityId}", "");
       fetchTopCollectionStore(
-          "",
-          "10",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "1",
-          "${_cityId}",
-          "");
+          "", "10", "", "", "", "", "", "1", "${_cityId}", "");
       getName();
       getBanners();
       fetchGreatOffers1("");
@@ -266,6 +245,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
       );
     }
   }
+
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   void _onItemTappedd(int index) {
     setState(() {
@@ -276,6 +256,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
 
     //Navigator.push(context, MaterialPageRoute(builder: (context) => HomeBottamScreen()));
   }
+
   Future<void> _handleReturnFromSecondScreen() async {
     // This function will be called when returning from the second screen
     print('Returned from HomeScreen');
@@ -283,9 +264,11 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
     await fetchCity();
     await currentMembership("$user_id");
   }
+
   void logoutUser() {
     SharedPref.logout(context);
   }
+
   final ScrollController _scrollController = ScrollController();
   bool _showTitle = true;
   void _handleScroll() {
@@ -297,10 +280,12 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
       }
     });
   }
+
   List<FirstList> list = [
     FirstList("Filter"),
     FirstList("Rating 4+"),
     FirstList("Within 5km"),
+    FirstList("Up to 10% off"),
   ];
   String selectedName = "";
   final List<Restaurant> restaurants = [
@@ -394,1203 +379,1359 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
-    List<FirstList> orderedList = [
-      list[0], // Fixed index 0
-      list[1], // Fixed index 1
-      ...selectedList, // Selected items start from index 2
-      ...list
-          .sublist(2)
-          .where((e) => !selectedList.contains(e)) // Remaining unselected items
-    ];
-    final location=Provider.of<Address>(context);
+    List<FirstList> orderedList = list;
+    final location = Provider.of<Address>(context);
+    final data = Provider.of<FilterViewModel>(context);
     print(location.area);
-    return  categories.isNotEmpty? Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: MyColors.backgroundBg,
-      body: Container(
-        color: MyColors.backgroundBg,
-        constraints: BoxConstraints(
-            maxWidth: MediaQuery
-                .of(context)
-                .size
-                .width,
-            maxHeight: MediaQuery
-                .of(context)
-                .size
-                .height),
-        child: RefreshIndicator(
-          color: Colors.white,
-          backgroundColor: MyColors.primaryColor,
-          onRefresh: _handleRefresh,
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                InkWell(
-                  onTap: (){
-                    widget.bannersDa[0].type=="1"?
-                    navigateToAllCouponScreen(
-                        context, widget.bannersDa[0].subcategory_name, widget.bannersDa[0].category_id,widget.bannersDa[0].id):Navigator.push(context, MaterialPageRoute(builder: (context)=>
-                        CouponFullViewScreen("${widget.bannersDa[0].url}")
-                    ));
-                  },
-                  child: Container(
-                    height: heights*0.46,
-                    decoration: BoxDecoration(
-                      // color: Colors.red,
-                        image: DecorationImage(image: NetworkImage(widget.bannersDa[0].image),fit: BoxFit.fill),
-                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20) )
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 40, left: 10, bottom: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              GestureDetector(
-                                  onTap: () {
-                                    if (_scaffoldKey.currentState!.isDrawerOpen) {
-                                      _scaffoldKey.currentState!.closeDrawer();
-                                    } else {
-                                      _scaffoldKey.currentState!.openDrawer();
-                                    }
-                                  },
-                                  child: const Icon(Icons.menu,color: MyColors.whiteBG,)),
-                              SizedBox(width: widths*0.05,),
-                              InkWell(
-                                onTap: (){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen(type: 2,)));
-
-                                },
-                                child: Container(
-                                  width: widths*0.8,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      //
-                                      Row(
-                                        children: [
-                                          Icon(LucideIcons.navigation,size: 16,color: MyColors.whiteBG,),
-                                          SizedBox(width: 2,),
-                                          Container(
-                                              width: widths*0.6,
-                                              child: Text(address.toString() !=""?address.toString().split(',')[0]:location.address.toString(),style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis,color: MyColors.whiteBG,),)),
-                                          Icon(Icons.keyboard_arrow_down_outlined,size: 16,color: MyColors.whiteBG,),
-
-                                        ],
-                                      ),
-                                      Container(
-                                          width: widths*0.7,
-                                          child: Text(address!=""?address:location.area,maxLines: 1,style: TextStyle(fontSize: 12,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis,color: MyColors.whiteBG,),)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                "Welcome,",
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: MyColors.whiteBG),
-                              ),
-                              Text(
-                                "$userName",
-                                style: TextStyle(
-                                    fontSize: 23,
-                                    fontWeight: FontWeight.w900,
-                                    color: MyColors.whiteBG),
-                              ),
-                            ],
-                          ),
-
-                          InkWell(
-                            onTap: () {
-                              _navigateToSearchScreen(context);
-                            },
-                            child: Container(
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width,
-                              margin: EdgeInsets.symmetric(horizontal: 15),
-                              height: 40,
-                              child: Material(
-                                elevation: 1, // Set the elevation value as needed
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Container(
-                                  height: 55,
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: ShapeDecoration(
-                                    color: MyColors.searchBg,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
+    return categories.isNotEmpty
+        ? Scaffold(
+            key: _scaffoldKey,
+            backgroundColor: MyColors.backgroundBg,
+            body: Container(
+              color: MyColors.backgroundBg,
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width,
+                  maxHeight: MediaQuery.of(context).size.height),
+              child: RefreshIndicator(
+                color: Colors.white,
+                backgroundColor: MyColors.primaryColor,
+                onRefresh: _handleRefresh,
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          widget.bannersDa[0].type == "1"
+                              ? navigateToAllCouponScreen(
+                                  context,
+                                  widget.bannersDa[0].subcategory_name,
+                                  widget.bannersDa[0].category_id,
+                                  widget.bannersDa[0].id)
+                              : Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          CouponFullViewScreen(
+                                              "${widget.bannersDa[0].url}")));
+                        },
+                        child: Container(
+                          height: heights * 0.46,
+                          decoration: BoxDecoration(
+                              // color: Colors.red,
+                              image: DecorationImage(
+                                  image:
+                                      NetworkImage(widget.bannersDa[0].image),
+                                  fit: BoxFit.fill),
+                              borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(20),
+                                  bottomRight: Radius.circular(20))),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                top: 40, left: 10, bottom: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    GestureDetector(
+                                        onTap: () {
+                                          if (_scaffoldKey
+                                              .currentState!.isDrawerOpen) {
+                                            _scaffoldKey.currentState!
+                                                .closeDrawer();
+                                          } else {
+                                            _scaffoldKey.currentState!
+                                                .openDrawer();
+                                          }
+                                        },
+                                        child: const Icon(
+                                          Icons.menu,
+                                          color: MyColors.whiteBG,
+                                        )),
+                                    SizedBox(
+                                      width: widths * 0.05,
                                     ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 28,
-                                        height: 28,
-                                        margin: EdgeInsets.only(right: 10),
-                                        clipBehavior: Clip.antiAlias,
-                                        decoration: BoxDecoration(),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    AddressScreen(
+                                                      type: 2,
+                                                    )));
+                                      },
+                                      child: Container(
+                                        width: widths * 0.8,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            SizedBox(
-                                                width: 28,
-                                                height: 28,
-                                                child: Icon(
-                                                  Icons.search,
-                                                  color: MyColors.primaryColor,
+                                            //
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  LucideIcons.navigation,
+                                                  size: 16,
+                                                  color: MyColors.whiteBG,
+                                                ),
+                                                SizedBox(
+                                                  width: 2,
+                                                ),
+                                                Container(
+                                                    width: widths * 0.6,
+                                                    child: Text(
+                                                      address.toString() != ""
+                                                          ? address
+                                                              .toString()
+                                                              .split(',')[0]
+                                                          : location.address
+                                                              .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        color: MyColors.whiteBG,
+                                                      ),
+                                                    )),
+                                                Icon(
+                                                  Icons
+                                                      .keyboard_arrow_down_outlined,
+                                                  size: 16,
+                                                  color: MyColors.whiteBG,
+                                                ),
+                                              ],
+                                            ),
+                                            Container(
+                                                width: widths * 0.7,
+                                                child: Text(
+                                                  address != ""
+                                                      ? address
+                                                      : location.area,
+                                                  maxLines: 1,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    color: MyColors.whiteBG,
+                                                  ),
                                                 )),
                                           ],
                                         ),
                                       ),
-                                      SizedBox(
-                                        child: Text(
-                                          'Search',
-                                          style: TextStyle(
-                                            color: Color(0x993C3C43),
-                                            fontSize: 17,
-                                            fontFamily: 'SF Pro Text',
-                                            fontWeight: FontWeight.w400,
-                                            height: 0.08,
-                                            letterSpacing: -0.41,
+                                    ),
+                                  ],
+                                ),
+                                // Row(
+                                //   children: [
+                                //     Text(
+                                //       "Welcome,",
+                                //       style: TextStyle(
+                                //           fontSize: 18,
+                                //           fontWeight: FontWeight.bold,
+                                //           color: MyColors.whiteBG),
+                                //     ),
+                                //     Text(
+                                //       "$userName",
+                                //       style: TextStyle(
+                                //           fontSize: 23,
+                                //           fontWeight: FontWeight.w900,
+                                //           color: MyColors.whiteBG),
+                                //     ),
+                                //   ],
+                                // ),
+
+                                InkWell(
+                                  onTap: () {
+                                    _navigateToSearchScreen(context);
+                                  },
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 15),
+                                    height: 40,
+                                    child: Material(
+                                      elevation:
+                                          1, // Set the elevation value as needed
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Container(
+                                        height: 55,
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: ShapeDecoration(
+                                          color: MyColors.searchBg,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
                                           ),
                                         ),
-                                      ),
-                                      Container(
-                                        width: 18,
-                                        height: 18,
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [],
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              width: 28,
+                                              height: 28,
+                                              margin:
+                                                  EdgeInsets.only(right: 10),
+                                              clipBehavior: Clip.antiAlias,
+                                              decoration: BoxDecoration(),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(
+                                                      width: 28,
+                                                      height: 28,
+                                                      child: Icon(
+                                                        Icons.search,
+                                                        color: MyColors
+                                                            .primaryColor,
+                                                      )),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              child: Text(
+                                                'Search',
+                                                style: TextStyle(
+                                                  color: Color(0x993C3C43),
+                                                  fontSize: 17,
+                                                  fontFamily: 'SF Pro Text',
+                                                  fontWeight: FontWeight.w400,
+                                                  height: 0.08,
+                                                  letterSpacing: -0.41,
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              width: 18,
+                                              height: 18,
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 25,
+                      ),
+                      Visibility(
+                        visible: imageSlider.isNotEmpty,
+                        child: Center(
+                          child: CarouselSlider(
+                            carouselController: _controller,
+                            items: imageSlider.map((json) {
+                              return GestureDetector(
+                                onTap: () {
+                                  print("url: " + json['image']);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              CouponFullViewScreen(
+                                                  "${json['store_id']}")));
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: CachedNetworkImage(
+                                    imageUrl: json['image'],
+                                    fit: BoxFit.fill,
+                                    placeholder: (context, url) => Image.asset(
+                                      'assets/images/placeholder.png',
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        Center(child: Icon(Icons.error)),
+                                  ),
+                                  // Image.network(
+                                  //   json['image'],
+                                  //   errorBuilder: (context, error, stackTrace) {
+                                  //     return Center(
+                                  //       child: Image.asset(
+                                  //         'assets/images/placeholder.png',
+                                  //         // Path to your placeholder image asset
+                                  //         fit: BoxFit.cover,
+                                  //         width: double.infinity,
+                                  //         height: double.infinity,
+                                  //       ),
+                                  //     );
+                                  //   },
+                                  //   fit: BoxFit.cover,
+                                  // ),
+                                ),
+                              );
+                            }).toList(),
+                            options: CarouselOptions(
+                              height: 165,
+                              enlargeCenterPage: true,
+                              autoPlay: true,
+                              reverse: true,
+                              disableCenter: true,
+                              aspectRatio: 16 / 9,
+                              autoPlayCurve: Curves.fastOutSlowIn,
+                              enableInfiniteScroll: true,
+                              autoPlayAnimationDuration:
+                                  Duration(milliseconds: 800),
+                              viewportFraction: 0.75,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (prebookofferlistHistory.isNotEmpty)
+                        Container(
+                          margin: EdgeInsets.only(
+                              top: 25, left: 15, right: 15, bottom: 15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "My Booking",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (prebookofferlistHistory.isNotEmpty)
+                        Container(
+                          height: 300,
+                          child: _buildOfferCard(prebookofferlistHistory),
+                        ),
+
+                      /// abhi kholna hai
+
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => NearMeScreen()));
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(top: 10),
+                          height: heights * 0.11,
+                          width: widths,
+                          padding: EdgeInsets.only(left: 10, right: 10),
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                  colors: [
+                                Color(0xffE8F5FD),
+                                Color(0xffD8DCF9),
+                                Color(0xffC5E7F3),
+                              ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Restaurants \nNear Me",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w600),
+                              ),
+                              Container(
+                                margin: EdgeInsets.all(10),
+                                height: heights * 0.1,
+                                width: widths * 0.2,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        image: AssetImage(
+                                            "assets/images/near_me.png"),
+                                        fit: BoxFit.fill)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      Container(
+                        margin: EdgeInsets.only(
+                          top: 10,
+                          left: 15,
+                          right: 15,
+                        ),
+                        child: Row(
+                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              height: heights * 0.02,
+                              width: 2,
+                              color: MyColors.redBG,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              "Explore Categories",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w500),
+                            ),
+                            // InkWell(
+                            //   onTap: () {
+                            //     navigateToTopCategoriesScreen();
+                            //   },
+                            //   child: Row(
+                            //     children: [
+                            //       Text(
+                            //         "View All",
+                            //         style: TextStyle(
+                            //             color: MyColors.txtDescColor,
+                            //             fontSize: 14,
+                            //             fontWeight: FontWeight.w300),
+                            //       ),
+                            //       SizedBox(
+                            //         width: 5,
+                            //       ),
+                            //       Icon(
+                            //         Icons.arrow_forward,
+                            //         size: 15,
+                            //         color: MyColors.primaryColor,
+                            //       )
+                            //     ],
+                            //   ),
+                            // ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: heights * 0.162,
+                        margin: EdgeInsets.only(left: widths * 0.03),
+                        // color: Colors.red,
+                        child: ListView.builder(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: subCategoriesList
+                              .length, // Use the length of the list
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            SubCategoriesModel subCategoriesModel =
+                                subCategoriesList[index];
+                            return SubCategoriesCardWidget(
+                              imgUrl: subCategoriesModel.image,
+                              subcategoryName:
+                                  subCategoriesModel.subcategory_name,
+                              spotAvailable: "",
+                              redeemed: "",
+                              onTap: () {
+                                print(subCategoriesModel.category_id);
+                                print(subCategoriesModel.id);
+                                print("subCategoriesModel.id");
+                                navigateToAllCouponScreen(
+                                  context,
+                                  subCategoriesModel.subcategory_name,
+                                  subCategoriesModel.category_id,
+                                  subCategoriesModel.id,
+                                );
+                              },
+                            );
+                            // final store = restaurantsItems[index];
+                            // return buildRestaurantsWidget(
+                            //     context,
+                            //     store.id,
+                            //     store.banner,
+                            //     // Use the logo property from StoreModel
+                            //     store.storeName,
+                            //     // Use the store_name property from StoreModel
+                            //     store.address,
+                            //     // Use the address property from StoreModel
+                            //     store.distance,
+                            //     // Use the distance property from StoreModel
+                            //     store.offers);
+                          },
+                        ),
+                        // GridView.builder(
+                        //   padding: EdgeInsets.zero,
+                        //   shrinkWrap: true,
+                        //   physics: NeverScrollableScrollPhysics(),
+                        //   itemCount: subCategoriesList.length,
+                        //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        //     crossAxisCount: 3,
+                        //     crossAxisSpacing: 8,
+                        //     mainAxisSpacing: 8,
+                        //     mainAxisExtent: 100
+                        //   ),
+                        //   itemBuilder: (BuildContext context, int index) {
+                        //     SubCategoriesModel subCategoriesModel =
+                        //     subCategoriesList[index];
+                        //     return SubCategoriesCardWidget(
+                        //       imgUrl: subCategoriesModel.image,
+                        //       subcategoryName:
+                        //       subCategoriesModel.subcategory_name,
+                        //       spotAvailable: "",
+                        //       redeemed: "",
+                        //       onTap: () {
+                        //         print(subCategoriesModel.category_id);
+                        //         print(subCategoriesModel.id);
+                        //         print("subCategoriesModel.id");
+                        //         navigateToAllCouponScreen(
+                        //           context,
+                        //           subCategoriesModel.subcategory_name,
+                        //           subCategoriesModel.category_id,
+                        //           subCategoriesModel.id,
+                        //         );
+                        //       },
+                        //     );
+                        //   },
+                        // ),
+                      ),
+
+                      if (!localtiyList.isEmpty)
+                        Container(
+                          margin: EdgeInsets.only(
+                              top: 25, left: 15, right: 15, bottom: 15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Popular Location",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (!localtiyList.isEmpty) LocationWidget(localtiyList),
+                      SizedBox(
+                        height: 0,
+                      ),
+                      if (!trendingStoreList.isEmpty)
+                        Container(
+                          margin: EdgeInsets.only(
+                              top: 25, left: 15, right: 15, bottom: 15),
+                          child: Row(
+                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                height: heights * 0.02,
+                                width: 2,
+                                color: MyColors.redBG,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                // "Trending Restaurants",
+                                "Something is Trending",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w500),
+                              ),
+                              // InkWell(
+                              //   onTap: () {
+                              //     Navigator.push(context,
+                              //         MaterialPageRoute(builder: (context) {
+                              //           return AllCouponScreen(
+                              //               "Trending Restaurants",
+                              //               "",
+                              //               "",
+                              //               "",
+                              //               "",
+                              //               "1",
+                              //               "",
+                              //               "",
+                              //               "$cityId",
+                              //               "");
+                              //         }));
+                              //   },
+                              //   child: Row(
+                              //     children: [
+                              //       Text(
+                              //         "View All",
+                              //         style: TextStyle(
+                              //             color: MyColors.txtDescColor,
+                              //             fontSize: 14,
+                              //             fontWeight: FontWeight.w300),
+                              //       ),
+                              //       SizedBox(
+                              //         width: 5,
+                              //       ),
+                              //       Icon(
+                              //         Icons.arrow_forward,
+                              //         size: 15,
+                              //         color: MyColors.primaryColor,
+                              //       )
+                              //     ],
+                              //   ),
+                              // ),
+                            ],
+                          ),
+                        ),
+                      if (!trendingStoreList.isEmpty)
+                        TrendingRestruantWidget(trendingStoreList),
+                      if (!recentStoreList.isEmpty)
+                        if (!recentStoreList.isEmpty)
+                          RecentJoinedWidget(recentStoreList, cityId),
+                      Container(
+                        margin: EdgeInsets.only(
+                          top: 10,
+                          left: 15,
+                          right: 15,
+                        ),
+                        child: Row(
+                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              height: heights * 0.02,
+                              width: 2,
+                              color: MyColors.redBG,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              "Taste from Different location?",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w500),
+                            ),
+
+                            // InkWell(
+                            //   onTap: () {
+                            //     navigateToTopCategoriesScreen();
+                            //   },
+                            //   child: Row(
+                            //     children: [
+                            //       Text(
+                            //         "View All",
+                            //         style: TextStyle(
+                            //             color: MyColors.txtDescColor,
+                            //             fontSize: 14,
+                            //             fontWeight: FontWeight.w300),
+                            //       ),
+                            //       SizedBox(
+                            //         width: 5,
+                            //       ),
+                            //       Icon(
+                            //         Icons.arrow_forward,
+                            //         size: 15,
+                            //         color: MyColors.primaryColor,
+                            //       )
+                            //     ],
+                            //   ),
+                            // ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 12),
+                        height: heights * 0.06,
+                        child: ListView.builder(
+                          itemCount: 7,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 7, horizontal: 30),
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 5),
+                              // height: heights*0.03,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey,
+                                      spreadRadius: 0.5,
+                                      offset: Offset(2, 2),
+                                      blurRadius: 2,
+                                    ),
+                                  ],
+                                  color: Color(0xfffde39f),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Text(
+                                "DALIBAG",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600, fontSize: 12),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 12),
+                        height: heights * 0.06,
+                        child: ListView.builder(
+                          itemCount: 7,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 7, horizontal: 30),
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 5),
+                              // height: heights*0.03,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey,
+                                      spreadRadius: 0.5,
+                                      offset: Offset(2, 2),
+                                      blurRadius: 2,
+                                    ),
+                                  ],
+                                  color: Color(0xfffde39f),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Text(
+                                "HAZRATGANJ",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600, fontSize: 12),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+
+                      if (!topCollectionStoreList.isEmpty)
+                        //   Container(
+                        //     margin: EdgeInsets.only(
+                        //         top: 25, left: 15, right: 15, bottom: 15),
+                        //     child: Row(
+                        //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //       children: [
+                        //         Text(
+                        //           "Top Collections",
+                        //           style: TextStyle(
+                        //               fontSize: 18, fontWeight: FontWeight.w500),
+                        //         ),
+                        //         InkWell(
+                        //           onTap: () {
+                        //             Navigator.push(context,
+                        //                 MaterialPageRoute(builder: (context) {
+                        //                   return AllCouponScreen(
+                        //                       "Top Collections",
+                        //                       "",
+                        //                       "",
+                        //                       "",
+                        //                       "",
+                        //                       "",
+                        //                       "",
+                        //                       "1",
+                        //                       "$cityId",
+                        //                       "");
+                        //                 }));
+                        //           },
+                        //           child: Row(
+                        //             children: [
+                        //               Text(
+                        //                 "View All",
+                        //                 style: TextStyle(
+                        //                     color: MyColors.txtDescColor,
+                        //                     fontSize: 14,
+                        //                     fontWeight: FontWeight.w300),
+                        //               ),
+                        //               SizedBox(
+                        //                 width: 5,
+                        //               ),
+                        //               Icon(
+                        //                 Icons.arrow_forward,
+                        //                 size: 15,
+                        //                 color: MyColors.primaryColor,
+                        //               )
+                        //             ],
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // if (!topCollectionStoreList.isEmpty)
+                        //   TopCollectionWidget(topCollectionStoreList, 0.0),
+                        /// abhi kholna hai
+                        SizedBox(
+                          height: 20,
+                        ),
+                      Container(
+                        margin: EdgeInsets.only(
+                            top: 25, left: 15, right: 15, bottom: 15),
+                        child: Row(
+                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              height: heights * 0.02,
+                              width: 2,
+                              color: MyColors.redBG,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              // "Trending Restaurants",
+                              "All Restaurants",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w500),
+                            ),
+                            // InkWell(
+                            //   onTap: () {
+                            //     Navigator.push(context,
+                            //         MaterialPageRoute(builder: (context) {
+                            //           return AllCouponScreen(
+                            //               "Trending Restaurants",
+                            //               "",
+                            //               "",
+                            //               "",
+                            //               "",
+                            //               "1",
+                            //               "",
+                            //               "",
+                            //               "$cityId",
+                            //               "");
+                            //         }));
+                            //   },
+                            //   child: Row(
+                            //     children: [
+                            //       Text(
+                            //         "View All",
+                            //         style: TextStyle(
+                            //             color: MyColors.txtDescColor,
+                            //             fontSize: 14,
+                            //             fontWeight: FontWeight.w300),
+                            //       ),
+                            //       SizedBox(
+                            //         width: 5,
+                            //       ),
+                            //       Icon(
+                            //         Icons.arrow_forward,
+                            //         size: 15,
+                            //         color: MyColors.primaryColor,
+                            //       )
+                            //     ],
+                            //   ),
+                            // ),
+                          ],
+                        ),
+                      ),
+                      // SizedBox(
+                      //   height: 20,
+                      // ),
+                      Container(
+                        // color: MyColors.whiteBG,
+                        child: SizedBox(
+                          height: 55,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: orderedList.length,
+                            itemBuilder: (context, index) {
+                              FirstList item = orderedList[index];
+                              bool isSelected = selectedList.contains(item);
+
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    toggleSelection(item);
+                                    selectedName = list[index].name;
+                                    print("item");
+                                    isSelected == false
+                                        ? index == 0
+                                            ? showFilterBottomSheet(
+                                                context,
+                                                lat,
+                                                long,
+                                                featureData,
+                                                subCategoriesList)
+                                            : index == 1
+                                                ? data.filterApi(context, lat,
+                                                    long, "4", "", "", [], [])
+                                                : index == 2
+                                                    ? data.filterApi(
+                                                        context,
+                                                        lat,
+                                                        long,
+                                                        "",
+                                                        "5",
+                                                        "",
+                                                        [],
+                                                        [],
+                                                      )
+                                                    : data.filterApi(
+                                                        context,
+                                                        lat,
+                                                        long,
+                                                        "",
+                                                        "",
+                                                        "10", [], [])
+                                        : null;
+
+                                    // index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):index==1?filterApi(lat, long,"4","",""):index==2?filterApi(lat, long,"","5",""):filterApi(lat, long,"","","10");
+                                  });
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 5, vertical: 10),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? Colors.grey.withOpacity(0.3)
+                                          : MyColors.whiteBG,
+                                      borderRadius: BorderRadius.circular(5),
+                                      border: Border.all(
+                                          color: isSelected
+                                              ? MyColors.blackBG
+                                              : Colors.grey.withOpacity(0.5))),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      index == 0
+                                          ? Icon(
+                                              Icons.filter_alt_outlined,
+                                              size: 18,
+                                            )
+                                          : index == 1
+                                              ? Icon(
+                                                  Icons
+                                                      .keyboard_arrow_down_outlined,
+                                                  size: 20,
+                                                )
+                                              : isSelected
+                                                  ? Icon(
+                                                      Icons.close,
+                                                      size: 16,
+                                                    )
+                                                  : Container(),
+                                      SizedBox(
+                                        width: widths * 0.02,
+                                      ),
+                                      Center(
+                                        child: Text(
+                                          item.name,
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ),
-                            ),
+                              );
+                            },
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 25,
-                ),
-                Visibility(
-                  visible: imageSlider.isNotEmpty,
-                  child: Center(
-                    child: CarouselSlider(
-                      carouselController: _controller,
-                      items: imageSlider.map((json) {
-                        return GestureDetector(
-                          onTap: () {
-                            print("url: " + json['image']);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        CouponFullViewScreen(
-                                            "${json['store_id']}")));
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: CachedNetworkImage(
-                              imageUrl: json['image'],
-                              fit: BoxFit.fill,
-                              placeholder: (context, url) =>
-                                  Image.asset(
-                                    'assets/images/placeholder.png',
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                  ),
-                              errorWidget: (context, url, error) =>
-                                  Center(child: Icon(Icons.error)),
-                            ),
-                            // Image.network(
-                            //   json['image'],
-                            //   errorBuilder: (context, error, stackTrace) {
-                            //     return Center(
-                            //       child: Image.asset(
-                            //         'assets/images/placeholder.png',
-                            //         // Path to your placeholder image asset
-                            //         fit: BoxFit.cover,
-                            //         width: double.infinity,
-                            //         height: double.infinity,
-                            //       ),
-                            //     );
-                            //   },
-                            //   fit: BoxFit.cover,
-                            // ),
-                          ),
-                        );
-                      }).toList(),
-                      options: CarouselOptions(
-                        height: 165,
-                        enlargeCenterPage: true,
-                        autoPlay: true,
-                        reverse: true,
-                        disableCenter: true,
-                        aspectRatio: 16 / 9,
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        enableInfiniteScroll: true,
-                        autoPlayAnimationDuration: Duration(milliseconds: 800),
-                        viewportFraction: 0.75,
-                      ),
-                    ),
-                  ),
-                ),
-                if(prebookofferlistHistory.isNotEmpty)
-                  Container(
-                    margin:
-                    EdgeInsets.only(top: 25, left: 15, right: 15, bottom: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "My Booking",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w500),
                         ),
-                      ],
-                    ),
-                  ),
-                if(prebookofferlistHistory.isNotEmpty)
-                  Container(
-                    height: 300,
-                    child: _buildOfferCard(prebookofferlistHistory),
-                  ),
-                /// abhi kholna hai
-
-                InkWell(
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>NearMeScreen()));
-                  },
-                  child: Container(
-                    margin: EdgeInsets.only(top: 10) ,
-                    height: heights*0.11,
-                    width: widths,
-                    padding: EdgeInsets.only(left: 10,right: 10),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [
-                        Color(0xffE8F5FD),
-                        Color(0xffD8DCF9),
-                        Color(0xffC5E7F3),
-                      ],begin: Alignment.topLeft,end: Alignment.bottomRight)
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Restaurants \nNear Me",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w600),),
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          height: heights*0.1,
-                          width: widths*0.2,
-                          decoration: BoxDecoration(
-                              image: DecorationImage(image: AssetImage("assets/images/near_me.png"),fit: BoxFit.fill)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                Container(
-                  margin:
-                  EdgeInsets.only(top: 10, left: 15, right: 15,),
-                  child: Row(
-                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        height: heights*0.02,
-                        width: 2,
-                        color: MyColors.redBG,
-
                       ),
-                      SizedBox(width: 5,),
-                      Text(
-                        "Explore Categories",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500),
-                      ),
-                      // InkWell(
-                      //   onTap: () {
-                      //     navigateToTopCategoriesScreen();
-                      //   },
-                      //   child: Row(
-                      //     children: [
-                      //       Text(
-                      //         "View All",
-                      //         style: TextStyle(
-                      //             color: MyColors.txtDescColor,
-                      //             fontSize: 14,
-                      //             fontWeight: FontWeight.w300),
-                      //       ),
-                      //       SizedBox(
-                      //         width: 5,
-                      //       ),
-                      //       Icon(
-                      //         Icons.arrow_forward,
-                      //         size: 15,
-                      //         color: MyColors.primaryColor,
-                      //       )
-                      //     ],
-                      //   ),
+                      // SizedBox(
+                      //   height: 20,
                       // ),
+                      data.filterList.data?.data != null &&
+                              data.filterList.data!.data!.isNotEmpty
+                          ? Container(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                padding: EdgeInsets.zero,
+                                itemCount:
+                                    data.filterList.data?.data?.length ?? 0,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  return data.filterList.data?.data?.length == 0
+                                      ? Text("Nodata")
+                                      : RestaurantCard(
+                                          name: selectedName,
+                                          filter: data!
+                                              .filterList!.data!.data![index]);
+                                },
+                              ),
+                            )
+                          : Center(
+                              child: Text(
+                              "No Restaurants Found",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black.withOpacity(0.7),
+                                  fontWeight: FontWeight.w600),
+                            )),
                     ],
                   ),
                 ),
-                Container(
-                  height: heights*0.162,
-                  margin: EdgeInsets.only(left: widths*0.03),
-                  // color: Colors.red,
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: subCategoriesList.length, // Use the length of the list
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      SubCategoriesModel subCategoriesModel =
-                      subCategoriesList[index];
-                      return SubCategoriesCardWidget(
-                        imgUrl: subCategoriesModel.image,
-                        subcategoryName:
-                        subCategoriesModel.subcategory_name,
-                        spotAvailable: "",
-                        redeemed: "",
-                        onTap: () {
-                          print(subCategoriesModel.category_id);
-                          print(subCategoriesModel.id);
-                          print("subCategoriesModel.id");
-                          navigateToAllCouponScreen(
-                            context,
-                            subCategoriesModel.subcategory_name,
-                            subCategoriesModel.category_id,
-                            subCategoriesModel.id,
-                          );
-                        },
-                      );
-                      // final store = restaurantsItems[index];
-                      // return buildRestaurantsWidget(
-                      //     context,
-                      //     store.id,
-                      //     store.banner,
-                      //     // Use the logo property from StoreModel
-                      //     store.storeName,
-                      //     // Use the store_name property from StoreModel
-                      //     store.address,
-                      //     // Use the address property from StoreModel
-                      //     store.distance,
-                      //     // Use the distance property from StoreModel
-                      //     store.offers);
-                    },
-
-
-                  ),
-                  // GridView.builder(
-                  //   padding: EdgeInsets.zero,
-                  //   shrinkWrap: true,
-                  //   physics: NeverScrollableScrollPhysics(),
-                  //   itemCount: subCategoriesList.length,
-                  //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  //     crossAxisCount: 3,
-                  //     crossAxisSpacing: 8,
-                  //     mainAxisSpacing: 8,
-                  //     mainAxisExtent: 100
-                  //   ),
-                  //   itemBuilder: (BuildContext context, int index) {
-                  //     SubCategoriesModel subCategoriesModel =
-                  //     subCategoriesList[index];
-                  //     return SubCategoriesCardWidget(
-                  //       imgUrl: subCategoriesModel.image,
-                  //       subcategoryName:
-                  //       subCategoriesModel.subcategory_name,
-                  //       spotAvailable: "",
-                  //       redeemed: "",
-                  //       onTap: () {
-                  //         print(subCategoriesModel.category_id);
-                  //         print(subCategoriesModel.id);
-                  //         print("subCategoriesModel.id");
-                  //         navigateToAllCouponScreen(
-                  //           context,
-                  //           subCategoriesModel.subcategory_name,
-                  //           subCategoriesModel.category_id,
-                  //           subCategoriesModel.id,
-                  //         );
-                  //       },
-                  //     );
-                  //   },
-                  // ),
-                ),
-
-                if (!localtiyList.isEmpty)
-                  Container(
-                    margin: EdgeInsets.only(
-                        top: 25, left: 15, right: 15, bottom: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Popular Location",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                  ),
-                if (!localtiyList.isEmpty) LocationWidget(localtiyList),
-                SizedBox(
-                  height: 0,
-                ),
-                if (!trendingStoreList.isEmpty)
-                  Container(
-                    margin: EdgeInsets.only(
-                        top: 25, left: 15, right: 15, bottom: 15),
-                    child: Row(
-                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          height: heights*0.02,
-                          width: 2,
-                          color: MyColors.redBG,
-
-                        ),
-                        SizedBox(width: 5,),
-                        Text(
-                          // "Trending Restaurants",
-                          "Something is Trending",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w500),
-                        ),
-                        // InkWell(
-                        //   onTap: () {
-                        //     Navigator.push(context,
-                        //         MaterialPageRoute(builder: (context) {
-                        //           return AllCouponScreen(
-                        //               "Trending Restaurants",
-                        //               "",
-                        //               "",
-                        //               "",
-                        //               "",
-                        //               "1",
-                        //               "",
-                        //               "",
-                        //               "$cityId",
-                        //               "");
-                        //         }));
-                        //   },
-                        //   child: Row(
-                        //     children: [
-                        //       Text(
-                        //         "View All",
-                        //         style: TextStyle(
-                        //             color: MyColors.txtDescColor,
-                        //             fontSize: 14,
-                        //             fontWeight: FontWeight.w300),
-                        //       ),
-                        //       SizedBox(
-                        //         width: 5,
-                        //       ),
-                        //       Icon(
-                        //         Icons.arrow_forward,
-                        //         size: 15,
-                        //         color: MyColors.primaryColor,
-                        //       )
-                        //     ],
-                        //   ),
-                        // ),
-                      ],
-                    ),
-                  ),
-                if (!trendingStoreList.isEmpty)
-                  TrendingRestruantWidget(trendingStoreList),
-                if (!recentStoreList.isEmpty)
-
-                if (!recentStoreList.isEmpty)
-                  RecentJoinedWidget(recentStoreList,cityId),
-                Container(
-                  margin:
-                  EdgeInsets.only(top: 10, left: 15, right: 15,),
-                  child: Row(
-                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        height: heights*0.02,
-                        width: 2,
-                        color: MyColors.redBG,
-
-                      ),
-                      SizedBox(width: 5,),
-                      Text(
-                        "Taste from Different location?",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500),
-                      ),
-
-                      // InkWell(
-                      //   onTap: () {
-                      //     navigateToTopCategoriesScreen();
-                      //   },
-                      //   child: Row(
-                      //     children: [
-                      //       Text(
-                      //         "View All",
-                      //         style: TextStyle(
-                      //             color: MyColors.txtDescColor,
-                      //             fontSize: 14,
-                      //             fontWeight: FontWeight.w300),
-                      //       ),
-                      //       SizedBox(
-                      //         width: 5,
-                      //       ),
-                      //       Icon(
-                      //         Icons.arrow_forward,
-                      //         size: 15,
-                      //         color: MyColors.primaryColor,
-                      //       )
-                      //     ],
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 12),
-
-                  height: heights*0.06,
-                  child: ListView.builder(
-                    itemCount: 7,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return  Container(
-                        padding: EdgeInsets.symmetric(vertical: 7,horizontal: 30),
-                        margin: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
-                        // height: heights*0.03,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey,
-                                spreadRadius: 0.5,
-                                offset: Offset(2,2),
-                                blurRadius: 2,
-                              ),
-                            ],
-                            color: Color(0xfffde39f),
-                            borderRadius: BorderRadius.circular(10)
-                        ),
-                        child: Text("DALIBAG",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 12),),
-                      );
-                    },
-
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 12),
-                  height: heights*0.06,
-                  child: ListView.builder(
-                    itemCount: 7,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return  Container(
-                        padding: EdgeInsets.symmetric(vertical: 7,horizontal: 30),
-                        margin: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
-                        // height: heights*0.03,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey,
-                                spreadRadius: 0.5,
-                                offset: Offset(2,2),
-                                blurRadius: 2,
-                              ),
-                            ],
-                            color: Color(0xfffde39f),
-                            borderRadius: BorderRadius.circular(10)
-                        ),
-                        child: Text("HAZRATGANJ",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 12),),
-                      );
-                    },
-
-                  ),
-                ),
-
-                if (!topCollectionStoreList.isEmpty)
-                //   Container(
-                //     margin: EdgeInsets.only(
-                //         top: 25, left: 15, right: 15, bottom: 15),
-                //     child: Row(
-                //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //       children: [
-                //         Text(
-                //           "Top Collections",
-                //           style: TextStyle(
-                //               fontSize: 18, fontWeight: FontWeight.w500),
-                //         ),
-                //         InkWell(
-                //           onTap: () {
-                //             Navigator.push(context,
-                //                 MaterialPageRoute(builder: (context) {
-                //                   return AllCouponScreen(
-                //                       "Top Collections",
-                //                       "",
-                //                       "",
-                //                       "",
-                //                       "",
-                //                       "",
-                //                       "",
-                //                       "1",
-                //                       "$cityId",
-                //                       "");
-                //                 }));
-                //           },
-                //           child: Row(
-                //             children: [
-                //               Text(
-                //                 "View All",
-                //                 style: TextStyle(
-                //                     color: MyColors.txtDescColor,
-                //                     fontSize: 14,
-                //                     fontWeight: FontWeight.w300),
-                //               ),
-                //               SizedBox(
-                //                 width: 5,
-                //               ),
-                //               Icon(
-                //                 Icons.arrow_forward,
-                //                 size: 15,
-                //                 color: MyColors.primaryColor,
-                //               )
-                //             ],
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // if (!topCollectionStoreList.isEmpty)
-                //   TopCollectionWidget(topCollectionStoreList, 0.0),
-               /// abhi kholna hai
-                SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  margin: EdgeInsets.only(
-                      top: 25, left: 15, right: 15, bottom: 15),
-                  child: Row(
-                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        height: heights*0.02,
-                        width: 2,
-                        color: MyColors.redBG,
-
-                      ),
-                      SizedBox(width: 5,),
-                      Text(
-                        // "Trending Restaurants",
-                        "All Restaurants",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w500),
-                      ),
-                      // InkWell(
-                      //   onTap: () {
-                      //     Navigator.push(context,
-                      //         MaterialPageRoute(builder: (context) {
-                      //           return AllCouponScreen(
-                      //               "Trending Restaurants",
-                      //               "",
-                      //               "",
-                      //               "",
-                      //               "",
-                      //               "1",
-                      //               "",
-                      //               "",
-                      //               "$cityId",
-                      //               "");
-                      //         }));
-                      //   },
-                      //   child: Row(
-                      //     children: [
-                      //       Text(
-                      //         "View All",
-                      //         style: TextStyle(
-                      //             color: MyColors.txtDescColor,
-                      //             fontSize: 14,
-                      //             fontWeight: FontWeight.w300),
-                      //       ),
-                      //       SizedBox(
-                      //         width: 5,
-                      //       ),
-                      //       Icon(
-                      //         Icons.arrow_forward,
-                      //         size: 15,
-                      //         color: MyColors.primaryColor,
-                      //       )
-                      //     ],
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                ),
-                // SizedBox(
-                //   height: 20,
-                // ),
-               Container(
-                  // color: MyColors.whiteBG,
-                  child: SizedBox(
-                    height: 55,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: orderedList.length,
-                      itemBuilder: (context, index) {
-                        FirstList item = orderedList[index];
-                        bool isSelected = selectedList.contains(item);
-
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              toggleSelection(item);
-                              selectedName = list[index].name;
-                              print("item");
-                              index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):null;
-                            });
-                          },
-                          child: Container(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 10),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 8, ),
-                            decoration: BoxDecoration(
-                                color: isSelected
-                                    ? Colors.grey.withOpacity(0.3)
-                                    : MyColors.whiteBG,
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(
-                                    color: isSelected
-                                        ? MyColors.blackBG
-                                        : Colors.grey.withOpacity(0.5))),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                index == 0
-                                    ? Icon(Icons.filter_alt_outlined,size: 18,)
-                                    : index == 1
-                                    ? Icon(
-                                  Icons.keyboard_arrow_down_outlined,size: 20,)
-                                    : isSelected
-                                    ? Icon(Icons.close,size: 16,)
-                                    : Container(),
-                                SizedBox(width: widths*0.02,),
-                                Center(
-                                  child: Text(
-                                    item.name,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500
-                                    ),
-                                  ),
-                                ),
-
-
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                // SizedBox(
-                //   height: 20,
-                // ),
-                Container(
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    itemCount: restaurants.length,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return RestaurantCard(
-                          restaurant: restaurants[index], name: selectedName);
-                    },
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-      // bottomSheet: _showTitle==false?  Container(
-      //   color: MyColors.whiteBG,
-      //   child: SizedBox(
-      //     height: 55,
-      //     child: ListView.builder(
-      //       scrollDirection: Axis.horizontal,
-      //       itemCount: orderedList.length,
-      //       itemBuilder: (context, index) {
-      //         FirstList item = orderedList[index];
-      //         bool isSelected = selectedList.contains(item);
-      //
-      //         return GestureDetector(
-      //           onTap: () {
-      //             setState(() {
-      //               toggleSelection(item);
-      //               selectedName = list[index].name;
-      //               print("item");
-      //               index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):null;
-      //             });
-      //           },
-      //           child: Container(
-      //             margin: EdgeInsets.symmetric(
-      //                 horizontal: 5, vertical: 10),
-      //             padding: EdgeInsets.symmetric(
-      //               horizontal: 8, ),
-      //             decoration: BoxDecoration(
-      //                 color: isSelected
-      //                     ? Colors.grey.withOpacity(0.3)
-      //                     : MyColors.whiteBG,
-      //                 borderRadius: BorderRadius.circular(20),
-      //                 border: Border.all(
-      //                     color: isSelected
-      //                         ? MyColors.blackBG
-      //                         : Colors.grey.withOpacity(0.5))),
-      //             child: Row(
-      //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      //               children: [
-      //                 Center(
-      //                   child: Text(
-      //                     item.name,
-      //                     style: TextStyle(
-      //                         color: Colors.black,
-      //                         fontSize: 13,
-      //                         fontWeight: FontWeight.w500
-      //                     ),
-      //                   ),
-      //                 ),
-      //                 SizedBox(width: widths*0.02,),
-      //                 index == 0
-      //                     ? Icon(Icons.tune_outlined,size: 18,)
-      //                     : index == 1
-      //                     ? Icon(
-      //                   Icons.keyboard_arrow_down_outlined,size: 20,)
-      //                     : isSelected
-      //                     ? Icon(Icons.close,size: 16,)
-      //                     : Container()
-      //               ],
-      //             ),
-      //           ),
-      //         );
-      //       },
-      //     ),
-      //   ),
-      // ):Text("") ,
-      drawer: Drawer(
-      backgroundColor: Colors.white,
-      child: ListView(
-        padding: const EdgeInsets.all(0),
-        children: [
-          Container(
-              decoration: BoxDecoration(
-                //color: MyColors.primaryColor.withOpacity(0.0),
-                image: DecorationImage(
-                  image: const AssetImage("assets/images/drawer_bg_img.jpg"),
-                  fit: BoxFit.cover,
-                  colorFilter: ColorFilter.mode(
-                    MyColors.primaryColor.withOpacity(0.1),
-                    BlendMode.darken,
-                  ),
-                ),
-              ), //BoxDecoration
-              child: Stack(
+            // bottomSheet: _showTitle==false?  Container(
+            //   color: MyColors.whiteBG,
+            //   child: SizedBox(
+            //     height: 55,
+            //     child: ListView.builder(
+            //       scrollDirection: Axis.horizontal,
+            //       itemCount: orderedList.length,
+            //       itemBuilder: (context, index) {
+            //         FirstList item = orderedList[index];
+            //         bool isSelected = selectedList.contains(item);
+            //
+            //         return GestureDetector(
+            //           onTap: () {
+            //             setState(() {
+            //               toggleSelection(item);
+            //               selectedName = list[index].name;
+            //               print("item");
+            //               index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):null;
+            //             });
+            //           },
+            //           child: Container(
+            //             margin: EdgeInsets.symmetric(
+            //                 horizontal: 5, vertical: 10),
+            //             padding: EdgeInsets.symmetric(
+            //               horizontal: 8, ),
+            //             decoration: BoxDecoration(
+            //                 color: isSelected
+            //                     ? Colors.grey.withOpacity(0.3)
+            //                     : MyColors.whiteBG,
+            //                 borderRadius: BorderRadius.circular(20),
+            //                 border: Border.all(
+            //                     color: isSelected
+            //                         ? MyColors.blackBG
+            //                         : Colors.grey.withOpacity(0.5))),
+            //             child: Row(
+            //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //               children: [
+            //                 Center(
+            //                   child: Text(
+            //                     item.name,
+            //                     style: TextStyle(
+            //                         color: Colors.black,
+            //                         fontSize: 13,
+            //                         fontWeight: FontWeight.w500
+            //                     ),
+            //                   ),
+            //                 ),
+            //                 SizedBox(width: widths*0.02,),
+            //                 index == 0
+            //                     ? Icon(Icons.tune_outlined,size: 18,)
+            //                     : index == 1
+            //                     ? Icon(
+            //                   Icons.keyboard_arrow_down_outlined,size: 20,)
+            //                     : isSelected
+            //                     ? Icon(Icons.close,size: 16,)
+            //                     : Container()
+            //               ],
+            //             ),
+            //           ),
+            //         );
+            //       },
+            //     ),
+            //   ),
+            // ):Text("") ,
+            drawer: Drawer(
+              backgroundColor: Colors.white,
+              child: ListView(
+                padding: const EdgeInsets.all(0),
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 20, right: 20, top: 50, bottom: 20),
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                  Container(
+                      decoration: BoxDecoration(
+                        //color: MyColors.primaryColor.withOpacity(0.0),
+                        image: DecorationImage(
+                          image: const AssetImage(
+                              "assets/images/drawer_bg_img.jpg"),
+                          fit: BoxFit.cover,
+                          colorFilter: ColorFilter.mode(
+                            MyColors.primaryColor.withOpacity(0.1),
+                            BlendMode.darken,
+                          ),
+                        ),
+                      ), //BoxDecoration
+                      child: Stack(
                         children: [
-                          Card(
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(40),
-                            ),
-                            // Set the clip behavior of the card
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            // Define the child widgets of the card
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 20, right: 20, top: 50, bottom: 20),
                             child: Container(
-                              width: 70,
-                              height: 70,
-                              child: ClipOval(
-                                child: CachedNetworkImage(
-                                  imageUrl: userimage.isNotEmpty
-                                      ? userimage
-                                      : image,
-                                  fit: BoxFit.fill,
-                                  placeholder: (context, url) => Image.asset(
-                                    'assets/images/placeholder.png',
-                                    // Path to your placeholder image asset
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                  const Center(child: Icon(Icons.error)),
-                                ),
-                                // child: Image.network(
-                                //   userimage.isNotEmpty ? userimage : image,
-                                //   loadingBuilder: (BuildContext context,
-                                //       Widget child,
-                                //       ImageChunkEvent? loadingProgress) {
-                                //     if (loadingProgress == null) {
-                                //       return child;
-                                //     } else {
-                                //       return Center(
-                                //         child: CircularProgressIndicator(
-                                //           value: loadingProgress
-                                //                       .expectedTotalBytes !=
-                                //                   null
-                                //               ? loadingProgress
-                                //                       .cumulativeBytesLoaded /
-                                //                   (loadingProgress
-                                //                           .expectedTotalBytes ??
-                                //                       1)
-                                //               : null,
-                                //         ),
-                                //       );
-                                //     }
-                                //   },
-                                //   errorBuilder: (BuildContext context,
-                                //       Object error, StackTrace? stackTrace) {
-                                //     return Icon(Icons
-                                //         .person); // Placeholder icon for error case
-                                //   },
-                                // ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                            height: 10,
-                          ),
-                          Visibility(
-                            visible:
-                            userName.isNotEmpty || userEmail.isNotEmpty,
-                            child: RichText(
-                              text: TextSpan(
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  if (userName.isNotEmpty)
-                                    TextSpan(
-                                      text: '$userName\n',
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
+                                  Card(
+                                    elevation: 2,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(40),
+                                    ),
+                                    // Set the clip behavior of the card
+                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                                    // Define the child widgets of the card
+                                    child: Container(
+                                      width: 70,
+                                      height: 70,
+                                      child: ClipOval(
+                                        child: CachedNetworkImage(
+                                          imageUrl: userimage.isNotEmpty
+                                              ? userimage
+                                              : image,
+                                          fit: BoxFit.fill,
+                                          placeholder: (context, url) =>
+                                              Image.asset(
+                                            'assets/images/placeholder.png',
+                                            // Path to your placeholder image asset
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              const Center(
+                                                  child: Icon(Icons.error)),
+                                        ),
+                                        // child: Image.network(
+                                        //   userimage.isNotEmpty ? userimage : image,
+                                        //   loadingBuilder: (BuildContext context,
+                                        //       Widget child,
+                                        //       ImageChunkEvent? loadingProgress) {
+                                        //     if (loadingProgress == null) {
+                                        //       return child;
+                                        //     } else {
+                                        //       return Center(
+                                        //         child: CircularProgressIndicator(
+                                        //           value: loadingProgress
+                                        //                       .expectedTotalBytes !=
+                                        //                   null
+                                        //               ? loadingProgress
+                                        //                       .cumulativeBytesLoaded /
+                                        //                   (loadingProgress
+                                        //                           .expectedTotalBytes ??
+                                        //                       1)
+                                        //               : null,
+                                        //         ),
+                                        //       );
+                                        //     }
+                                        //   },
+                                        //   errorBuilder: (BuildContext context,
+                                        //       Object error, StackTrace? stackTrace) {
+                                        //     return Icon(Icons
+                                        //         .person); // Placeholder icon for error case
+                                        //   },
+                                        // ),
                                       ),
                                     ),
-                                  if (userName.isNotEmpty &&
-                                      userMobile.isNotEmpty)
-                                    const WidgetSpan(
-                                      child: SizedBox(
-                                          height:
-                                          25), // Adjust the height as needed
-                                    ),
-                                  if (userMobile.isNotEmpty)
-                                    TextSpan(
-                                      text: '$userMobile',
-                                      style: TextStyle(
-                                        fontSize: 17,
-                                        color: Colors.black.withOpacity(0.7),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                    height: 10,
+                                  ),
+                                  Visibility(
+                                    visible: userName.isNotEmpty ||
+                                        userEmail.isNotEmpty,
+                                    child: RichText(
+                                      text: TextSpan(
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                        ),
+                                        children: [
+                                          if (userName.isNotEmpty)
+                                            TextSpan(
+                                              text: '$userName\n',
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          if (userName.isNotEmpty &&
+                                              userMobile.isNotEmpty)
+                                            const WidgetSpan(
+                                              child: SizedBox(
+                                                  height:
+                                                      25), // Adjust the height as needed
+                                            ),
+                                          if (userMobile.isNotEmpty)
+                                            TextSpan(
+                                              text: '$userMobile',
+                                              style: TextStyle(
+                                                fontSize: 17,
+                                                color: Colors.black
+                                                    .withOpacity(0.7),
+                                              ),
+                                            ),
+                                        ],
                                       ),
                                     ),
+                                  )
                                 ],
                               ),
                             ),
-                          )
+                          ),
+                          // Center(
+                          //   child: SvgPicture.string(
+                          //     "assets/images/drawer_img.xml",
+                          //     width: 500,
+                          //     height: 500,
+                          //   ),
+                          // ),
                         ],
+                      )),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.home,
+                      color: MyColors.drawerIconColor,
+                    ),
+                    title: const Text(' Home '),
+                    onTap: () {
+                      _onItemTappedd(0);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.account_balance_wallet,
+                      color: MyColors.drawerIconColor,
+                    ),
+                    title: const Text(' Transaction '),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return TransactionScreen();
+                      }));
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.support_agent,
+                      color: MyColors.drawerIconColor,
+                    ),
+                    title: const Text(' Customer Care '),
+                    onTap: () {
+                      //Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return CustomerCare();
+                      }));
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.settings,
+                      color: MyColors.drawerIconColor,
+                    ),
+                    title: const Text(' How to use app '),
+                    onTap: () {
+                      //Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return HowItWorksScreen();
+                      }));
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.share_rounded,
+                      color: MyColors.drawerIconColor,
+                    ),
+                    title: const Text(' Share '),
+                    onTap: () {
+                      _scaffoldKey.currentState?.closeDrawer();
+                      shareNetworkImage("$image",
+                          "\nCheck out this store on Discount Deals! \n\n *Download Now* \n\n $playstoreLink");
+                      //Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.info_outline,
+                      color: MyColors.drawerIconColor,
+                    ),
+                    title: const Text(' About Us '),
+                    onTap: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AboutUsScreen()),
+                      );
+
+                      // Call the function after returning
+                      _handleReturnFromSecondScreen();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.book,
+                      color: MyColors.drawerIconColor,
+                    ),
+                    title: const Text(' Terms & Condition '),
+                    onTap: () {
+                      //Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return TermsAndCondition();
+                      }));
+                    },
+                  ),
+                  Visibility(
+                    visible: user_id != 0,
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.delete_sweep_rounded,
+                        color: MyColors.drawerIconColor,
                       ),
+                      title: const Text(' Account Delete '),
+                      onTap: () {
+                        //Navigator.pop(context);
+
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return DeleteScreen();
+                        }));
+
+                        //logoutUser();
+                      },
                     ),
                   ),
-                  // Center(
-                  //   child: SvgPicture.string(
-                  //     "assets/images/drawer_img.xml",
-                  //     width: 500,
-                  //     height: 500,
-                  //   ),
-                  // ),
+                  ListTile(
+                    leading: user_id == 0
+                        ? const Icon(
+                            Icons.login_outlined,
+                            color: MyColors.drawerIconColor,
+                          )
+                        : const Icon(
+                            Icons.logout_outlined,
+                            color: MyColors.drawerIconColor,
+                          ),
+                    title: user_id == 0
+                        ? const Text(' Login ')
+                        : const Text(' Logout '),
+                    onTap: () {
+                      //Navigator.pop(context);
+                      if (user_id == 0) {
+                        NavigationUtil.navigateToLogin(context);
+                      } else {
+                        logoutUser();
+                      }
+                    },
+                  ),
                 ],
-              )),
-
-          ListTile(
-            leading: const Icon(
-              Icons.home,
-              color: MyColors.drawerIconColor,
-            ),
-            title: const Text(' Home '),
-            onTap: () {
-              _onItemTappedd(0);
-            },
-          ),
-          ListTile(
-            leading: const Icon(
-              Icons.account_balance_wallet,
-              color: MyColors.drawerIconColor,
-            ),
-            title: const Text(' Transaction '),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return TransactionScreen();
-              }));
-            },
-          ),
-          ListTile(
-            leading: const Icon(
-              Icons.support_agent,
-              color: MyColors.drawerIconColor,
-            ),
-            title: const Text(' Customer Care '),
-            onTap: () {
-              //Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return CustomerCare();
-              }));
-            },
-          ),
-          ListTile(
-            leading: const Icon(
-              Icons.settings,
-              color: MyColors.drawerIconColor,
-            ),
-            title: const Text(' How to use app '),
-            onTap: () {
-              //Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return HowItWorksScreen();
-              }));
-            },
-          ),
-          ListTile(
-            leading: const Icon(
-              Icons.share_rounded,
-              color: MyColors.drawerIconColor,
-            ),
-            title: const Text(' Share '),
-            onTap: () {
-              _scaffoldKey.currentState?.closeDrawer();
-              shareNetworkImage("$image",
-                  "\nCheck out this store on Discount Deals! \n\n *Download Now* \n\n $playstoreLink");
-              //Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: const Icon(
-              Icons.info_outline,
-              color: MyColors.drawerIconColor,
-            ),
-            title: const Text(' About Us '),
-            onTap: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => AboutUsScreen()),
-              );
-
-              // Call the function after returning
-              _handleReturnFromSecondScreen();
-
-            },
-          ),
-          ListTile(
-            leading: const Icon(
-              Icons.book,
-              color: MyColors.drawerIconColor,
-            ),
-            title: const Text(' Terms & Condition '),
-            onTap: () {
-              //Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return TermsAndCondition();
-              }));
-            },
-          ),
-          Visibility(
-            visible: user_id != 0,
-            child: ListTile(
-              leading: const Icon(
-                Icons.delete_sweep_rounded,
-                color: MyColors.drawerIconColor,
               ),
-              title: const Text(' Account Delete '),
-              onTap: () {
-                //Navigator.pop(context);
-
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return DeleteScreen();
-                }));
-
-                //logoutUser();
-              },
             ),
-          ),
-          ListTile(
-            leading: user_id == 0
-                ? const Icon(
-              Icons.login_outlined,
-              color: MyColors.drawerIconColor,
-            )
-                : const Icon(
-              Icons.logout_outlined,
-              color: MyColors.drawerIconColor,
+          )
+        : Center(
+            child: CircularProgressIndicator(
+              color: MyColors.primary,
             ),
-            title: user_id == 0 ? const Text(' Login ') : const Text(' Logout '),
-            onTap: () {
-              //Navigator.pop(context);
-              if (user_id == 0) {
-                NavigationUtil.navigateToLogin(context);
-              } else {
-                logoutUser();
-              }
-            },
-          ),
-        ],
-      ),
-    ) ,
-    ):Center(
-      child: CircularProgressIndicator(
-        color: MyColors.primary ,
-      ),
-    );
+          );
   }
-  List<FeaturesModel>featureData=[];
+
+  List<FeaturesModel> featureData = [];
   // bool isLoading=false;
   Future<void> feature() async {
     setState(() {
@@ -1611,13 +1752,55 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
       });
     }
   }
+
+  List<FilteredDataModel> data = [];
+  Future<void> filterApi(
+    dynamic lat,
+    dynamic long,
+    dynamic rating,
+    dynamic distance,
+    dynamic discount,
+  ) async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final body = {
+        "latitude": lat,
+        "longitude": long,
+        "rating": rating,
+        "discount": discount,
+        "distance": distance,
+        "amenities": "",
+        "subcategory_id": "",
+      };
+      print("Amannnn:$body");
+      final response = await ApiServices.filterApi(body, context);
+      if (response != null) {
+        print("Amannnn:$response");
+        setState(() {
+          data = response;
+        });
+      } else {
+        // showErrorMessage(context, message: "message");
+      }
+    } catch (e) {
+      print('fetchSubCategories: $e');
+    } finally {
+      // setModalState(() {
+      //   isLoading = false;
+      // });
+    }
+  }
+
   Future<void> navigateToAllCouponScreen(BuildContext context,
       String subCategoryName, String category_id, int subcategory_id) async {
     final route = MaterialPageRoute(
         builder: (context) => AllCouponScreen("$subCategoryName", "",
-            "$category_id", "$subcategory_id", "", "", "", "","$cityId",""));
+            "$category_id", "$subcategory_id", "", "", "", "", "$cityId", ""));
     await Navigator.push(context, route);
   }
+
   Future<void> fetchCity() async {
     try {
       final response = await ApiServices.api_show_city(context);
@@ -1640,6 +1823,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
       print('fetchCity: $e');
     }
   }
+
   Future<void> currentMembership(String user_id) async {
     print('current_membership user_id: $user_id');
     setState(() {
@@ -1670,6 +1854,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
       });
     }
   }
+
   Future<void> fetchSubCategories(int category_id) async {
     setState(() {
       isLoading = true;
@@ -1692,6 +1877,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
       });
     }
   }
+
   Widget _buildOfferCard(
       List<PreBookTableHistoryModel> prebookofferlistHistory) {
     return SizedBox(
@@ -1769,7 +1955,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                           Expanded(
                             flex: 1, // Takes up 50% of the width
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center, // Centers the icons horizontally
+                              mainAxisAlignment: MainAxisAlignment
+                                  .center, // Centers the icons horizontally
                               children: [
                                 if (offer.mobile.isNotEmpty)
                                   GestureDetector(
@@ -1807,16 +1994,15 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                                 children: [
                                   _buildRowWithIcon(
                                     icon: Icons.phone,
-                                    text: "Number of guests: ${offer
-                                        .no_of_guest}",
+                                    text:
+                                        "Number of guests: ${offer.no_of_guest}",
                                   ),
                                   SizedBox(height: 5),
                                   _buildRowWithIcon(
                                     icon: Icons.calendar_month,
-                                    text: "${offer.booking_date} at ${offer
-                                        .booking_time}",
+                                    text:
+                                        "${offer.booking_date} at ${offer.booking_time}",
                                   ),
-
                                 ],
                               ),
                             ],
@@ -1872,19 +2058,22 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             TablePaybillScreen(
-                                                offer, offer.store_name,
+                                                offer,
+                                                offer.store_name,
                                                 offer.address)),
                                   );
                                 }
                               },
                               child: _buildButton(
-                                  'Pay bill', isBookingTimePassed(
-                                  offer.booking_date, offer.booking_time)
-                                  ? Colors.red
-                                  : Colors.grey.shade300, isBookingTimePassed(
-                                  offer.booking_date, offer.booking_time)
-                                  ? Colors.white
-                                  : Colors.grey),
+                                  'Pay bill',
+                                  isBookingTimePassed(offer.booking_date,
+                                          offer.booking_time)
+                                      ? Colors.red
+                                      : Colors.grey.shade300,
+                                  isBookingTimePassed(offer.booking_date,
+                                          offer.booking_time)
+                                      ? Colors.white
+                                      : Colors.grey),
                             ),
                           ),
                         ],
@@ -1944,7 +2133,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
     }
   }
 
-
   Widget _buildIcon(IconData icon) {
     return Container(
       margin: EdgeInsets.only(left: 8.0),
@@ -1995,7 +2183,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
     );
   }
 
-
   Future<void> getName() async {
     // SharedPref sharedPref=new SharedPref();
     // userName = (await SharedPref.getUser()).name;
@@ -2003,22 +2190,24 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
     print("name: " + n.name);
     userName = n.name;
   }
+
   Future<void> getBanners() async {
     print("ttttt");
     final UserModel user = await SharedPref.getUser();
     List<BannerModel> banners = user.banners;
     for (var banner in banners) {
       // setState(() {
-        bannerId=banner.id.toString();
-        bannerImage=banner.image;
-        bannerType=banner.type;
-        bannerURL=banner.url;
-        bannerStatus=banner.status;
+      bannerId = banner.id.toString();
+      bannerImage = banner.image;
+      bannerType = banner.type;
+      bannerURL = banner.url;
+      bannerStatus = banner.status;
       // });
       print(banner.image);
       print("ttttt");
     }
   }
+
   Future<void> navigateToTopCategoriesScreen() async {
     final route = MaterialPageRoute(
         builder: (context) => TopCategoriesScreen("Categories", categories));
@@ -2026,7 +2215,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
     await Navigator.push(context, route);
   }
 
-  Future<void> navigateToTopSubCategories(BuildContext context, String categoryName, int categoryId) async {
+  Future<void> navigateToTopSubCategories(
+      BuildContext context, String categoryName, int categoryId) async {
     final route = MaterialPageRoute(
       builder: (context) => SubCategoriesScreen(categoryName, categoryId),
     );
@@ -2034,7 +2224,9 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
     await Navigator.push(context, route);
   }
 
-  Future<void> fetchShowSlider(String city_id,) async {
+  Future<void> fetchShowSlider(
+    String city_id,
+  ) async {
     try {
       final body = {
         "city_id": "$city_id",
@@ -2070,7 +2262,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
     }
   }
 
-  Future<void> fetchRecentStore(String user_id,
+  Future<void> fetchRecentStore(
+      String user_id,
       String store_limit,
       String cat_id,
       String subcat_id,
@@ -2110,7 +2303,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
     }
   }
 
-  Future<void> fetchTrendingStore(String user_id,
+  Future<void> fetchTrendingStore(
+      String user_id,
       String store_limit,
       String cat_id,
       String subcat_id,
@@ -2149,7 +2343,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
     }
   }
 
-  Future<void> fetchTopCollectionStore(String user_id,
+  Future<void> fetchTopCollectionStore(
+      String user_id,
       String store_limit,
       String cat_id,
       String subcat_id,
@@ -2275,7 +2470,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
         });
       } else {
         setState(() {
-          prebookofferlistHistory =[];
+          prebookofferlistHistory = [];
           isLoading = false; // Set isLoading to false when fetching ends
         });
       }
@@ -2286,8 +2481,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen> with WidgetsBinding
       });
     }
   }
-
-
 }
 
 //What your choice
@@ -2319,17 +2512,8 @@ class YourChoiceHomeWidget extends StatelessWidget {
     return InkWell(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return AllCouponScreen(
-              "${item.subcategory_name}",
-              "",
-              "",
-              "${item.id}",
-              "",
-              "",
-              "",
-              "",
-              "$city_id",
-              "");
+          return AllCouponScreen("${item.subcategory_name}", "", "",
+              "${item.id}", "", "", "", "", "$city_id", "");
         }));
       },
       child: Container(
@@ -2439,14 +2623,13 @@ class TrendingRestruantWidget extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: imgUrl,
                   fit: BoxFit.fill,
-                  placeholder: (context, url) =>
-                      Image.asset(
-                        'assets/images/vertical_placeholder.jpg',
-                        // Path to your placeholder image asset
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
+                  placeholder: (context, url) => Image.asset(
+                    'assets/images/vertical_placeholder.jpg',
+                    // Path to your placeholder image asset
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
                   errorWidget: (context, url, error) =>
                       Center(child: Icon(Icons.error)),
                 ),
@@ -2721,35 +2904,36 @@ class TrendingRestruantWidget extends StatelessWidget {
 
 class RecentJoinedWidget extends StatelessWidget {
   final List<StoreModel> stores; // Renamed from restaurantsItems
-final String cityId;
-  RecentJoinedWidget(this.stores,this.cityId, {super.key});
+  final String cityId;
+  RecentJoinedWidget(this.stores, this.cityId, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(top: 10),
-      height: heights*0.35,
-      color:Color(0xff1e1f16) ,
+      height: heights * 0.35,
+      color: Color(0xff1e1f16),
       child: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(
-               top: 10,  left: 15, right: 15, bottom: 15),
+            margin: EdgeInsets.only(top: 10, left: 15, right: 15, bottom: 15),
             child: Row(
               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  height: heights*0.02,
+                  height: heights * 0.02,
                   width: 2,
                   color: MyColors.redBG,
-
                 ),
-                SizedBox(width: 5,),
+                SizedBox(
+                  width: 5,
+                ),
                 Text(
                   "Recent Joinees",
                   style: TextStyle(
-                    color: MyColors.whiteBG,
-                      fontSize: 16, fontWeight: FontWeight.w500),
+                      color: MyColors.whiteBG,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500),
                 ),
                 // InkWell(
                 //   onTap: () {
@@ -2792,7 +2976,7 @@ final String cityId;
             ),
           ),
           Container(
-            height: heights*0.26,
+            height: heights * 0.26,
             child: ListView.builder(
               shrinkWrap: true,
               itemBuilder: (context, index) {
@@ -2993,9 +3177,16 @@ final String cityId;
       ),
     );
   }*/
-///
-  Widget buildStoreWidget(BuildContext context, int id, String imgUrl,
-      String storeName, String location, String distance, String offers,String categoryName) {
+  ///
+  Widget buildStoreWidget(
+      BuildContext context,
+      int id,
+      String imgUrl,
+      String storeName,
+      String location,
+      String distance,
+      String offers,
+      String categoryName) {
     return InkWell(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -3006,11 +3197,7 @@ final String cityId;
         alignment: Alignment.bottomCenter,
         children: [
           Container(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width *
-          0.45,
+            width: MediaQuery.of(context).size.width * 0.45,
             margin: EdgeInsets.all(8),
             // Adjust the height according to your requirement
             decoration: BoxDecoration(
@@ -3030,14 +3217,13 @@ final String cityId;
               child: CachedNetworkImage(
                 imageUrl: imgUrl,
                 fit: BoxFit.cover,
-                placeholder: (context, url) =>
-                    Image.asset(
-                      'assets/images/vertical_placeholder.jpg',
-                      // Path to your placeholder image asset
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
-                    ),
+                placeholder: (context, url) => Image.asset(
+                  'assets/images/vertical_placeholder.jpg',
+                  // Path to your placeholder image asset
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
                 width: double.infinity,
                 height: double.infinity,
                 errorWidget: (context, url, error) =>
@@ -3061,19 +3247,21 @@ final String cityId;
             padding: const EdgeInsets.only(bottom: 26.0),
             child: Container(
               alignment: Alignment.center,
-              height: heights*0.03,
-              width:widths*0.4,
+              height: heights * 0.03,
+              width: widths * 0.4,
               decoration: BoxDecoration(
-                color: MyColors.whiteBG,
-                borderRadius: BorderRadius.circular(25)
+                  color: MyColors.whiteBG,
+                  borderRadius: BorderRadius.circular(25)),
+              child: Text(
+                "Book Table",
+                style: TextStyle(fontSize: 12),
               ),
-              child: Text("Book Table",style: TextStyle(fontSize: 12),),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-    offers,
+              offers,
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
@@ -3195,17 +3383,15 @@ class LocationWidget extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: locality.image,
                   fit: BoxFit.fill,
-                  placeholder: (context, url) =>
-                      Image.asset(
-                        'assets/images/placeholder.png',
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                  errorWidget: (context, url, error) =>
-                      Center(
-                        child: Icon(Icons.error),
-                      ),
+                  placeholder: (context, url) => Image.asset(
+                    'assets/images/placeholder.png',
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                  errorWidget: (context, url, error) => Center(
+                    child: Icon(Icons.error),
+                  ),
                 ),
               ),
             ),
@@ -3227,18 +3413,8 @@ class LocationWidget extends StatelessWidget {
       String locationName, String city_id, String localtiy_id) async {
     //showErrorMessage(context, message: "city_id: "+city_id+", localtiyId: "+localtiy_id);
     final route = MaterialPageRoute(
-        builder: (context) =>
-            AllCouponScreen(
-                "$locationName",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "$city_id",
-                "$localtiy_id"));
+        builder: (context) => AllCouponScreen("$locationName", "", "", "", "",
+            "", "", "", "$city_id", "$localtiy_id"));
     await Navigator.push(context, route);
   }
 }
@@ -3254,10 +3430,7 @@ class TopCollectionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Container(
-      height: MediaQuery
-          .of(context)
-          .size
-          .width * 0.32,
+      height: MediaQuery.of(context).size.width * 0.32,
       child: ListView.builder(
         itemBuilder: (context, index) {
           //return buildRestaurantsWidget(context, "" + restaurantsItems[index]['imgUrl']);
@@ -3300,29 +3473,22 @@ class TopCollectionWidget extends StatelessWidget {
           ),
           clipBehavior: Clip.antiAliasWithSaveLayer,
           child: Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width *
+            width: MediaQuery.of(context).size.width *
                 0.3, // Adjust the width according to your requirement
-            height: MediaQuery
-                .of(context)
-                .size
-                .width *
+            height: MediaQuery.of(context).size.width *
                 0.3, // Adjust the height according to your requirement
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: CachedNetworkImage(
                 imageUrl: imgUrl,
                 fit: BoxFit.fill,
-                placeholder: (context, url) =>
-                    Image.asset(
-                      'assets/images/vertical_placeholder.jpg',
-                      // Path to your placeholder image asset
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
-                    ),
+                placeholder: (context, url) => Image.asset(
+                  'assets/images/vertical_placeholder.jpg',
+                  // Path to your placeholder image asset
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
                 errorWidget: (context, url, error) =>
                     Center(child: Icon(Icons.error)),
               ),
@@ -3334,12 +3500,12 @@ class TopCollectionWidget extends StatelessWidget {
   }
 }
 
-
 class RestaurantCard extends StatefulWidget {
-  final Restaurant restaurant;
+  // final Restaurant restaurant;
   final String name;
+  final Data filter;
 
-  RestaurantCard({required this.restaurant, required this.name});
+  RestaurantCard({required this.name, required this.filter});
 
   @override
   State<RestaurantCard> createState() => _RestaurantCardState();
@@ -3352,189 +3518,237 @@ class _RestaurantCardState extends State<RestaurantCard> {
     // TODO: implement initState
     super.initState();
     fetchGalleryImagesAmbience("177", "ambience");
+    print("Totaaaaa:${widget.name}");
   }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      elevation: 5,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image with overlay
-          Stack(
-            children: [
-              CarouselSlider(
-                items: ambienceList.map((json) {
-                  return GestureDetector(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10)),
-                      child: CachedNetworkImage(
-                        imageUrl: json['image'],
-                        fit: BoxFit.fill,
-                        placeholder: (context, url) => Image.asset(
-                          'assets/images/placeholder.png',
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                        ),
-                        errorWidget: (context, url, error) =>
-                        const Center(child: Icon(Icons.error)),
-                      ),
-                    ),
-                  );
-                }).toList(),
-                options: CarouselOptions(
-                  height: heights * 0.22,
-                  enlargeCenterPage: true,
-                  autoPlay: true,
-                  reverse: true,
-                  disableCenter: true,
-                  aspectRatio: 1 / 9,
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  enableInfiniteScroll: true,
-                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                  viewportFraction: 1,
-                ),
-              ),
-              Positioned(
-                top: 10,
-                left: 10,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Text(
-                    widget.name.toString(),
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 10,
-                right: 10,
-                child: Icon(Icons.favorite_border, color: Colors.white),
-              ),
-            ],
-          ),
-
-          Padding(
-            padding: EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: widths * 0.66,
-                      // color: Colors.red,
-                      child: Text(
-                        widget.restaurant.name,
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                    Spacer(),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.withOpacity(0.3)),
-                          // color: Color(0xff00bd62),
-                          borderRadius: BorderRadius.circular(3)
-                      ),
-                      child: Text("⭐⭐⭐",
-                          style: TextStyle(
-                            color:MyColors.whiteBG,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12,
-                          )),
-                    ),
-                    // CircleAvatar(
-                    //     radius: 9,
-                    //     backgroundColor: MyColors.darkGreen,
-                    //     child: Icon(Icons.star,
-                    //         color: MyColors.whiteBG, size: 12)),
-                    // SizedBox(width: 4),
-                    // Text(
-                    //   widget.restaurant.rating.toString(),
-                    //   style: TextStyle(
-                    //       fontSize: 20,
-                    //       fontWeight: FontWeight.bold,
-                    //       color: MyColors.blackBG),
-                    // ),
-                  ],
-                ),
-                SizedBox(height: 4),
-                Text(
-                  widget.restaurant.location,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  "${widget.restaurant.cuisine} • ${widget.restaurant.price}",
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                ),
-                SizedBox(height: 6),
-                // Row(
-                //   children: [
-                //     Container(
-                //         padding: EdgeInsets.all(3),
-                //         decoration: BoxDecoration(
-                //           color: Colors.grey.withOpacity(0.3),
-                //           borderRadius: BorderRadius.circular(10),
-                //         ),
-                //         child: Row(
-                //           children: [
-                //             Icon(
-                //               Icons.calendar_month_outlined,
-                //               color: Colors.grey[600],
-                //               size: 12,
-                //             ),
-                //             SizedBox(width: 6),
-                //             Text(
-                //               "Table Booking",
-                //               style: TextStyle(
-                //                   fontSize: 12,
-                //                   color: Colors.black.withOpacity(0.5)),
-                //             ),
-                //           ],
-                //         )),
-                //   ],
-                // ),
-                Divider(),
-                Wrap(
-                  children: widget.restaurant.offers.map((offer) {
-                    return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-                      decoration: BoxDecoration(
-                        color: Color(0xff00bd62),
-                        borderRadius: BorderRadius.circular(3)
-                      ),
-                      child: Text(
-                          offer,
-                          style: TextStyle(
-                            color:MyColors.whiteBG,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                          )),
-                    );
-                  }).toList(),
+    return widget.filter != "null"
+        ? Container(
+            margin: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              // color: MyColors.whiteBG,
+              color: Color(0xffffffff),
+              borderRadius: BorderRadius.circular(10),
+              // color: Colors.red
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  spreadRadius: 2,
+                  blurRadius: 5,
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Image with overlay
+                Stack(
+                  children: [
+                    CarouselSlider(
+                      items: ambienceList.map((json) {
+                        return GestureDetector(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10)),
+                            child: CachedNetworkImage(
+                              imageUrl: json['image'],
+                              fit: BoxFit.fill,
+                              placeholder: (context, url) => Image.asset(
+                                'assets/images/placeholder.png',
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const Center(child: Icon(Icons.error)),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      options: CarouselOptions(
+                        height: heights * 0.22,
+                        enlargeCenterPage: true,
+                        autoPlay: true,
+                        reverse: true,
+                        disableCenter: true,
+                        aspectRatio: 1 / 9,
+                        autoPlayCurve: Curves.fastOutSlowIn,
+                        enableInfiniteScroll: true,
+                        autoPlayAnimationDuration:
+                            const Duration(milliseconds: 800),
+                        viewportFraction: 1,
+                      ),
+                    ),
+                    Positioned(
+                      top: 10,
+                      left: 10,
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Text(
+                              widget.name.toString(),
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12),
+                            ),
+                          ),
+                          // Spacer(),
+                          SizedBox(
+                            width: widths * 0.65,
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(right: 8),
+                            padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Text(
+                              "${widget.filter.avgRating}/5",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          CircleAvatar(
+                              radius: 12,
+                              backgroundColor: MyColors.whiteBG,
+                              child: Icon(
+                                Icons.favorite_border,
+                                color: MyColors.blackBG,
+                                size: 16,
+                              ))
+                          // Icon(Icons.favorite_border, color: Colors.white),
+                        ],
+                      ),
+                    ),
+                    // Positioned(
+                    //   top: 10,
+                    //   right: 10,
+                    //   child: CircleAvatar(
+                    //       radius: 12,
+                    //       child: Icon(Icons.favorite_border, color: Colors.white,size: 16,)),
+                    // ),
+                  ],
+                ),
+
+                Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: widths * 0.66,
+                            // color: Colors.red,
+                            child: Text(
+                              widget.filter.storeName,
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                          Spacer(),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 3, vertical: 1),
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Colors.grey.withOpacity(0.3)),
+                                // color: Color(0xff00bd62),
+                                borderRadius: BorderRadius.circular(3)),
+                            child: Text("⭐⭐⭐",
+                                style: TextStyle(
+                                  color: MyColors.whiteBG,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                )),
+                          ),
+                          // CircleAvatar(
+                          //     radius: 9,
+                          //     backgroundColor: MyColors.darkGreen,
+                          //     child: Icon(Icons.star,
+                          //         color: MyColors.whiteBG, size: 12)),
+                          // SizedBox(width: 4),
+                          // Text(
+                          //   widget.restaurant.rating.toString(),
+                          //   style: TextStyle(
+                          //       fontSize: 20,
+                          //       fontWeight: FontWeight.bold,
+                          //       color: MyColors.blackBG),
+                          // ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        widget.filter.address,
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                      ),
+                      SizedBox(height: 4),
+                      // Text(
+                      //   "${widget.restaurant.cuisine} • ${widget.restaurant.price}",
+                      //   style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      // ),
+                      SizedBox(height: 6),
+                      // Row(
+                      //   children: [
+                      //     Container(
+                      //         padding: EdgeInsets.all(3),
+                      //         decoration: BoxDecoration(
+                      //           color: Colors.grey.withOpacity(0.3),
+                      //           borderRadius: BorderRadius.circular(10),
+                      //         ),
+                      //         child: Row(
+                      //           children: [
+                      //             Icon(
+                      //               Icons.calendar_month_outlined,
+                      //               color: Colors.grey[600],
+                      //               size: 12,
+                      //             ),
+                      //             SizedBox(width: 6),
+                      //             Text(
+                      //               "Table Booking",
+                      //               style: TextStyle(
+                      //                   fontSize: 12,
+                      //                   color: Colors.black.withOpacity(0.5)),
+                      //             ),
+                      //           ],
+                      //         )),
+                      //   ],
+                      // ),
+                      Divider(),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                        decoration: BoxDecoration(
+                            color: Color(0xff00bd62),
+                            borderRadius: BorderRadius.circular(3)),
+                        child: Text(
+                            "Flat 50% off on pre-booking       +${widget.filter.offers} offers",
+                            style: TextStyle(
+                              color: MyColors.whiteBG,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                            )),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )
+        : Text("Nodata");
   }
 
   bool isLoading = true;

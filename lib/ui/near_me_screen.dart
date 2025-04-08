@@ -3,6 +3,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
+import 'package:grabto/view_model/filter_view_model.dart';
+import 'package:provider/provider.dart';
 
 import '../helper/shared_pref.dart';
 import '../model/features_model.dart';
@@ -155,7 +157,9 @@ class _NearMeScreenState extends State<NearMeScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_handleScroll);
+
     getUserDetails();
+
     feature();
     fetchSubCategories(5);
 
@@ -178,20 +182,15 @@ class _NearMeScreenState extends State<NearMeScreen> {
       lat=n.lat;
       long = n.long;
     });
-    filterApi(lat, long,"","","");
+    // filterApi(lat, long,"","","");
+    Provider.of<FilterViewModel>(context,listen: false).filterApi(context, lat, long, "", "", "", [], []);
   }
   int selectedIndices = 1;
   String selectedName = "";
   @override
   Widget build(BuildContext context) {
-    List<FirstList> orderedList = [
-      list[0], // Fixed index 0
-      list[1], // Fixed index 1
-      ...selectedList, // Selected items start from index 2
-      ...list
-          .sublist(2)
-          .where((e) => !selectedList.contains(e)) // Remaining unselected items
-    ];
+    final data=Provider.of<FilterViewModel>(context);
+    List<FirstList> orderedList = list;
     return Scaffold(
       backgroundColor: MyColors.whiteBG,
       body: CustomScrollView(
@@ -289,7 +288,8 @@ class _NearMeScreenState extends State<NearMeScreen> {
                               toggleSelection(item);
                               selectedName = list[index].name;
                               print("item");
-                              index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):index==1?filterApi(lat, long,"4","",""):index==2?filterApi(lat, long,"","5",""):filterApi(lat, long,"","","10");
+                              print(isSelected);
+                              isSelected==false? index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):index==1?data.filterApi(context, lat, long, "4", "", "", [], []):index==2?data.filterApi(context,lat, long,"","5","",[],[],):data.filterApi(context,lat, long,"","","10",[],[]):null;
                             });
                           },
                           child: Container(
@@ -338,62 +338,30 @@ class _NearMeScreenState extends State<NearMeScreen> {
                 )),
           ),
           SliverToBoxAdapter(
-            child: Container(
+            child:  
+            data.filterList.data?.data!=null&&data.filterList.data!.data!.isNotEmpty?Container(
               color: Color(0xffffffff),
               child: ListView.builder(
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
-                itemCount: data.length??0,
+                itemCount:  data.filterList.data?.data?.length??0,
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   return
-                    data.length==0?Container(): RestaurantCard(name: selectedName,filter:data[index]);
+                    data.filterList.data?.data?.length==0?Container(): RestaurantCard(name: selectedName,filter:data.filterList.data!.data![index]);
                 },
               ),
-            ),
+            ):Center(child: Text("No Restaurants Found",style: TextStyle(
+                fontSize: 14,
+                color: Colors.black.withOpacity(0.7),
+                fontWeight: FontWeight.w600
+            ),)),
           )
         ],
       ),
     );
   }
-  List<FilteredDataModel> data = [];
-  Future<void> filterApi(
-      dynamic lat,
-      dynamic long,
-      dynamic rating,
-      dynamic distance,
-      dynamic discount,
-      ) async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      final body = {
-        "latitude": lat,
-        "longitude": long,
-        "rating": rating,
-        "discount": discount,
-        "distance": distance,
-        "amenities": "",
-        "subcategory_id": "",       };
-      print("Amannnn:$body");
-      final response = await ApiServices.filterApi(body,context);
-      if (response != null) {
-        print("Amannnn:$response");
-        setState(() {
-          data = response;
-        });
-      }else{
-        // showErrorMessage(context, message: "message");
-      }
-    } catch (e) {
-      print('fetchSubCategories: $e');
-    } finally {
-      // setModalState(() {
-      //   isLoading = false;
-      // });
-    }
-  }
+
   List<SubCategoriesModel> subCategoriesList = [];
   List<FeaturesModel>featureData=[];
   bool isLoading=false;
@@ -443,7 +411,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
 class RestaurantCard extends StatefulWidget {
   // final Restaurant restaurant;
   final String name;
-  final FilteredDataModel filter;
+  final Data filter;
 
   RestaurantCard({ required this.name, required this.filter});
 
@@ -458,7 +426,6 @@ class _RestaurantCardState extends State<RestaurantCard> {
     // TODO: implement initState
     super.initState();
     fetchGalleryImagesAmbience("177", "ambience");
-    print("Totaaaaa:${widget.name}");
   }
 
   @override

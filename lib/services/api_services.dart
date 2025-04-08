@@ -67,7 +67,8 @@ class ApiServices {
   }
   static Future<Map<String, dynamic>?> verify_otp(
       BuildContext context, Map body) async {
-    const url = '$BASE_URL/verify_otp';
+    // const url = '$BASE_URL/verify_otp';
+    const url = '$BASE_URL/user_verify_otp';
     final uri = Uri.parse(url);
     final response = await http.post(uri, body: body);
 
@@ -194,25 +195,29 @@ print(url);
     }
   }
 
-  static Future<List<FilteredDataModel>?> filterApi( Map body,context) async {
+  static Future<List<FilteredDataModel>?> filterApi(Map body,context) async {
+    print("⭐");
     const url = '$BASE_URL/filter-Stores';
     final uri = Uri.parse(url);
-    final response = await http.post(uri, body: body);
-
+    print("Rama");
+    final response = await http.post(uri, body: body );
+    print("Ajay");
+    print("hjvhh ${response.body}");
     if (response.statusCode == 200) {
+      print("😶‍🌫️");
       // Parse the JSON response
       final jsonResponse = json.decode(response.body) as Map;
       final res = jsonResponse['res'] as String;
       if (res == "success") {
         print('api_show_category: $jsonResponse');
         final data = jsonResponse['data'] as List<dynamic>;
-
+        showSuccessMessage(context, message: jsonResponse['msg'].toString());
         final FilteredData = data.map((e) {
           return FilteredDataModel.fromJson(e);
         }).toList();
-
         return FilteredData;
       } else {
+        print("✌️");
         print("filter-Stores: $res");
         showErrorMessage(context, message: jsonResponse['msg'].toString());
         return null;
@@ -221,6 +226,8 @@ print(url);
       return null;
     }
   }
+
+
   static Future<List<FeaturesModel>?> getFeatureApi() async {
     const url = '$BASE_URL/get-feature';
     final uri = Uri.parse(url);

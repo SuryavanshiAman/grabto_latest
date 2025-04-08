@@ -8,6 +8,7 @@ import 'package:grabto/ui/near_me_screen.dart';
 import 'package:grabto/ui/splash_screen.dart';
 // import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:grabto/view_model/filter_view_model.dart';
 // import 'package:in_app_update/in_app_update.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
@@ -200,6 +201,7 @@ class _MyAppState extends State<MyApp> {
         // ChangeNotifierProvider(create: (_) => PurchaseProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()), // Add UserProvider here
         ChangeNotifierProvider(create: (_) => Address()), // Add UserProvider here
+        ChangeNotifierProvider(create: (_) => FilterViewModel()), // Add UserProvider here
       ],
       child: MaterialApp(
         title: 'Grabto',
