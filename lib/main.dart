@@ -8,6 +8,7 @@ import 'package:grabto/ui/near_me_screen.dart';
 import 'package:grabto/ui/splash_screen.dart';
 // import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:grabto/view_model/different_location_view_model.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
 // import 'package:in_app_update/in_app_update.dart';
 import 'package:provider/provider.dart';
@@ -198,10 +199,10 @@ class _MyAppState extends State<MyApp> {
     widths=MediaQuery.of(context).size.width;
     return MultiProvider(
       providers: [
-        // ChangeNotifierProvider(create: (_) => PurchaseProvider()),
-        ChangeNotifierProvider(create: (_) => UserProvider()), // Add UserProvider here
-        ChangeNotifierProvider(create: (_) => Address()), // Add UserProvider here
-        ChangeNotifierProvider(create: (_) => FilterViewModel()), // Add UserProvider here
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => Address()),
+        ChangeNotifierProvider(create: (_) => FilterViewModel()),
+        ChangeNotifierProvider(create: (_) => DifferentLocationViewModel()),
       ],
       child: MaterialApp(
         title: 'Grabto',

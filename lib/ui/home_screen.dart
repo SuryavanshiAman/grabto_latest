@@ -572,61 +572,77 @@ print("dsd ${banners.length}");
         ),
       ),
       //
-      bottomNavigationBar: PopScope(
+      bottomNavigationBar:
+      PopScope(
         canPop: false,
         onPopInvoked: (v) {
           _onWillPop();
         },
-        child: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home_outlined,
-                color: MyColors.bottomNavigationUnselectedColor,
+        child: Container(
+          // color: MyColors.blackBG,
+          child: BottomNavigationBar(
+            backgroundColor: MyColors.blackBG,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.home_outlined,
+                  color: MyColors.bottomNavigationUnselectedColor,
+                ),
+                activeIcon: Icon(
+                  Icons.home,
+                  color: MyColors.bottomNavigationSelectedColor,
+                ),
+                label: "Home",
               ),
-              activeIcon: Icon(
-                Icons.home,
-                color: MyColors.bottomNavigationSelectedColor,
-              ),
-              label: "Home",
-            ),
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.category_outlined,
-                  color: MyColors.bottomNavigationUnselectedColor,
-                ),
-                activeIcon: Icon(
-                  Icons.category_rounded,
-                  color: MyColors.bottomNavigationSelectedColor,
-                ),
-                label: "Categories"),
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.favorite_border,
-                  color: MyColors.bottomNavigationUnselectedColor,
-                ),
-                activeIcon: Icon(
-                  Icons.favorite,
-                  color: MyColors.bottomNavigationSelectedColor,
-                ),
-                label: "Bookmark"),
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.person_outline,
-                  color: MyColors.bottomNavigationUnselectedColor,
-                ),
-                activeIcon: Icon(
-                  Icons.person,
-                  color: MyColors.bottomNavigationSelectedColor,
-                ),
-                label: "Profile")
-          ],
-          currentIndex: _selectedIndex,
-          showUnselectedLabels: true,
-          unselectedItemColor: MyColors.bottomNavigationUnselectedColor,
-          selectedItemColor: MyColors.bottomNavigationSelectedColor,
-          elevation: 5,
-          onTap: _onItemTapped,
+              BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.category_outlined,
+                    color: MyColors.bottomNavigationUnselectedColor,
+                  ),
+                  activeIcon: Icon(
+                    Icons.category_rounded,
+                    color: MyColors.bottomNavigationSelectedColor,
+                  ),
+                  label: "Categories"),
+              // BottomNavigationBarItem(
+              //   backgroundColor: MyColors.redBG,
+              //     icon: Icon(
+              //       Icons.folder,
+              //       color: MyColors.bottomNavigationUnselectedColor,
+              //     ),
+              //     activeIcon: Icon(
+              //       Icons.category_rounded,
+              //       color: MyColors.bottomNavigationSelectedColor,
+              //     ),
+              //     label: "PayBill"),
+              BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.favorite_border,
+                    color: MyColors.bottomNavigationUnselectedColor,
+                  ),
+                  activeIcon: Icon(
+                    Icons.favorite,
+                    color: MyColors.bottomNavigationSelectedColor,
+                  ),
+                  label: "Bookmark"),
+              BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.person_outline,
+                    color: MyColors.bottomNavigationUnselectedColor,
+                  ),
+                  activeIcon: Icon(
+                    Icons.person,
+                    color: MyColors.bottomNavigationSelectedColor,
+                  ),
+                  label: "Profile")
+            ],
+            currentIndex: _selectedIndex,
+            showUnselectedLabels: true,
+            unselectedItemColor: MyColors.bottomNavigationUnselectedColor,
+            selectedItemColor: MyColors.bottomNavigationSelectedColor,
+            elevation: 5,
+            onTap: _onItemTapped,
+          ),
         ),
       ),
     );

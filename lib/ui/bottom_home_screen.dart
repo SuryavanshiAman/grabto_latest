@@ -27,6 +27,7 @@ import 'package:grabto/ui/transaction_screen.dart';
 import 'package:grabto/utils/dashed_line.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:grabto/utils/time_slot.dart';
+import 'package:grabto/view_model/different_location_view_model.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
 import 'package:grabto/widget/title_description_widget.dart';
 import 'package:flutter/material.dart';
@@ -98,14 +99,13 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
   void initState() {
     // TODO: implement initState
     super.initState();
-    _scrollController.addListener(_handleScroll);
 
     _instance = this;
     WidgetsBinding.instance.addObserver(this);
     getUserDetails();
     fetchSubCategories(5);
     getBanners();
-
+Provider.of<DifferentLocationViewModel>(context,listen: false).differentLocationApi(context);
     // fetchSubCategories()
   }
 
@@ -270,16 +270,16 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
   }
 
   final ScrollController _scrollController = ScrollController();
-  bool _showTitle = true;
-  void _handleScroll() {
-    setState(() {
-      if (_scrollController.position.pixels > 1500) {
-        _showTitle = false;
-      } else {
-        _showTitle = true;
-      }
-    });
-  }
+  // bool _showTitle = true;
+  // void _handleScroll() {
+  //   setState(() {
+  //     if (_scrollController.position.pixels > 1500) {
+  //       _showTitle = false;
+  //     } else {
+  //       _showTitle = true;
+  //     }
+  //   });
+  // }
 
   List<FirstList> list = [
     FirstList("Filter"),
@@ -384,11 +384,12 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
   Widget build(BuildContext context) {
     List<FirstList> orderedList = list;
     final location = Provider.of<Address>(context);
+    final differentLocation =Provider.of<DifferentLocationViewModel>(context);
     final data = Provider.of<FilterViewModel>(context);
     print(location.area);
     return categories.isNotEmpty
         ? Scaffold(
-            key: _scaffoldKey,
+            // key: _scaffoldKey,
             backgroundColor: MyColors.backgroundBg,
             body: Container(
               color: MyColors.backgroundBg,
@@ -1047,31 +1048,37 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                         margin: EdgeInsets.symmetric(horizontal: 12),
                         height: heights * 0.06,
                         child: ListView.builder(
-                          itemCount: 7,
+                          itemCount: differentLocation.locationList.data?.data?.length??0,
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
-                            return Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 7, horizontal: 30),
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 5),
-                              // height: heights*0.03,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey,
-                                      spreadRadius: 0.5,
-                                      offset: Offset(2, 2),
-                                      blurRadius: 2,
-                                    ),
-                                  ],
-                                  color: Color(0xfffde39f),
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Text(
-                                "DALIBAG",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600, fontSize: 12),
+                            final data=differentLocation.locationList.data?.data?[index];
+                            return InkWell(
+                              onTap: (){
+                                differentLocation.nearByPlacesApi(context, data?.localityName??"");
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 7, horizontal: 30),
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 5),
+                                // height: heights*0.03,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey,
+                                        spreadRadius: 0.5,
+                                        offset: Offset(2, 2),
+                                        blurRadius: 2,
+                                      ),
+                                    ],
+                                    color: Color(0xfffde39f),
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Text(
+                                  data?.localityName??"",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600, fontSize: 12),
+                                ),
                               ),
                             );
                           },
@@ -1081,31 +1088,37 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                         margin: EdgeInsets.symmetric(horizontal: 12),
                         height: heights * 0.06,
                         child: ListView.builder(
-                          itemCount: 7,
+                          itemCount: differentLocation.locationList.data?.data1?.length??0,
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
-                            return Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 7, horizontal: 30),
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 5),
-                              // height: heights*0.03,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey,
-                                      spreadRadius: 0.5,
-                                      offset: Offset(2, 2),
-                                      blurRadius: 2,
-                                    ),
-                                  ],
-                                  color: Color(0xfffde39f),
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Text(
-                                "HAZRATGANJ",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600, fontSize: 12),
+                            final data=differentLocation.locationList.data?.data1?[index];
+                            return InkWell(
+                              onTap: (){
+                                differentLocation.nearByPlacesApi(context, data?.localityName??"");
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 7, horizontal: 30),
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 5),
+                                // height: heights*0.03,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey,
+                                        spreadRadius: 0.5,
+                                        offset: Offset(2, 2),
+                                        blurRadius: 2,
+                                      ),
+                                    ],
+                                    color: Color(0xfffde39f),
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Text(
+                                    data?.localityName??"",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600, fontSize: 12),
+                                ),
                               ),
                             );
                           },
@@ -1356,6 +1369,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                   return data.filterList.data?.data?.length == 0
                                       ? Text("Nodata")
                                       : RestaurantCard(
+                                    index:index,
                                           name: selectedName,
                                           filter: data!
                                               .filterList!.data!.data![index]);
@@ -3502,10 +3516,11 @@ class TopCollectionWidget extends StatelessWidget {
 
 class RestaurantCard extends StatefulWidget {
   // final Restaurant restaurant;
+  final int index;
   final String name;
   final Data filter;
 
-  RestaurantCard({required this.name, required this.filter});
+  RestaurantCard({ required this.index,  required this.name, required this.filter});
 
   @override
   State<RestaurantCard> createState() => _RestaurantCardState();
@@ -3518,9 +3533,8 @@ class _RestaurantCardState extends State<RestaurantCard> {
     // TODO: implement initState
     super.initState();
     fetchGalleryImagesAmbience("177", "ambience");
-    print("Totaaaaa:${widget.name}");
   }
-
+int selectedIndex=-1;
   @override
   Widget build(BuildContext context) {
     return widget.filter != "null"
@@ -3545,15 +3559,52 @@ class _RestaurantCardState extends State<RestaurantCard> {
                 // Image with overlay
                 Stack(
                   children: [
+                    // CarouselSlider(
+                    //   items: widget.filter.image((json) {
+                    //     return GestureDetector(
+                    //       child: ClipRRect(
+                    //         borderRadius: BorderRadius.only(
+                    //             topLeft: Radius.circular(10),
+                    //             topRight: Radius.circular(10)),
+                    //         child: CachedNetworkImage(
+                    //           imageUrl: json.url.toString(),
+                    //           fit: BoxFit.fill,
+                    //           placeholder: (context, url) => Image.asset(
+                    //             'assets/images/placeholder.png',
+                    //             fit: BoxFit.cover,
+                    //             width: double.infinity,
+                    //             height: double.infinity,
+                    //           ),
+                    //           errorWidget: (context, url, error) =>
+                    //               const Center(child: Icon(Icons.error)),
+                    //         ),
+                    //       ),
+                    //     );
+                    //   }).toList(),
+                    //   options: CarouselOptions(
+                    //     height: heights * 0.22,
+                    //     enlargeCenterPage: true,
+                    //     autoPlay: true,
+                    //     reverse: true,
+                    //     disableCenter: true,
+                    //     aspectRatio: 1 / 9,
+                    //     autoPlayCurve: Curves.fastOutSlowIn,
+                    //     enableInfiniteScroll: true,
+                    //     autoPlayAnimationDuration:
+                    //         const Duration(milliseconds: 800),
+                    //     viewportFraction: 1,
+                    //   ),
+                    // ),
                     CarouselSlider(
-                      items: ambienceList.map((json) {
+                      items: widget.filter.image?.map((img) {
                         return GestureDetector(
                           child: ClipRRect(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                topRight: Radius.circular(10)),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                            ),
                             child: CachedNetworkImage(
-                              imageUrl: json['image'],
+                              imageUrl: img.url.toString(),
                               fit: BoxFit.fill,
                               placeholder: (context, url) => Image.asset(
                                 'assets/images/placeholder.png',
@@ -3562,11 +3613,11 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                 height: double.infinity,
                               ),
                               errorWidget: (context, url, error) =>
-                                  const Center(child: Icon(Icons.error)),
+                              const Center(child: Icon(Icons.error)),
                             ),
                           ),
                         );
-                      }).toList(),
+                      }).toList() ?? [], // Use empty list if image is null
                       options: CarouselOptions(
                         height: heights * 0.22,
                         enlargeCenterPage: true,
@@ -3576,11 +3627,11 @@ class _RestaurantCardState extends State<RestaurantCard> {
                         aspectRatio: 1 / 9,
                         autoPlayCurve: Curves.fastOutSlowIn,
                         enableInfiniteScroll: true,
-                        autoPlayAnimationDuration:
-                            const Duration(milliseconds: 800),
+                        autoPlayAnimationDuration: const Duration(milliseconds: 800),
                         viewportFraction: 1,
                       ),
                     ),
+
                     Positioned(
                       top: 10,
                       left: 10,
@@ -3590,30 +3641,30 @@ class _RestaurantCardState extends State<RestaurantCard> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color:MyColors.redBG ,
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child: Text(
-                              widget.name.toString(),
+                              "${widget.filter.availableSeat} seat left",
                               style: TextStyle(
-                                  color: Colors.red,
+                                  color: MyColors.whiteBG,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12),
                             ),
                           ),
                           // Spacer(),
                           SizedBox(
-                            width: widths * 0.65,
+                            width: widths * 0.43,
                           ),
                           Container(
-                            margin: EdgeInsets.only(right: 8),
+                            margin: EdgeInsets.only(right: 15),
                             padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
                             decoration: BoxDecoration(
                               color: Colors.green,
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child: Text(
-                              "${widget.filter.avgRating}/5",
+                              "${widget.filter.avgRating.toStringAsFixed(1)}/5",
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -3624,22 +3675,22 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           CircleAvatar(
                               radius: 12,
                               backgroundColor: MyColors.whiteBG,
-                              child: Icon(
-                                Icons.favorite_border,
-                                color: MyColors.blackBG,
-                                size: 16,
+                              child: InkWell(
+                                onTap: (){
+                                  setState(() {
+                                    selectedIndex=widget.index;
+                                  });
+                                },
+                                child: Icon(
+                                  selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
+                                  color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
+                                  size: 16,
+                                ),
                               ))
                           // Icon(Icons.favorite_border, color: Colors.white),
                         ],
                       ),
                     ),
-                    // Positioned(
-                    //   top: 10,
-                    //   right: 10,
-                    //   child: CircleAvatar(
-                    //       radius: 12,
-                    //       child: Icon(Icons.favorite_border, color: Colors.white,size: 16,)),
-                    // ),
                   ],
                 ),
 

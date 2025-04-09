@@ -338,7 +338,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
                 )),
           ),
           SliverToBoxAdapter(
-            child:  
+            child:
             data.filterList.data?.data!=null&&data.filterList.data!.data!.isNotEmpty?Container(
               color: Color(0xffffffff),
               child: ListView.builder(
@@ -451,15 +451,51 @@ class _RestaurantCardState extends State<RestaurantCard> {
           // Image with overlay
           Stack(
             children: [
+              // CarouselSlider(
+              //   items: ambienceList.map((json) {
+              //     return GestureDetector(
+              //       child: ClipRRect(
+              //         borderRadius: BorderRadius.only(
+              //             topLeft: Radius.circular(10),
+              //             topRight: Radius.circular(10)),
+              //         child: CachedNetworkImage(
+              //           imageUrl: json['image'],
+              //           fit: BoxFit.fill,
+              //           placeholder: (context, url) => Image.asset(
+              //             'assets/images/placeholder.png',
+              //             fit: BoxFit.cover,
+              //             width: double.infinity,
+              //             height: double.infinity,
+              //           ),
+              //           errorWidget: (context, url, error) =>
+              //           const Center(child: Icon(Icons.error)),
+              //         ),
+              //       ),
+              //     );
+              //   }).toList(),
+              //   options: CarouselOptions(
+              //     height: heights * 0.22,
+              //     enlargeCenterPage: true,
+              //     autoPlay: true,
+              //     reverse: true,
+              //     disableCenter: true,
+              //     aspectRatio: 1 / 9,
+              //     autoPlayCurve: Curves.fastOutSlowIn,
+              //     enableInfiniteScroll: true,
+              //     autoPlayAnimationDuration: const Duration(milliseconds: 800),
+              //     viewportFraction: 1,
+              //   ),
+              // ),
               CarouselSlider(
-                items: ambienceList.map((json) {
+                items: widget.filter.image?.map((img) {
                   return GestureDetector(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10)),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                      ),
                       child: CachedNetworkImage(
-                        imageUrl: json['image'],
+                        imageUrl: img.url.toString(),
                         fit: BoxFit.fill,
                         placeholder: (context, url) => Image.asset(
                           'assets/images/placeholder.png',
@@ -472,7 +508,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                       ),
                     ),
                   );
-                }).toList(),
+                }).toList() ?? [], // Use empty list if image is null
                 options: CarouselOptions(
                   height: heights * 0.22,
                   enlargeCenterPage: true,
@@ -498,7 +534,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(
-                        widget.name.toString(),
+                        widget.filter.availableSeat,
                         style: TextStyle(
                             color: Colors.red,
                             fontWeight: FontWeight.bold,
@@ -650,29 +686,40 @@ class _RestaurantCardState extends State<RestaurantCard> {
 
   bool isLoading = true;
 
-  Future<void> fetchGalleryImagesAmbience(
-      String store_id, String food_type) async {
+  Future<void> fetchGalleryImagesAmbience(String store_id, String food_type) async {
+    if (!mounted) return; // exit early if the widget is not mounted
     setState(() {
       isLoading = true;
     });
+
     try {
       final body = {"store_id": "$store_id", "food_type": "$food_type"};
       final response = await ApiServices.store_multiple_galleryJson(body);
       print("object: $response");
+
+      if (!mounted) return;
+
       if (response != null) {
         setState(() {
           ambienceList = response;
-
           print('fetchGalleryImagesAmbience: $response');
         });
       }
-      setState(() {
-        isLoading = false;
-      });
+
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+
     } catch (e) {
       print('fetchGalleryImagesAmbience: $e');
     } finally {
-      isLoading = false;
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 }

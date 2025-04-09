@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:grabto/model/filtered_data_model.dart';
-import 'package:grabto/repo.dart';
 
 import '../helper/response/api_response.dart';
+import '../repo/filter_repo.dart';
 
 class FilterViewModel with ChangeNotifier {
   final _filterRepo =FilterRepo();
