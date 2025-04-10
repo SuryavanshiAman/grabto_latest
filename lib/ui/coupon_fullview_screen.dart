@@ -588,21 +588,42 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>with TickerP
                                         .width *
                                         0.015, // Adjust according to your requirement
                                   ),
-                                  Container(
-                                    margin: EdgeInsets.only(left: 15),
-                                    padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.grey.withOpacity(0.3)),
-                                        // color: Color(0xff00bd62),
-                                        borderRadius: BorderRadius.circular(3)
-                                    ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        margin: EdgeInsets.only(left: 15),
+                                        padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                                            // color: Color(0xff00bd62),
+                                            borderRadius: BorderRadius.circular(3)
+                                        ),
 
-                                    child: Text("⭐⭐⭐",
-                                        style: TextStyle(
-                                          color:MyColors.whiteBG,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 12,
-                                        )),
+                                        child: Text("⭐⭐⭐",
+                                            style: TextStyle(
+                                              color:MyColors.whiteBG,
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 12,
+                                            )),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(right: 15),
+                                        padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green,
+                                          borderRadius: BorderRadius.circular(5),
+                                        ),
+                                        child: Text(
+                                          "${star}/5",
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   SizedBox(
                                     height: MediaQuery
@@ -616,25 +637,30 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>with TickerP
                                     child: Text("People Say This Place Is Known For Outdoor Seating, Weekend Brunch, Cafe, Good Music, Young Crowd, Elaborate Menu",style:TextStyle(color: MyColors.textColorTwo) ,),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 10.0),
+                                    padding: const EdgeInsets.only(left: 10.0,top: 5),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                                       children: [
-                                         Text("4.3km away",style: TextStyle(fontSize: 12,color: MyColors.textColorTwo),),
-                                         Text("₹1000 for two",style: TextStyle(fontSize: 12,color: MyColors.textColorTwo),),
-                                         Text("3 Seats left",style: TextStyle(color: MyColors.redBG,fontSize: 12),),
+                                         Text("4.3km away",style: TextStyle(fontSize: 12,color: MyColors.textColorTwo,fontWeight: FontWeight.w500),),
+                                         Text("₹1000 for two",style: TextStyle(fontSize: 12,color: MyColors.textColorTwo,fontWeight: FontWeight.w500),),
+                                         Text("3 Seats left",style: TextStyle(color: MyColors.redBG,fontSize: 12,fontWeight: FontWeight.w500),),
 SizedBox(width: widths*0.2,)
                                       ],
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 10.0),
+                                    padding: const EdgeInsets.only(top: 10),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                                       children: [
                                         Text("Open",style: TextStyle(fontSize: 12,color: MyColors.lightGreen,fontWeight: FontWeight.w600),),
-                                        Text("View Timing",style: TextStyle(fontSize: 12,color: MyColors.textColorTwo),),
-                                        Text("Call 📞",style: TextStyle(color: MyColors.blackBG,fontSize: 12),),
+                                        Text("View Timing",style: TextStyle(fontSize: 12,color: MyColors.blackBG),),
+                                        InkWell(
+                                            onTap: (){
+                                              _makePhoneCall(
+                                                  storeMobile);
+                                            },
+                                            child: Text("Call 📞",style: TextStyle(color: MyColors.blackBG,fontSize: 12),)),
                                         SizedBox(width: widths*0.2,)
                                       ],
                                     ),
@@ -674,152 +700,152 @@ SizedBox(width: widths*0.2,)
                                       ],
                                     ),
                                   ),
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 5),
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceEvenly,
-                                        children: [
-                                          _buildCard(
-                                            context: context,
-                                            icon: Icons.pin_drop,
-                                            text: 'Location',
-                                            onTap: _launchMaps,
-                                          ),
-                                          _buildCard(
-                                            context: context,
-                                            icon: Icons.call,
-                                            text: 'Contact',
-                                            onTap: () {
-                                              _makePhoneCall(
-                                                  storeMobile);
-                                            },
-                                          ),
-                                          _buildCard(
-                                            context: context,
-                                            icon: Icons.edit_note,
-                                            text: 'Review',
-                                            onTap: () {
-                                              if (userId == 0) {
-                                                NavigationUtil
-                                                    .navigateToLogin(
-                                                    context);
-                                              } else {
-                                                _navigateToAddRatingScreen(
-                                                    context);
-                                              }
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                                  // Container(
+                                  //   margin: const EdgeInsets.symmetric(
+                                  //       horizontal: 5),
+                                  //   child: SingleChildScrollView(
+                                  //     scrollDirection: Axis.horizontal,
+                                  //     child: Row(
+                                  //       mainAxisAlignment:
+                                  //       MainAxisAlignment
+                                  //           .spaceEvenly,
+                                  //       children: [
+                                  //         _buildCard(
+                                  //           context: context,
+                                  //           icon: Icons.pin_drop,
+                                  //           text: 'Location',
+                                  //           onTap: _launchMaps,
+                                  //         ),
+                                  //         _buildCard(
+                                  //           context: context,
+                                  //           icon: Icons.call,
+                                  //           text: 'Contact',
+                                  //           onTap: () {
+                                  //             _makePhoneCall(
+                                  //                 storeMobile);
+                                  //           },
+                                  //         ),
+                                  //         _buildCard(
+                                  //           context: context,
+                                  //           icon: Icons.edit_note,
+                                  //           text: 'Review',
+                                  //           onTap: () {
+                                  //             if (userId == 0) {
+                                  //               NavigationUtil
+                                  //                   .navigateToLogin(
+                                  //                   context);
+                                  //             } else {
+                                  //               _navigateToAddRatingScreen(
+                                  //                   context);
+                                  //             }
+                                  //           },
+                                  //         ),
+                                  //       ],
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  //
+                                  // if (avg_type.isNotEmpty ||
+                                  //     subcategory_name.isNotEmpty)
+                                  //   Row(
+                                  //     mainAxisAlignment: MainAxisAlignment
+                                  //         .center,
+                                  //     // Distributes the widgets with space between them
+                                  //     children: [
+                                  //       if (avg_type
+                                  //           .isNotEmpty) // Show the widget only if avg_type is not empty
+                                  //         _buildCard(
+                                  //           context: context,
+                                  //           icon: Icons.currency_rupee,
+                                  //           text: '$avg_type',
+                                  //           onTap: () {
+                                  //             // _makePhoneCall(storeMobile);
+                                  //           },
+                                  //         ),
+                                  //       if (avg_type.isNotEmpty &&
+                                  //           subcategory_name
+                                  //               .isNotEmpty) const SizedBox(
+                                  //           width: 16),
+                                  //       // Space between the containers if both are present
+                                  //       if (subcategory_name
+                                  //           .isNotEmpty) // Show the widget only if subcategory_name is not empty
+                                  //         _buildCard(
+                                  //           context: context,
+                                  //           icon: Icons.rice_bowl_outlined,
+                                  //           text: '$subcategory_name',
+                                  //           onTap: () {
+                                  //             navigateToAllCouponScreen(
+                                  //               context,
+                                  //               subcategory_name,
+                                  //               category_id,
+                                  //               subcategory_id,
+                                  //             );
+                                  //           },
+                                  //         ),
+                                  //     ],
+                                  //   ),
 
-                                  if (avg_type.isNotEmpty ||
-                                      subcategory_name.isNotEmpty)
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment
-                                          .center,
-                                      // Distributes the widgets with space between them
-                                      children: [
-                                        if (avg_type
-                                            .isNotEmpty) // Show the widget only if avg_type is not empty
-                                          _buildCard(
-                                            context: context,
-                                            icon: Icons.currency_rupee,
-                                            text: '$avg_type',
-                                            onTap: () {
-                                              // _makePhoneCall(storeMobile);
-                                            },
-                                          ),
-                                        if (avg_type.isNotEmpty &&
-                                            subcategory_name
-                                                .isNotEmpty) const SizedBox(
-                                            width: 16),
-                                        // Space between the containers if both are present
-                                        if (subcategory_name
-                                            .isNotEmpty) // Show the widget only if subcategory_name is not empty
-                                          _buildCard(
-                                            context: context,
-                                            icon: Icons.rice_bowl_outlined,
-                                            text: '$subcategory_name',
-                                            onTap: () {
-                                              navigateToAllCouponScreen(
-                                                context,
-                                                subcategory_name,
-                                                category_id,
-                                                subcategory_id,
-                                              );
-                                            },
-                                          ),
-                                      ],
-                                    ),
-
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          decoration: const BoxDecoration(
-                                            shape: BoxShape.circle
-                                          ),
-                                          child: Card(
-                                            elevation: 2,
-
-                                            color: Colors.green,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                              BorderRadius.circular(20),
-
-                                            ),
-                                            child: const Padding(
-                                              padding: EdgeInsets.all(4.0),
-                                              child: Icon(
-                                                Icons.star,
-                                                color: Colors.white,
-                                                size: 18,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          " ${star??"4.0"},",
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 18,
-                                            fontWeight:
-                                            FontWeight.w600,
-                                              fontFamily: "afacadFlux"
-                                          ),
-                                        ),
-                                        Text(
-                                          "  ${noOfRating??"4.0"}",
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 14,
-                                            fontWeight:
-                                            FontWeight.w600,
-                                              fontFamily: "afacadFlux"
-                                          ),
-                                        ),
-                                        const Text(
-                                          "  Google ratings",
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 14,
-                                            fontWeight:
-                                            FontWeight.w600,
-                                            fontFamily: "afacadFlux"
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  // Padding(
+                                  //   padding: const EdgeInsets.all(8.0),
+                                  //   child: Row(
+                                  //     mainAxisAlignment: MainAxisAlignment.start,
+                                  //     children: [
+                                  //       Container(
+                                  //         decoration: const BoxDecoration(
+                                  //           shape: BoxShape.circle
+                                  //         ),
+                                  //         child: Card(
+                                  //           elevation: 2,
+                                  //
+                                  //           color: Colors.green,
+                                  //           shape: RoundedRectangleBorder(
+                                  //             borderRadius:
+                                  //             BorderRadius.circular(20),
+                                  //
+                                  //           ),
+                                  //           child: const Padding(
+                                  //             padding: EdgeInsets.all(4.0),
+                                  //             child: Icon(
+                                  //               Icons.star,
+                                  //               color: Colors.white,
+                                  //               size: 18,
+                                  //             ),
+                                  //           ),
+                                  //         ),
+                                  //       ),
+                                  //       Text(
+                                  //         " ${star??"4.0"},",
+                                  //         style: const TextStyle(
+                                  //           color: Colors.black,
+                                  //           fontSize: 18,
+                                  //           fontWeight:
+                                  //           FontWeight.w600,
+                                  //             fontFamily: "afacadFlux"
+                                  //         ),
+                                  //       ),
+                                  //       Text(
+                                  //         "  ${noOfRating??"4.0"}",
+                                  //         style: const TextStyle(
+                                  //           color: Colors.black,
+                                  //           fontSize: 14,
+                                  //           fontWeight:
+                                  //           FontWeight.w600,
+                                  //             fontFamily: "afacadFlux"
+                                  //         ),
+                                  //       ),
+                                  //       const Text(
+                                  //         "  Google ratings",
+                                  //         style: TextStyle(
+                                  //           color: Colors.black,
+                                  //           fontSize: 14,
+                                  //           fontWeight:
+                                  //           FontWeight.w600,
+                                  //           fontFamily: "afacadFlux"
+                                  //         ),
+                                  //       ),
+                                  //     ],
+                                  //   ),
+                                  // ),
                                   // SizedBox(
                                   //   height: MediaQuery
                                   //       .of(context)
@@ -2141,6 +2167,7 @@ setState(() {
           response['res'] == 'success') {
         final data = response['data'];
         print("Aman:$data");
+        print("🫠🫠:$data");
 
         // Ensure that the response data is in the expected format
         if (data != null && data is Map<String, dynamic>) {
@@ -3137,146 +3164,147 @@ class PrebookOfferListWidget extends StatelessWidget {
 
   Widget _buildPrebookOfferWidget(BuildContext context,
       PreBookTable prebooktable,categoryName) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 15),
-      child: Center(
-        child: CouponCard(
-          backgroundColor: MyColors.primaryColor,
-          curveAxis: Axis.vertical,
-          firstChild: GestureDetector(
-            onTap: () {
-              _showBottomSheet(
-                  context, "${prebooktable.title}");
-            },
-            child: Container(
-              padding: const EdgeInsets.all(5),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-
-                  const SizedBox(height: 5),
-                  const Text(
-                    "Today's Offer",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                      overflow: TextOverflow.clip,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    '${prebooktable.title}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      overflow: TextOverflow.clip,
-                    ),
-                  ),
-                  // const Text(
-                  //   'Available for limited',
-                  //   style: TextStyle(
-                  //     color: Colors.white,
-                  //     fontSize: 13,
-                  //     fontWeight: FontWeight.bold,
-                  //     overflow: TextOverflow.clip,
-                  //   ),
-                  // ),
-                  // const SizedBox(height: 5),
-                  DottedLine(
-                    height: 2,
-                    color: Colors.white,
-                    width: double.infinity,
-                    dashWidth: 6.0,
-                    dashSpacing: 6.0,
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    'Available for limited',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      overflow: TextOverflow.clip,
-                    ),
-                  ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: <Widget>[
-                  //     Expanded(
-                  //       child: Text(
-                  //         '${prebooktable.available_seat} slots available',
-                  //         style: const TextStyle(
-                  //           color: Colors.white,
-                  //           fontSize: 12,
-                  //           fontWeight: FontWeight.bold,
-                  //           overflow: TextOverflow.clip,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                ],
-              ),
-            ),
-          ),
-          secondChild: Container(
-            decoration: const BoxDecoration(
-              color: MyColors.blackBG,
-            ),
-            child: Center(
-              child: Card(
-                elevation: 2,
-                color: MyColors.blackBG,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: const BorderSide(
-                    color: MyColors.primaryColor,
-                    width: 1.0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 4,
-                    horizontal: 15,
-                  ),
-                  child: InkWell(
-                    onTap: () async{
-                      UserModel n = await SharedPref.getUser();
-                      print(n.name);
-                      if(n.id==0){
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
-
-                      }else{
-                        kycStatus=="Approve"?
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  BookTableScreen("$start_time",
-                                      // "$end_time",
-                                      "$storeName", "$storeId","$categoryName")),
-                        ):showErrorMessage(context, message: "Store temporarily unavailable here.Kindly visit store for more details.");
-                      }},
-                    child: const Text(
-                      'Book\nNow',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+    return
+    //   Container(
+    //   margin: const EdgeInsets.symmetric(horizontal: 15),
+    //   child: Center(
+    //     child: CouponCard(
+    //       backgroundColor: MyColors.primaryColor,
+    //       curveAxis: Axis.vertical,
+    //       firstChild: GestureDetector(
+    //         onTap: () {
+    //           _showBottomSheet(
+    //               context, "${prebooktable.title}");
+    //         },
+    //         child: Container(
+    //           padding: const EdgeInsets.all(5),
+    //           child: Column(
+    //             mainAxisSize: MainAxisSize.min,
+    //             crossAxisAlignment: CrossAxisAlignment.start,
+    //             children: <Widget>[
+    //
+    //               const SizedBox(height: 5),
+    //               const Text(
+    //                 "Today's Offer",
+    //                 style: TextStyle(
+    //                   color: Colors.white,
+    //                   fontSize: 17,
+    //                   fontWeight: FontWeight.bold,
+    //                   overflow: TextOverflow.clip,
+    //                 ),
+    //               ),
+    //               const SizedBox(height: 5),
+    //               Text(
+    //                 '${prebooktable.title}',
+    //                 style: const TextStyle(
+    //                   color: Colors.white,
+    //                   fontSize: 16,
+    //                   fontWeight: FontWeight.bold,
+    //                   overflow: TextOverflow.clip,
+    //                 ),
+    //               ),
+    //               // const Text(
+    //               //   'Available for limited',
+    //               //   style: TextStyle(
+    //               //     color: Colors.white,
+    //               //     fontSize: 13,
+    //               //     fontWeight: FontWeight.bold,
+    //               //     overflow: TextOverflow.clip,
+    //               //   ),
+    //               // ),
+    //               // const SizedBox(height: 5),
+    //               DottedLine(
+    //                 height: 2,
+    //                 color: Colors.white,
+    //                 width: double.infinity,
+    //                 dashWidth: 6.0,
+    //                 dashSpacing: 6.0,
+    //               ),
+    //               const SizedBox(height: 5),
+    //               Text(
+    //                 'Available for limited',
+    //                 style: TextStyle(
+    //                   color: Colors.white,
+    //                   fontSize: 13,
+    //                   fontWeight: FontWeight.bold,
+    //                   overflow: TextOverflow.clip,
+    //                 ),
+    //               ),
+    //               // Row(
+    //               //   mainAxisAlignment: MainAxisAlignment.center,
+    //               //   children: <Widget>[
+    //               //     Expanded(
+    //               //       child: Text(
+    //               //         '${prebooktable.available_seat} slots available',
+    //               //         style: const TextStyle(
+    //               //           color: Colors.white,
+    //               //           fontSize: 12,
+    //               //           fontWeight: FontWeight.bold,
+    //               //           overflow: TextOverflow.clip,
+    //               //         ),
+    //               //       ),
+    //               //     ),
+    //               //   ],
+    //               // ),
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+    //       secondChild: Container(
+    //         decoration: const BoxDecoration(
+    //           color: MyColors.blackBG,
+    //         ),
+    //         child: Center(
+    //           child: Card(
+    //             elevation: 2,
+    //             color: MyColors.blackBG,
+    //             shape: RoundedRectangleBorder(
+    //               borderRadius: BorderRadius.circular(8),
+    //               side: const BorderSide(
+    //                 color: MyColors.primaryColor,
+    //                 width: 1.0,
+    //               ),
+    //             ),
+    //             child: Padding(
+    //               padding: const EdgeInsets.symmetric(
+    //                 vertical: 4,
+    //                 horizontal: 15,
+    //               ),
+    //               child: InkWell(
+    //                 onTap: () async{
+    //                   UserModel n = await SharedPref.getUser();
+    //                   print(n.name);
+    //                   if(n.id==0){
+    //                     Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
+    //
+    //                   }else{
+    //                     kycStatus=="Approve"?
+    //                     Navigator.push(
+    //                       context,
+    //                       MaterialPageRoute(
+    //                           builder: (context) =>
+    //                               BookTableScreen("$start_time",
+    //                                   // "$end_time",
+    //                                   "$storeName", "$storeId","$categoryName")),
+    //                     ):showErrorMessage(context, message: "Store temporarily unavailable here.Kindly visit store for more details.");
+    //                   }},
+    //                 child: const Text(
+    //                   'Book\nNow',
+    //                   textAlign: TextAlign.center,
+    //                   style: TextStyle(
+    //                     color: Colors.white,
+    //                     fontSize: 14,
+    //                     fontWeight: FontWeight.bold,
+    //                   ),
+    //                 ),
+    //               ),
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
       InkWell(
       onTap: () {
         _showBottomSheet(
@@ -3290,158 +3318,159 @@ class PrebookOfferListWidget extends StatelessWidget {
           border: Border.all(color: MyColors.redBG)
         ),
         child:
-        // Column(
-        //   crossAxisAlignment: CrossAxisAlignment.start,
-        //   children: [
-        //     Text(prebooktable.title,style: TextStyle(color: MyColors.blackBG,fontSize: 16,fontWeight: FontWeight.w500),),
-        //     Text("Get 20% off upto ₹740 on booking above ₹5000",style: TextStyle(color: MyColors.blackBG,fontSize: 14),),
-        //     Row(
-        //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //       children: [
-        //         Text("LIMITED TIME",style: TextStyle(color: MyColors.lightGreen,fontSize: 12,fontWeight: FontWeight.w600),),
-        //         Text("Apply",style: TextStyle(color: MyColors.blackBG,fontSize: 12),),
-        //       ],
-        //     )
-        //   ],
-        // )
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(prebooktable.title,style: TextStyle(color: MyColors.blackBG,fontSize: 16,fontWeight: FontWeight.w500),),
+            Text("Get 20% off upto ₹740 on booking above ₹5000",style: TextStyle(color: MyColors.textColorTwo,fontSize: 14),),
+            SizedBox(height: heights*0.01,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("LIMITED TIME",style: TextStyle(color: MyColors.green,fontSize: 12,fontWeight: FontWeight.w600),),
+                Text("Apply",style: TextStyle(color: MyColors.blackBG,fontSize: 12,fontWeight: FontWeight.w500),),
+              ],
+            )
+          ],
+        )
           ///
-            Center(
-              child: CouponCard(
-                backgroundColor: MyColors.primaryColor,
-                curveAxis: Axis.vertical,
-                firstChild: GestureDetector(
-                  onTap: () {
-                    _showBottomSheet(
-                        context, "${prebooktable.title}");
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-
-                        const SizedBox(height: 5),
-                        const Text(
-                          "Today's Offer",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            overflow: TextOverflow.clip,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          '${prebooktable.title}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            overflow: TextOverflow.clip,
-                          ),
-                        ),
-                        // const Text(
-                        //   'Available for limited',
-                        //   style: TextStyle(
-                        //     color: Colors.white,
-                        //     fontSize: 13,
-                        //     fontWeight: FontWeight.bold,
-                        //     overflow: TextOverflow.clip,
-                        //   ),
-                        // ),
-                        // const SizedBox(height: 5),
-                        DottedLine(
-                          height: 2,
-                          color: Colors.white,
-                          width: double.infinity,
-                          dashWidth: 6.0,
-                          dashSpacing: 6.0,
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          'Available for limited',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            overflow: TextOverflow.clip,
-                          ),
-                        ),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.center,
-                        //   children: <Widget>[
-                        //     Expanded(
-                        //       child: Text(
-                        //         '${prebooktable.available_seat} slots available',
-                        //         style: const TextStyle(
-                        //           color: Colors.white,
-                        //           fontSize: 12,
-                        //           fontWeight: FontWeight.bold,
-                        //           overflow: TextOverflow.clip,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
-                      ],
-                    ),
-                  ),
-                ),
-                secondChild: Container(
-                  decoration: const BoxDecoration(
-                    color: MyColors.blackBG,
-                  ),
-                  child: Center(
-                    child: Card(
-                      elevation: 2,
-                      color: MyColors.blackBG,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: const BorderSide(
-                          color: MyColors.primaryColor,
-                          width: 1.0,
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 4,
-                          horizontal: 15,
-                        ),
-                        child: InkWell(
-                          onTap: () async{
-                            UserModel n = await SharedPref.getUser();
-                            print(n.name);
-                            if(n.id==0){
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
-
-                            }else{
-      kycStatus=="Approve"?
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      BookTableScreen("$start_time",
-                                          // "$end_time",
-                                          "$storeName", "$storeId","$categoryName")),
-                            ):showErrorMessage(context, message: "Store temporarily unavailable here.Kindly visit store for more details.");
-                          }},
-                          child: const Text(
-                           'Book\nNow',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+      //       Center(
+      //         child: CouponCard(
+      //           backgroundColor: MyColors.primaryColor,
+      //           curveAxis: Axis.vertical,
+      //           firstChild: GestureDetector(
+      //             onTap: () {
+      //               _showBottomSheet(
+      //                   context, "${prebooktable.title}");
+      //             },
+      //             child: Container(
+      //               padding: const EdgeInsets.all(5),
+      //               child: Column(
+      //                 mainAxisSize: MainAxisSize.min,
+      //                 crossAxisAlignment: CrossAxisAlignment.start,
+      //                 children: <Widget>[
+      //
+      //                   const SizedBox(height: 5),
+      //                   const Text(
+      //                     "Today's Offer",
+      //                     style: TextStyle(
+      //                       color: Colors.white,
+      //                       fontSize: 17,
+      //                       fontWeight: FontWeight.bold,
+      //                       overflow: TextOverflow.clip,
+      //                     ),
+      //                   ),
+      //                   const SizedBox(height: 5),
+      //                   Text(
+      //                     '${prebooktable.title}',
+      //                     style: const TextStyle(
+      //                       color: Colors.white,
+      //                       fontSize: 16,
+      //                       fontWeight: FontWeight.bold,
+      //                       overflow: TextOverflow.clip,
+      //                     ),
+      //                   ),
+      //                   // const Text(
+      //                   //   'Available for limited',
+      //                   //   style: TextStyle(
+      //                   //     color: Colors.white,
+      //                   //     fontSize: 13,
+      //                   //     fontWeight: FontWeight.bold,
+      //                   //     overflow: TextOverflow.clip,
+      //                   //   ),
+      //                   // ),
+      //                   // const SizedBox(height: 5),
+      //                   DottedLine(
+      //                     height: 2,
+      //                     color: Colors.white,
+      //                     width: double.infinity,
+      //                     dashWidth: 6.0,
+      //                     dashSpacing: 6.0,
+      //                   ),
+      //                   const SizedBox(height: 5),
+      //                   Text(
+      //                     'Available for limited',
+      //                     style: TextStyle(
+      //                       color: Colors.white,
+      //                       fontSize: 13,
+      //                       fontWeight: FontWeight.bold,
+      //                       overflow: TextOverflow.clip,
+      //                     ),
+      //                   ),
+      //                   // Row(
+      //                   //   mainAxisAlignment: MainAxisAlignment.center,
+      //                   //   children: <Widget>[
+      //                   //     Expanded(
+      //                   //       child: Text(
+      //                   //         '${prebooktable.available_seat} slots available',
+      //                   //         style: const TextStyle(
+      //                   //           color: Colors.white,
+      //                   //           fontSize: 12,
+      //                   //           fontWeight: FontWeight.bold,
+      //                   //           overflow: TextOverflow.clip,
+      //                   //         ),
+      //                   //       ),
+      //                   //     ),
+      //                   //   ],
+      //                   // ),
+      //                 ],
+      //               ),
+      //             ),
+      //           ),
+      //           secondChild: Container(
+      //             decoration: const BoxDecoration(
+      //               color: MyColors.blackBG,
+      //             ),
+      //             child: Center(
+      //               child: Card(
+      //                 elevation: 2,
+      //                 color: MyColors.blackBG,
+      //                 shape: RoundedRectangleBorder(
+      //                   borderRadius: BorderRadius.circular(8),
+      //                   side: const BorderSide(
+      //                     color: MyColors.primaryColor,
+      //                     width: 1.0,
+      //                   ),
+      //                 ),
+      //                 child: Padding(
+      //                   padding: const EdgeInsets.symmetric(
+      //                     vertical: 4,
+      //                     horizontal: 15,
+      //                   ),
+      //                   child: InkWell(
+      //                     onTap: () async{
+      //                       UserModel n = await SharedPref.getUser();
+      //                       print(n.name);
+      //                       if(n.id==0){
+      //                         Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
+      //
+      //                       }else{
+      // kycStatus=="Approve"?
+      //                       Navigator.push(
+      //                         context,
+      //                         MaterialPageRoute(
+      //                             builder: (context) =>
+      //                                 BookTableScreen("$start_time",
+      //                                     // "$end_time",
+      //                                     "$storeName", "$storeId","$categoryName")),
+      //                       ):showErrorMessage(context, message: "Store temporarily unavailable here.Kindly visit store for more details.");
+      //                     }},
+      //                     child: const Text(
+      //                      'Book\nNow',
+      //                       textAlign: TextAlign.center,
+      //                       style: TextStyle(
+      //                         color: Colors.white,
+      //                         fontSize: 14,
+      //                         fontWeight: FontWeight.bold,
+      //                       ),
+      //                     ),
+      //                   ),
+      //                 ),
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       ),
       ),
     );
   }
@@ -3550,303 +3579,304 @@ class RegularOfferListWidget extends StatelessWidget {
   Widget _buildRegularOfferWidget(BuildContext context,
       RegularOfferModel regularoffer) {
     return
-    //   InkWell(
-    //   onTap: () {
-    //     _showBottomSheet(
-    //         context, "${regularoffer.title}");
-    //   },
-    //   child: Container(
-    //       margin: const EdgeInsets.symmetric(horizontal: 15),
-    //       padding: const EdgeInsets.all(10),
-    //       decoration: BoxDecoration(
-    //           borderRadius: BorderRadius.circular(5),
-    //           border: Border.all(color: MyColors.redBG)
-    //       ),
-    //       child: Column(
-    //         crossAxisAlignment: CrossAxisAlignment.start,
-    //         children: [
-    //           Text(regularoffer.title,style: TextStyle(color: MyColors.blackBG,fontSize: 16,fontWeight: FontWeight.w500),),
-    //           Text("Get 20% off upto ₹740 on booking above ₹5000",style: TextStyle(color: MyColors.blackBG,fontSize: 14),),
-    //           Row(
-    //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //             children: [
-    //               Text("LIMITED TIME",style: TextStyle(color: MyColors.lightGreen,fontSize: 12,fontWeight: FontWeight.w600),),
-    //               Text("Apply",style: TextStyle(color: MyColors.blackBG,fontSize: 12),),
-    //             ],
-    //           )
-    //         ],
-    //       )
-    //     //       Center(
-    //     //         child: CouponCard(
-    //     //           backgroundColor: MyColors.primaryColor,
-    //     //           curveAxis: Axis.vertical,
-    //     //           firstChild: GestureDetector(
-    //     //             onTap: () {
-    //     //               _showBottomSheet(
-    //     //                   context, "${prebooktable.title}");
-    //     //             },
-    //     //             child: Container(
-    //     //               padding: const EdgeInsets.all(5),
-    //     //               child: Column(
-    //     //                 mainAxisSize: MainAxisSize.min,
-    //     //                 crossAxisAlignment: CrossAxisAlignment.start,
-    //     //                 children: <Widget>[
-    //     //
-    //     //                   const SizedBox(height: 5),
-    //     //                   const Text(
-    //     //                     "Today's Offer",
-    //     //                     style: TextStyle(
-    //     //                       color: Colors.white,
-    //     //                       fontSize: 17,
-    //     //                       fontWeight: FontWeight.bold,
-    //     //                       overflow: TextOverflow.clip,
-    //     //                     ),
-    //     //                   ),
-    //     //                   const SizedBox(height: 5),
-    //     //                   Text(
-    //     //                     '${prebooktable.title}',
-    //     //                     style: const TextStyle(
-    //     //                       color: Colors.white,
-    //     //                       fontSize: 16,
-    //     //                       fontWeight: FontWeight.bold,
-    //     //                       overflow: TextOverflow.clip,
-    //     //                     ),
-    //     //                   ),
-    //     //                   // const Text(
-    //     //                   //   'Available for limited',
-    //     //                   //   style: TextStyle(
-    //     //                   //     color: Colors.white,
-    //     //                   //     fontSize: 13,
-    //     //                   //     fontWeight: FontWeight.bold,
-    //     //                   //     overflow: TextOverflow.clip,
-    //     //                   //   ),
-    //     //                   // ),
-    //     //                   // const SizedBox(height: 5),
-    //     //                   DottedLine(
-    //     //                     height: 2,
-    //     //                     color: Colors.white,
-    //     //                     width: double.infinity,
-    //     //                     dashWidth: 6.0,
-    //     //                     dashSpacing: 6.0,
-    //     //                   ),
-    //     //                   const SizedBox(height: 5),
-    //     //                   Text(
-    //     //                     'Available for limited',
-    //     //                     style: TextStyle(
-    //     //                       color: Colors.white,
-    //     //                       fontSize: 13,
-    //     //                       fontWeight: FontWeight.bold,
-    //     //                       overflow: TextOverflow.clip,
-    //     //                     ),
-    //     //                   ),
-    //     //                   // Row(
-    //     //                   //   mainAxisAlignment: MainAxisAlignment.center,
-    //     //                   //   children: <Widget>[
-    //     //                   //     Expanded(
-    //     //                   //       child: Text(
-    //     //                   //         '${prebooktable.available_seat} slots available',
-    //     //                   //         style: const TextStyle(
-    //     //                   //           color: Colors.white,
-    //     //                   //           fontSize: 12,
-    //     //                   //           fontWeight: FontWeight.bold,
-    //     //                   //           overflow: TextOverflow.clip,
-    //     //                   //         ),
-    //     //                   //       ),
-    //     //                   //     ),
-    //     //                   //   ],
-    //     //                   // ),
-    //     //                 ],
-    //     //               ),
-    //     //             ),
-    //     //           ),
-    //     //           secondChild: Container(
-    //     //             decoration: const BoxDecoration(
-    //     //               color: MyColors.blackBG,
-    //     //             ),
-    //     //             child: Center(
-    //     //               child: Card(
-    //     //                 elevation: 2,
-    //     //                 color: MyColors.blackBG,
-    //     //                 shape: RoundedRectangleBorder(
-    //     //                   borderRadius: BorderRadius.circular(8),
-    //     //                   side: const BorderSide(
-    //     //                     color: MyColors.primaryColor,
-    //     //                     width: 1.0,
-    //     //                   ),
-    //     //                 ),
-    //     //                 child: Padding(
-    //     //                   padding: const EdgeInsets.symmetric(
-    //     //                     vertical: 4,
-    //     //                     horizontal: 15,
-    //     //                   ),
-    //     //                   child: InkWell(
-    //     //                     onTap: () async{
-    //     //                       UserModel n = await SharedPref.getUser();
-    //     //                       print(n.name);
-    //     //                       if(n.id==0){
-    //     //                         Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
-    //     //
-    //     //                       }else{
-    //     // kycStatus=="Approve"?
-    //     //                       Navigator.push(
-    //     //                         context,
-    //     //                         MaterialPageRoute(
-    //     //                             builder: (context) =>
-    //     //                                 BookTableScreen("$start_time",
-    //     //                                     // "$end_time",
-    //     //                                     "$storeName", "$storeId","$categoryName")),
-    //     //                       ):showErrorMessage(context, message: "Store temporarily unavailable here.Kindly visit store for more details.");
-    //     //                     }},
-    //     //                     child: const Text(
-    //     //                      'Book\nNow',
-    //     //                       textAlign: TextAlign.center,
-    //     //                       style: TextStyle(
-    //     //                         color: Colors.white,
-    //     //                         fontSize: 14,
-    //     //                         fontWeight: FontWeight.bold,
-    //     //                       ),
-    //     //                     ),
-    //     //                   ),
-    //     //                 ),
-    //     //               ),
-    //     //             ),
-    //     //           ),
-    //     //         ),
-    //     //       ),
-    //   ),
-    // );
-      Container(
-      margin: const EdgeInsets.symmetric(horizontal: 15),
-      child: Center(
-        child: CouponCard(
-          backgroundColor: MyColors.primaryColor,
-          curveAxis: Axis.vertical,
-          firstChild: GestureDetector(
-            onTap: () {
-              _showBottomSheet(context, regularoffer.title);
-            },
-            child: Container(
-              padding: const EdgeInsets.all(5),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          "Today's discount",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            overflow: TextOverflow.clip,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 5),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          regularoffer.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            overflow: TextOverflow.clip,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 5),
-                  DottedLine(
-                    height: 2,
-                    color: Colors.white,
-                    width: double.infinity,
-                    dashWidth: 6.0,
-                    dashSpacing: 6.0,
-                  ),
-                  const SizedBox(height: 5),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          'Tab to view offers',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            overflow: TextOverflow.clip,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+      InkWell(
+      onTap: () {
+        _showBottomSheet(
+            context, "${regularoffer.title}");
+      },
+      child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 15),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(color: MyColors.redBG)
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(regularoffer.title,style: TextStyle(color: MyColors.blackBG,fontSize: 16,fontWeight: FontWeight.w500),),
+              Text("Get 20% off upto ₹740 on booking above ₹5000",style: TextStyle(color: MyColors.textColorTwo,fontSize: 14),),
+             SizedBox(height: heights*0.01,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("LIMITED TIME",style: TextStyle(color: MyColors.green,fontSize: 12,fontWeight: FontWeight.w600),),
+                  Text("Apply",style: TextStyle(color: MyColors.blackBG,fontSize: 12,fontWeight: FontWeight.w500),),
                 ],
-              ),
-            ),
-          ),
-          secondChild: Container(
-            decoration: const BoxDecoration(
-              color: MyColors.blackBG,
-            ),
-            child: Center(
-              child: Card(
-                elevation: 2,
-                color: MyColors.blackBG,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: const BorderSide(
-                    color: MyColors.primaryColor,
-                    width: 1.0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 4,
-                    horizontal: 15,
-                  ),
-                  child: InkWell(
-                    onTap: () async{
-                      UserModel n = await SharedPref.getUser();
-                      print(n.name);
-                      if(n.id==0){
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
-
-                      }else {
-                        kycStatus == "Approve" ? Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  PayBillScreen(
-                                      regularoffer, storeName, "$addresss")),
-                        ) : showErrorMessage(context,
-                            message: "Store temporarily unavailable here.Kindly visit store for more details.");
-                      }  },
-                    child: const Text(
-                     'Pay\nBill',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+              )
+            ],
+          )
+        //       Center(
+        //         child: CouponCard(
+        //           backgroundColor: MyColors.primaryColor,
+        //           curveAxis: Axis.vertical,
+        //           firstChild: GestureDetector(
+        //             onTap: () {
+        //               _showBottomSheet(
+        //                   context, "${prebooktable.title}");
+        //             },
+        //             child: Container(
+        //               padding: const EdgeInsets.all(5),
+        //               child: Column(
+        //                 mainAxisSize: MainAxisSize.min,
+        //                 crossAxisAlignment: CrossAxisAlignment.start,
+        //                 children: <Widget>[
+        //
+        //                   const SizedBox(height: 5),
+        //                   const Text(
+        //                     "Today's Offer",
+        //                     style: TextStyle(
+        //                       color: Colors.white,
+        //                       fontSize: 17,
+        //                       fontWeight: FontWeight.bold,
+        //                       overflow: TextOverflow.clip,
+        //                     ),
+        //                   ),
+        //                   const SizedBox(height: 5),
+        //                   Text(
+        //                     '${prebooktable.title}',
+        //                     style: const TextStyle(
+        //                       color: Colors.white,
+        //                       fontSize: 16,
+        //                       fontWeight: FontWeight.bold,
+        //                       overflow: TextOverflow.clip,
+        //                     ),
+        //                   ),
+        //                   // const Text(
+        //                   //   'Available for limited',
+        //                   //   style: TextStyle(
+        //                   //     color: Colors.white,
+        //                   //     fontSize: 13,
+        //                   //     fontWeight: FontWeight.bold,
+        //                   //     overflow: TextOverflow.clip,
+        //                   //   ),
+        //                   // ),
+        //                   // const SizedBox(height: 5),
+        //                   DottedLine(
+        //                     height: 2,
+        //                     color: Colors.white,
+        //                     width: double.infinity,
+        //                     dashWidth: 6.0,
+        //                     dashSpacing: 6.0,
+        //                   ),
+        //                   const SizedBox(height: 5),
+        //                   Text(
+        //                     'Available for limited',
+        //                     style: TextStyle(
+        //                       color: Colors.white,
+        //                       fontSize: 13,
+        //                       fontWeight: FontWeight.bold,
+        //                       overflow: TextOverflow.clip,
+        //                     ),
+        //                   ),
+        //                   // Row(
+        //                   //   mainAxisAlignment: MainAxisAlignment.center,
+        //                   //   children: <Widget>[
+        //                   //     Expanded(
+        //                   //       child: Text(
+        //                   //         '${prebooktable.available_seat} slots available',
+        //                   //         style: const TextStyle(
+        //                   //           color: Colors.white,
+        //                   //           fontSize: 12,
+        //                   //           fontWeight: FontWeight.bold,
+        //                   //           overflow: TextOverflow.clip,
+        //                   //         ),
+        //                   //       ),
+        //                   //     ),
+        //                   //   ],
+        //                   // ),
+        //                 ],
+        //               ),
+        //             ),
+        //           ),
+        //           secondChild: Container(
+        //             decoration: const BoxDecoration(
+        //               color: MyColors.blackBG,
+        //             ),
+        //             child: Center(
+        //               child: Card(
+        //                 elevation: 2,
+        //                 color: MyColors.blackBG,
+        //                 shape: RoundedRectangleBorder(
+        //                   borderRadius: BorderRadius.circular(8),
+        //                   side: const BorderSide(
+        //                     color: MyColors.primaryColor,
+        //                     width: 1.0,
+        //                   ),
+        //                 ),
+        //                 child: Padding(
+        //                   padding: const EdgeInsets.symmetric(
+        //                     vertical: 4,
+        //                     horizontal: 15,
+        //                   ),
+        //                   child: InkWell(
+        //                     onTap: () async{
+        //                       UserModel n = await SharedPref.getUser();
+        //                       print(n.name);
+        //                       if(n.id==0){
+        //                         Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
+        //
+        //                       }else{
+        // kycStatus=="Approve"?
+        //                       Navigator.push(
+        //                         context,
+        //                         MaterialPageRoute(
+        //                             builder: (context) =>
+        //                                 BookTableScreen("$start_time",
+        //                                     // "$end_time",
+        //                                     "$storeName", "$storeId","$categoryName")),
+        //                       ):showErrorMessage(context, message: "Store temporarily unavailable here.Kindly visit store for more details.");
+        //                     }},
+        //                     child: const Text(
+        //                      'Book\nNow',
+        //                       textAlign: TextAlign.center,
+        //                       style: TextStyle(
+        //                         color: Colors.white,
+        //                         fontSize: 14,
+        //                         fontWeight: FontWeight.bold,
+        //                       ),
+        //                     ),
+        //                   ),
+        //                 ),
+        //               ),
+        //             ),
+        //           ),
+        //         ),
+        //       ),
       ),
     );
+    //   Container(
+    //   margin: const EdgeInsets.symmetric(horizontal: 15),
+    //   child: Center(
+    //     child: CouponCard(
+    //       backgroundColor: MyColors.primaryColor,
+    //       curveAxis: Axis.vertical,
+    //       firstChild: GestureDetector(
+    //         onTap: () {
+    //           _showBottomSheet(context, regularoffer.title);
+    //         },
+    //         child: Container(
+    //           padding: const EdgeInsets.all(5),
+    //           child: Column(
+    //             mainAxisSize: MainAxisSize.min,
+    //             crossAxisAlignment: CrossAxisAlignment.start,
+    //             children: <Widget>[
+    //               const Row(
+    //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //                 children: <Widget>[
+    //                   Expanded(
+    //                     child: Text(
+    //                       "Today's discount",
+    //                       style: TextStyle(
+    //                         color: Colors.white,
+    //                         fontSize: 11,
+    //                         fontWeight: FontWeight.bold,
+    //                         overflow: TextOverflow.clip,
+    //                       ),
+    //                     ),
+    //                   ),
+    //                 ],
+    //               ),
+    //               const SizedBox(height: 5),
+    //               Row(
+    //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //                 children: <Widget>[
+    //                   Expanded(
+    //                     child: Text(
+    //                       regularoffer.title,
+    //                       style: const TextStyle(
+    //                         color: Colors.white,
+    //                         fontSize: 16,
+    //                         fontWeight: FontWeight.bold,
+    //                         overflow: TextOverflow.clip,
+    //                       ),
+    //                     ),
+    //                   ),
+    //                 ],
+    //               ),
+    //               const SizedBox(height: 5),
+    //               DottedLine(
+    //                 height: 2,
+    //                 color: Colors.white,
+    //                 width: double.infinity,
+    //                 dashWidth: 6.0,
+    //                 dashSpacing: 6.0,
+    //               ),
+    //               const SizedBox(height: 5),
+    //               const Row(
+    //                 mainAxisAlignment: MainAxisAlignment.center,
+    //                 children: <Widget>[
+    //                   Expanded(
+    //                     child: Text(
+    //                       'Tab to view offers',
+    //                       style: TextStyle(
+    //                         color: Colors.white,
+    //                         fontSize: 12,
+    //                         fontWeight: FontWeight.bold,
+    //                         overflow: TextOverflow.clip,
+    //                       ),
+    //                     ),
+    //                   ),
+    //                 ],
+    //               ),
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+    //       secondChild: Container(
+    //         decoration: const BoxDecoration(
+    //           color: MyColors.blackBG,
+    //         ),
+    //         child: Center(
+    //           child: Card(
+    //             elevation: 2,
+    //             color: MyColors.blackBG,
+    //             shape: RoundedRectangleBorder(
+    //               borderRadius: BorderRadius.circular(8),
+    //               side: const BorderSide(
+    //                 color: MyColors.primaryColor,
+    //                 width: 1.0,
+    //               ),
+    //             ),
+    //             child: Padding(
+    //               padding: const EdgeInsets.symmetric(
+    //                 vertical: 4,
+    //                 horizontal: 15,
+    //               ),
+    //               child: InkWell(
+    //                 onTap: () async{
+    //                   UserModel n = await SharedPref.getUser();
+    //                   print(n.name);
+    //                   if(n.id==0){
+    //                     Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
+    //
+    //                   }else {
+    //                     kycStatus == "Approve" ? Navigator.push(
+    //                       context,
+    //                       MaterialPageRoute(
+    //                           builder: (context) =>
+    //                               PayBillScreen(
+    //                                   regularoffer, storeName, "$addresss")),
+    //                     ) : showErrorMessage(context,
+    //                         message: "Store temporarily unavailable here.Kindly visit store for more details.");
+    //                   }  },
+    //                 child: const Text(
+    //                  'Pay\nBill',
+    //                   textAlign: TextAlign.center,
+    //                   style: TextStyle(
+    //                     color: Colors.white,
+    //                     fontSize: 14,
+    //                     fontWeight: FontWeight.bold,
+    //                   ),
+    //                 ),
+    //               ),
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
 }
 class RestaurantCard extends StatefulWidget {

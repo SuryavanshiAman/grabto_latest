@@ -99,7 +99,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    _scrollController.addListener(_handleScroll);
     _instance = this;
     WidgetsBinding.instance.addObserver(this);
     getUserDetails();
@@ -270,16 +270,16 @@ Provider.of<DifferentLocationViewModel>(context,listen: false).differentLocation
   }
 
   final ScrollController _scrollController = ScrollController();
-  // bool _showTitle = true;
-  // void _handleScroll() {
-  //   setState(() {
-  //     if (_scrollController.position.pixels > 1500) {
-  //       _showTitle = false;
-  //     } else {
-  //       _showTitle = true;
-  //     }
-  //   });
-  // }
+  bool _showTitle = true;
+  void _handleScroll() {
+    setState(() {
+      if (_scrollController.position.pixels > 1500) {
+        _showTitle = false;
+      } else {
+        _showTitle = true;
+      }
+    });
+  }
 
   List<FirstList> list = [
     FirstList("Filter"),
@@ -288,87 +288,87 @@ Provider.of<DifferentLocationViewModel>(context,listen: false).differentLocation
     FirstList("Up to 10% off"),
   ];
   String selectedName = "";
-  final List<Restaurant> restaurants = [
-    Restaurant(
-      name: "Rocca By Hyatt Regency",
-      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-      cuisine: "Continental, North Indian",
-      rating: 4.0,
-      price: "₹1500 for two", // Example image URL
-      offers: [
-        "Flat 50% off on pre-booking"
-            "                 +4 more",
-        // "Get extra 10% off using GIRFNEXT150",
-      ],
-    ),
-    Restaurant(
-      name: "Que",
-      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-      cuisine: "Continental, North Indian",
-      rating: 4.0,
-      price: "₹1500 for two", // Example image URL
-      offers: [
-        "Flat 50% off on pre-booking"
-            "                 +4 more",
-      ],
-    ),
-    Restaurant(
-      name: "Que",
-      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-      cuisine: "Continental, North Indian",
-      rating: 4.0,
-      price: "₹1500 for two", // Example image URL
-      offers: [
-        "Flat 50% off on pre-booking"
-            "                 +4 more",
-      ],
-    ),
-    Restaurant(
-      name: "Que",
-      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-      cuisine: "Continental, North Indian",
-      rating: 4.0,
-      price: "₹1500 for two", // Example image URL
-      offers: [
-        "Flat 50% off on pre-booking"
-            "                 +4 more",
-      ],
-    ),
-    Restaurant(
-      name: "Que",
-      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-      cuisine: "Continental, North Indian",
-      rating: 4.0,
-      price: "₹1500 for two", // Example image URL
-      offers: [
-        "Flat 50% off on pre-booking"
-            "                 +4 more",
-      ],
-    ),
-    Restaurant(
-      name: "Que",
-      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-      cuisine: "Continental, North Indian",
-      rating: 4.0,
-      price: "₹1500 for two", // Example image URL
-      offers: [
-        "Flat 50% off on pre-booking"
-            "                 +4 more",
-      ],
-    ),
-    Restaurant(
-      name: "Que",
-      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-      cuisine: "Continental, North Indian",
-      rating: 4.0,
-      price: "₹1500 for two", // Example image URL
-      offers: [
-        "Flat 50% off on pre-booking"
-            "                 +4 more",
-      ],
-    ),
-    // Add more restaurants here
-  ];
+  // final List<Restaurant> restaurants = [
+  //   Restaurant(
+  //     name: "Rocca By Hyatt Regency",
+  //     location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
+  //     cuisine: "Continental, North Indian",
+  //     rating: 4.0,
+  //     price: "₹1500 for two", // Example image URL
+  //     offers: [
+  //       "Flat 50% off on pre-booking"
+  //           "                 +4 more",
+  //       // "Get extra 10% off using GIRFNEXT150",
+  //     ],
+  //   ),
+  //   Restaurant(
+  //     name: "Que",
+  //     location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
+  //     cuisine: "Continental, North Indian",
+  //     rating: 4.0,
+  //     price: "₹1500 for two", // Example image URL
+  //     offers: [
+  //       "Flat 50% off on pre-booking"
+  //           "                 +4 more",
+  //     ],
+  //   ),
+  //   Restaurant(
+  //     name: "Que",
+  //     location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
+  //     cuisine: "Continental, North Indian",
+  //     rating: 4.0,
+  //     price: "₹1500 for two", // Example image URL
+  //     offers: [
+  //       "Flat 50% off on pre-booking"
+  //           "                 +4 more",
+  //     ],
+  //   ),
+  //   Restaurant(
+  //     name: "Que",
+  //     location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
+  //     cuisine: "Continental, North Indian",
+  //     rating: 4.0,
+  //     price: "₹1500 for two", // Example image URL
+  //     offers: [
+  //       "Flat 50% off on pre-booking"
+  //           "                 +4 more",
+  //     ],
+  //   ),
+  //   Restaurant(
+  //     name: "Que",
+  //     location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
+  //     cuisine: "Continental, North Indian",
+  //     rating: 4.0,
+  //     price: "₹1500 for two", // Example image URL
+  //     offers: [
+  //       "Flat 50% off on pre-booking"
+  //           "                 +4 more",
+  //     ],
+  //   ),
+  //   Restaurant(
+  //     name: "Que",
+  //     location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
+  //     cuisine: "Continental, North Indian",
+  //     rating: 4.0,
+  //     price: "₹1500 for two", // Example image URL
+  //     offers: [
+  //       "Flat 50% off on pre-booking"
+  //           "                 +4 more",
+  //     ],
+  //   ),
+  //   Restaurant(
+  //     name: "Que",
+  //     location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
+  //     cuisine: "Continental, North Indian",
+  //     rating: 4.0,
+  //     price: "₹1500 for two", // Example image URL
+  //     offers: [
+  //       "Flat 50% off on pre-booking"
+  //           "                 +4 more",
+  //     ],
+  //   ),
+  //   // Add more restaurants here
+  // ];
   List<FirstList> selectedList = [];
   void toggleSelection(FirstList item) {
     setState(() {
@@ -1389,70 +1389,113 @@ Provider.of<DifferentLocationViewModel>(context,listen: false).differentLocation
                 ),
               ),
             ),
-            // bottomSheet: _showTitle==false?  Container(
-            //   color: MyColors.whiteBG,
-            //   child: SizedBox(
-            //     height: 55,
-            //     child: ListView.builder(
-            //       scrollDirection: Axis.horizontal,
-            //       itemCount: orderedList.length,
-            //       itemBuilder: (context, index) {
-            //         FirstList item = orderedList[index];
-            //         bool isSelected = selectedList.contains(item);
-            //
-            //         return GestureDetector(
-            //           onTap: () {
-            //             setState(() {
-            //               toggleSelection(item);
-            //               selectedName = list[index].name;
-            //               print("item");
-            //               index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):null;
-            //             });
-            //           },
-            //           child: Container(
-            //             margin: EdgeInsets.symmetric(
-            //                 horizontal: 5, vertical: 10),
-            //             padding: EdgeInsets.symmetric(
-            //               horizontal: 8, ),
-            //             decoration: BoxDecoration(
-            //                 color: isSelected
-            //                     ? Colors.grey.withOpacity(0.3)
-            //                     : MyColors.whiteBG,
-            //                 borderRadius: BorderRadius.circular(20),
-            //                 border: Border.all(
-            //                     color: isSelected
-            //                         ? MyColors.blackBG
-            //                         : Colors.grey.withOpacity(0.5))),
-            //             child: Row(
-            //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //               children: [
-            //                 Center(
-            //                   child: Text(
-            //                     item.name,
-            //                     style: TextStyle(
-            //                         color: Colors.black,
-            //                         fontSize: 13,
-            //                         fontWeight: FontWeight.w500
-            //                     ),
-            //                   ),
-            //                 ),
-            //                 SizedBox(width: widths*0.02,),
-            //                 index == 0
-            //                     ? Icon(Icons.tune_outlined,size: 18,)
-            //                     : index == 1
-            //                     ? Icon(
-            //                   Icons.keyboard_arrow_down_outlined,size: 20,)
-            //                     : isSelected
-            //                     ? Icon(Icons.close,size: 16,)
-            //                     : Container()
-            //               ],
-            //             ),
-            //           ),
-            //         );
-            //       },
-            //     ),
-            //   ),
-            // ):Text("") ,
+            bottomSheet: _showTitle==false?   Container(
+              color: MyColors.whiteBG,
+              child: SizedBox(
+                height: 55,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: orderedList.length,
+                  itemBuilder: (context, index) {
+                    FirstList item = orderedList[index];
+                    bool isSelected = selectedList.contains(item);
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          toggleSelection(item);
+                          selectedName = list[index].name;
+                          print("item");
+                          isSelected == false
+                              ? index == 0
+                              ? showFilterBottomSheet(
+                              context,
+                              lat,
+                              long,
+                              featureData,
+                              subCategoriesList)
+                              : index == 1
+                              ? data.filterApi(context, lat,
+                              long, "4", "", "", [], [])
+                              : index == 2
+                              ? data.filterApi(
+                            context,
+                            lat,
+                            long,
+                            "",
+                            "5",
+                            "",
+                            [],
+                            [],
+                          )
+                              : data.filterApi(
+                              context,
+                              lat,
+                              long,
+                              "",
+                              "",
+                              "10", [], [])
+                              : null;
+
+                          // index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):index==1?filterApi(lat, long,"4","",""):index==2?filterApi(lat, long,"","5",""):filterApi(lat, long,"","","10");
+                        });
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 10),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8,
+                        ),
+                        decoration: BoxDecoration(
+                            color: isSelected
+                                ? Colors.grey.withOpacity(0.3)
+                                : MyColors.whiteBG,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                                color: isSelected
+                                    ? MyColors.blackBG
+                                    : Colors.grey.withOpacity(0.5))),
+                        child: Row(
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceEvenly,
+                          children: [
+                            index == 0
+                                ? Icon(
+                              Icons.filter_alt_outlined,
+                              size: 18,
+                            )
+                                : index == 1
+                                ? Icon(
+                              Icons
+                                  .keyboard_arrow_down_outlined,
+                              size: 20,
+                            )
+                                : isSelected
+                                ? Icon(
+                              Icons.close,
+                              size: 16,
+                            )
+                                : Container(),
+                            SizedBox(
+                              width: widths * 0.02,
+                            ),
+                            Center(
+                              child: Text(
+                                item.name,
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ):Text("") ,
             drawer: Drawer(
               backgroundColor: Colors.white,
               child: ListView(
@@ -2463,7 +2506,7 @@ Provider.of<DifferentLocationViewModel>(context,listen: false).differentLocation
 
   Future<void> _navigateToSearchScreen(BuildContext context) async {
     await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => SearchStoreScreen()));
+        context, MaterialPageRoute(builder: (context) => SearchStoreScreen(status: "0",)));
   }
 
   Future<void> UserPreBookTableHistory(String user_id) async {
@@ -3538,267 +3581,290 @@ int selectedIndex=-1;
   @override
   Widget build(BuildContext context) {
     return widget.filter != "null"
-        ? Container(
-            margin: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              // color: MyColors.whiteBG,
-              color: Color(0xffffffff),
-              borderRadius: BorderRadius.circular(10),
-              // color: Colors.red
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Image with overlay
-                Stack(
-                  children: [
-                    // CarouselSlider(
-                    //   items: widget.filter.image((json) {
-                    //     return GestureDetector(
-                    //       child: ClipRRect(
-                    //         borderRadius: BorderRadius.only(
-                    //             topLeft: Radius.circular(10),
-                    //             topRight: Radius.circular(10)),
-                    //         child: CachedNetworkImage(
-                    //           imageUrl: json.url.toString(),
-                    //           fit: BoxFit.fill,
-                    //           placeholder: (context, url) => Image.asset(
-                    //             'assets/images/placeholder.png',
-                    //             fit: BoxFit.cover,
-                    //             width: double.infinity,
-                    //             height: double.infinity,
-                    //           ),
-                    //           errorWidget: (context, url, error) =>
-                    //               const Center(child: Icon(Icons.error)),
-                    //         ),
-                    //       ),
-                    //     );
-                    //   }).toList(),
-                    //   options: CarouselOptions(
-                    //     height: heights * 0.22,
-                    //     enlargeCenterPage: true,
-                    //     autoPlay: true,
-                    //     reverse: true,
-                    //     disableCenter: true,
-                    //     aspectRatio: 1 / 9,
-                    //     autoPlayCurve: Curves.fastOutSlowIn,
-                    //     enableInfiniteScroll: true,
-                    //     autoPlayAnimationDuration:
-                    //         const Duration(milliseconds: 800),
-                    //     viewportFraction: 1,
-                    //   ),
-                    // ),
-                    CarouselSlider(
-                      items: widget.filter.image?.map((img) {
-                        return GestureDetector(
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10),
-                            ),
-                            child: CachedNetworkImage(
-                              imageUrl: img.url.toString(),
-                              fit: BoxFit.fill,
-                              placeholder: (context, url) => Image.asset(
-                                'assets/images/placeholder.png',
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: double.infinity,
-                              ),
-                              errorWidget: (context, url, error) =>
-                              const Center(child: Icon(Icons.error)),
-                            ),
-                          ),
-                        );
-                      }).toList() ?? [], // Use empty list if image is null
-                      options: CarouselOptions(
-                        height: heights * 0.22,
-                        enlargeCenterPage: true,
-                        autoPlay: true,
-                        reverse: true,
-                        disableCenter: true,
-                        aspectRatio: 1 / 9,
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        enableInfiniteScroll: true,
-                        autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                        viewportFraction: 1,
-                      ),
-                    ),
-
-                    Positioned(
-                      top: 10,
-                      left: 10,
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color:MyColors.redBG ,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Text(
-                              "${widget.filter.availableSeat} seat left",
-                              style: TextStyle(
-                                  color: MyColors.whiteBG,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12),
-                            ),
-                          ),
-                          // Spacer(),
-                          SizedBox(
-                            width: widths * 0.43,
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(right: 15),
-                            padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Text(
-                              "${widget.filter.avgRating.toStringAsFixed(1)}/5",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                          CircleAvatar(
-                              radius: 12,
-                              backgroundColor: MyColors.whiteBG,
-                              child: InkWell(
-                                onTap: (){
-                                  setState(() {
-                                    selectedIndex=widget.index;
-                                  });
-                                },
-                                child: Icon(
-                                  selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
-                                  color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
-                                  size: 16,
-                                ),
-                              ))
-                          // Icon(Icons.favorite_border, color: Colors.white),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        ? InkWell(
+      onTap: (){
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return CouponFullViewScreen(widget.filter.id.toString());
+        }));
+      },
+          child: Container(
+              margin: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                // color: MyColors.whiteBG,
+                color: Color(0xffffffff),
+                borderRadius: BorderRadius.circular(10),
+                // color: Colors.red
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Image with overlay
+                  Stack(
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: widths * 0.66,
-                            // color: Colors.red,
-                            child: Text(
-                              widget.filter.storeName,
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                          Spacer(),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 3, vertical: 1),
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Colors.grey.withOpacity(0.3)),
-                                // color: Color(0xff00bd62),
-                                borderRadius: BorderRadius.circular(3)),
-                            child: Text("⭐⭐⭐",
-                                style: TextStyle(
-                                  color: MyColors.whiteBG,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 12,
-                                )),
-                          ),
-                          // CircleAvatar(
-                          //     radius: 9,
-                          //     backgroundColor: MyColors.darkGreen,
-                          //     child: Icon(Icons.star,
-                          //         color: MyColors.whiteBG, size: 12)),
-                          // SizedBox(width: 4),
-                          // Text(
-                          //   widget.restaurant.rating.toString(),
-                          //   style: TextStyle(
-                          //       fontSize: 20,
-                          //       fontWeight: FontWeight.bold,
-                          //       color: MyColors.blackBG),
-                          // ),
-                        ],
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        widget.filter.address,
-                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                      ),
-                      SizedBox(height: 4),
-                      // Text(
-                      //   "${widget.restaurant.cuisine} • ${widget.restaurant.price}",
-                      //   style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                      // ),
-                      SizedBox(height: 6),
-                      // Row(
-                      //   children: [
-                      //     Container(
-                      //         padding: EdgeInsets.all(3),
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.grey.withOpacity(0.3),
-                      //           borderRadius: BorderRadius.circular(10),
+                      // CarouselSlider(
+                      //   items: widget.filter.image((json) {
+                      //     return GestureDetector(
+                      //       child: ClipRRect(
+                      //         borderRadius: BorderRadius.only(
+                      //             topLeft: Radius.circular(10),
+                      //             topRight: Radius.circular(10)),
+                      //         child: CachedNetworkImage(
+                      //           imageUrl: json.url.toString(),
+                      //           fit: BoxFit.fill,
+                      //           placeholder: (context, url) => Image.asset(
+                      //             'assets/images/placeholder.png',
+                      //             fit: BoxFit.cover,
+                      //             width: double.infinity,
+                      //             height: double.infinity,
+                      //           ),
+                      //           errorWidget: (context, url, error) =>
+                      //               const Center(child: Icon(Icons.error)),
                       //         ),
-                      //         child: Row(
-                      //           children: [
-                      //             Icon(
-                      //               Icons.calendar_month_outlined,
-                      //               color: Colors.grey[600],
-                      //               size: 12,
-                      //             ),
-                      //             SizedBox(width: 6),
-                      //             Text(
-                      //               "Table Booking",
-                      //               style: TextStyle(
-                      //                   fontSize: 12,
-                      //                   color: Colors.black.withOpacity(0.5)),
-                      //             ),
-                      //           ],
-                      //         )),
-                      //   ],
+                      //       ),
+                      //     );
+                      //   }).toList(),
+                      //   options: CarouselOptions(
+                      //     height: heights * 0.22,
+                      //     enlargeCenterPage: true,
+                      //     autoPlay: true,
+                      //     reverse: true,
+                      //     disableCenter: true,
+                      //     aspectRatio: 1 / 9,
+                      //     autoPlayCurve: Curves.fastOutSlowIn,
+                      //     enableInfiniteScroll: true,
+                      //     autoPlayAnimationDuration:
+                      //         const Duration(milliseconds: 800),
+                      //     viewportFraction: 1,
+                      //   ),
                       // ),
-                      Divider(),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-                        decoration: BoxDecoration(
-                            color: Color(0xff00bd62),
-                            borderRadius: BorderRadius.circular(3)),
-                        child: Text(
-                            "Flat 50% off on pre-booking       +${widget.filter.offers} offers",
-                            style: TextStyle(
-                              color: MyColors.whiteBG,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            )),
+                      CarouselSlider(
+                        items: widget.filter.image?.map((img) {
+                          return GestureDetector(
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10),
+                              ),
+                              child: CachedNetworkImage(
+                                imageUrl: img.url.toString(),
+                                fit: BoxFit.fill,
+                                placeholder: (context, url) => Image.asset(
+                                  'assets/images/placeholder.png',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                ),
+                                errorWidget: (context, url, error) =>
+                                const Center(child: Icon(Icons.error)),
+                              ),
+                            ),
+                          );
+                        }).toList() ?? [], // Use empty list if image is null
+                        options: CarouselOptions(
+                          height: heights * 0.22,
+                          enlargeCenterPage: true,
+                          autoPlay: true,
+                          reverse: true,
+                          disableCenter: true,
+                          aspectRatio: 1 / 9,
+                          autoPlayCurve: Curves.fastOutSlowIn,
+                          enableInfiniteScroll: true,
+                          autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                          viewportFraction: 1,
+                        ),
+                      ),
+
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color:MyColors.redBG ,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Text(
+                                "${widget.filter.availableSeat} seat left",
+                                style: TextStyle(
+                                    color: MyColors.whiteBG,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12),
+                              ),
+                            ),
+                            // Spacer(),
+                            SizedBox(
+                              width: widths * 0.43,
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right: 15),
+                              padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Text(
+                                "${widget.filter.avgRating.toStringAsFixed(1)}/5",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+
+                            CircleAvatar(
+                                radius: 12,
+                                backgroundColor: MyColors.whiteBG,
+                                child:InkWell(
+                                  onTap: (){
+                                    fetchStoresFullView(widget.filter.id.toString());
+                                    wishlist( widget.filter.id.toString());
+                                  },
+                                  child: Icon(
+                                    wishlist_status == 'true'
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    size: 16,
+                                    color:
+                                    wishlist_status == 'true' ? Colors.red : Colors.black,
+                                  ),
+                                ),
+                                // InkWell(
+                                //   onTap: (){
+                                //     setState(() {
+                                //       selectedIndex=widget.index;
+                                //     });
+                                //   },
+                                //   child: Icon(
+                                //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
+                                //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
+                                //     size: 16,
+                                //   ),
+                                // )
+                            )
+                            // Icon(Icons.favorite_border, color: Colors.white),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ],
+
+                  Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: widths * 0.66,
+                              // color: Colors.red,
+                              child: Text(
+                                widget.filter.storeName,
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                            Spacer(),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 3, vertical: 1),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.grey.withOpacity(0.3)),
+                                  // color: Color(0xff00bd62),
+                                  borderRadius: BorderRadius.circular(3)),
+                              child: Text("⭐⭐⭐",
+                                  style: TextStyle(
+                                    color: MyColors.whiteBG,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 12,
+                                  )),
+                            ),
+                            // CircleAvatar(
+                            //     radius: 9,
+                            //     backgroundColor: MyColors.darkGreen,
+                            //     child: Icon(Icons.star,
+                            //         color: MyColors.whiteBG, size: 12)),
+                            // SizedBox(width: 4),
+                            // Text(
+                            //   widget.restaurant.rating.toString(),
+                            //   style: TextStyle(
+                            //       fontSize: 20,
+                            //       fontWeight: FontWeight.bold,
+                            //       color: MyColors.blackBG),
+                            // ),
+                          ],
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          widget.filter.address,
+                          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                        ),
+                        SizedBox(height: 4),
+                        // Text(
+                        //   "${widget.restaurant.cuisine} • ${widget.restaurant.price}",
+                        //   style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                        // ),
+                        SizedBox(height: 6),
+                        // Row(
+                        //   children: [
+                        //     Container(
+                        //         padding: EdgeInsets.all(3),
+                        //         decoration: BoxDecoration(
+                        //           color: Colors.grey.withOpacity(0.3),
+                        //           borderRadius: BorderRadius.circular(10),
+                        //         ),
+                        //         child: Row(
+                        //           children: [
+                        //             Icon(
+                        //               Icons.calendar_month_outlined,
+                        //               color: Colors.grey[600],
+                        //               size: 12,
+                        //             ),
+                        //             SizedBox(width: 6),
+                        //             Text(
+                        //               "Table Booking",
+                        //               style: TextStyle(
+                        //                   fontSize: 12,
+                        //                   color: Colors.black.withOpacity(0.5)),
+                        //             ),
+                        //           ],
+                        //         )),
+                        //   ],
+                        // ),
+                        Divider(),
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                          decoration: BoxDecoration(
+                              color: Color(0xff00bd62),
+                              borderRadius: BorderRadius.circular(3)),
+                          child: Text(
+                              "Flat 50% off on pre-booking       +${widget.filter.offers} offers",
+                              style: TextStyle(
+                                color: MyColors.whiteBG,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                              )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          )
+        )
         : Text("Nodata");
   }
 
@@ -3828,5 +3894,85 @@ int selectedIndex=-1;
     } finally {
       isLoading = false;
     }
+  }
+  String wishlist_status = '';
+  StoreModel? store;
+
+  Future<void> wishlist( String store_id) async {
+    print("☕");
+    try {
+      UserModel n = await SharedPref.getUser();
+      final body = {"user_id": n.id, "store_id": store_id};
+      final response = await ApiServices.wishlist(body);
+
+      // Check if the response is null or doesn't contain the expected data
+      if (response != null &&
+          response.containsKey('res') &&
+          response['res'] == 'success') {
+        final msg = response['msg'] as String;
+        print("☕");
+        setState(() {
+          wishlist_status = response['wishlist_status'] as String;
+          wishlist_status == "true"
+              ? showSuccessMessage(context, message: msg)
+              : showErrorMessage(context, message: msg);
+        });
+      } else if (response != null) {
+        String msg = response['msg'];
+
+        showErrorMessage(context, message: msg);
+      }
+    } catch (e) {
+      //print('verify_otp error: $e');
+      // Handle error
+      //showErrorMessage(context, message: 'An error occurred: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+  Future<void> fetchStoresFullView(String store_id) async {
+    print("strollll:${store_id}");
+    UserModel n = await SharedPref.getUser();
+    try {
+      final body = {
+        "store_id": "$store_id",
+        "user_id": "${n.id}",
+      };
+      final response = await ApiServices.api_store_fullview(body);
+
+      if (response != null &&
+          response.containsKey('res') &&
+          response['res'] == 'success') {
+        final data = response['data'];
+        print("Aman:$data");
+
+        // Ensure that the response data is in the expected format
+        if (data != null && data is Map<String, dynamic>) {
+          store = StoreModel.fromMap(data);
+          setState(() {
+            wishlist_status = store!.wishlistStatus;
+          });
+
+          print("storeeeeee: " + data.toString());
+
+          // print('fetchStoresFullView data: ${category_name}');
+        } else {
+          // Handle invalid response data format
+          // showErrorMessage(context, message: 'Invalid response data format');
+        }
+
+      } else if (response != null) {
+        String msg = response['msg'];
+
+        // Handle unsuccessful response or missing 'res' field
+        // showErrorMessage(context, message: msg);
+      }
+    } catch (e) {
+      //print('verify_otp error: $e');
+      // Handle error
+      //showErrorMessage(context, message: 'An error occurred: $e');
+    } finally {}
   }
 }

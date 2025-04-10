@@ -21,7 +21,7 @@ import 'package:grabto/ui/bottom_sortlist_screen.dart';
 import 'package:grabto/ui/customer_care.dart';
 import 'package:grabto/ui/delete_screen.dart';
 import 'package:grabto/ui/how_it_works.dart';
-import 'package:grabto/ui/select_address_screen.dart';
+import 'package:grabto/ui/restaurant_payment_screen.dart';
 import 'package:grabto/ui/term_and_condition.dart';
 import 'package:grabto/ui/transaction_screen.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
@@ -37,6 +37,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../helper/location_provider.dart';
+import 'bottom_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -191,7 +192,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       return await showExitConfirmation(context) ?? true;
     }
   }
+  final List<String> _image = [
+    "assets/images/home_app_logo.png",
+    "assets/images/Menu Icons.png",
+    "assets/images/add_card.png",
+    "assets/images/travel_explore.png",
+    "assets/images/home_app_logo.png",
+  ];
 
+  final List<String> _labels = [
+    "Home",
+    "Explore",
+    "Pay Bill",
+    "Flicks",
+    "Profile",
+  ];
   @override
   Widget build(BuildContext context) {
     final address=Provider.of<Address>(context);
@@ -203,7 +218,7 @@ print("dsd ${banners.length}");
         backgroundColor: MyColors.backgroundBg,
         leadingWidth: 20,
         centerTitle: true,
-        title:_selectedIndex==1? Text("Category"):_selectedIndex==2? Text("BookMark"): Text("Profile"),
+        title:_selectedIndex==1? Text("Explore"):_selectedIndex==2?Text("Pay Bill"):_selectedIndex==3? Text("Flicks"): Text("Profile"),
         // title: Column(
         //   crossAxisAlignment: CrossAxisAlignment.start,
         //   children: [
@@ -274,7 +289,8 @@ print("dsd ${banners.length}");
             ),
 
             CategoriesBottamWidget(),
-
+            RestaurantPaymentScreen(),
+            // Center(child: Text("Page: ${_labels[_selectedIndex]}")),
             //BottomLoginScreen(),
             user_id == 0 ? const BottomLoginScreen() : SortListBottamWidget(),
 
@@ -578,72 +594,135 @@ print("dsd ${banners.length}");
         onPopInvoked: (v) {
           _onWillPop();
         },
-        child: Container(
-          // color: MyColors.blackBG,
-          child: BottomNavigationBar(
-            backgroundColor: MyColors.blackBG,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.home_outlined,
-                  color: MyColors.bottomNavigationUnselectedColor,
+        child:Container(
+          decoration: BoxDecoration(
+            color: Colors.black,
+            // borderRadius: const BorderRadius.only(
+            //   topLeft: Radius.circular(20),
+            //   topRight: Radius.circular(20),
+            // ),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(_image.length, (index) {
+              final isSelected = _selectedIndex == index;
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            color: isSelected ? Colors.red : Colors.transparent,
+                            // borderRadius: BorderRadius.circular(16),
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10),
+                              // ),
+                            )),
+                        child:index==4?CircleAvatar(
+                          radius: 10,
+                          backgroundImage: NetworkImage(userimage),
+                        ): Image(image: AssetImage(_image[index],),color:  MyColors.whiteBG ,)
+                      // Icon(
+                      //   _icons[index],
+                      //   color: isSelected ? Colors.white : Colors.white70,
+                      //   size: isSelected ? 28 : 24,
+                      // ),
+                    ),
+                    // if (index == 4)
+                    //   CircleAvatar(
+                    //     radius: 12,
+                    //     backgroundImage: NetworkImage(
+                    //       "https://i.pravatar.cc/150?img=3",
+                    //     ),
+                    //   )
+                    // else
+                    Text(
+                      _labels[index],
+                      style: TextStyle(
+                        color: MyColors.whiteBG,
+                        fontSize: 12,
+                      ),)
+                    //   ),
+                  ],
                 ),
-                activeIcon: Icon(
-                  Icons.home,
-                  color: MyColors.bottomNavigationSelectedColor,
-                ),
-                label: "Home",
-              ),
-              BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.category_outlined,
-                    color: MyColors.bottomNavigationUnselectedColor,
-                  ),
-                  activeIcon: Icon(
-                    Icons.category_rounded,
-                    color: MyColors.bottomNavigationSelectedColor,
-                  ),
-                  label: "Categories"),
-              // BottomNavigationBarItem(
-              //   backgroundColor: MyColors.redBG,
-              //     icon: Icon(
-              //       Icons.folder,
-              //       color: MyColors.bottomNavigationUnselectedColor,
-              //     ),
-              //     activeIcon: Icon(
-              //       Icons.category_rounded,
-              //       color: MyColors.bottomNavigationSelectedColor,
-              //     ),
-              //     label: "PayBill"),
-              BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.favorite_border,
-                    color: MyColors.bottomNavigationUnselectedColor,
-                  ),
-                  activeIcon: Icon(
-                    Icons.favorite,
-                    color: MyColors.bottomNavigationSelectedColor,
-                  ),
-                  label: "Bookmark"),
-              BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.person_outline,
-                    color: MyColors.bottomNavigationUnselectedColor,
-                  ),
-                  activeIcon: Icon(
-                    Icons.person,
-                    color: MyColors.bottomNavigationSelectedColor,
-                  ),
-                  label: "Profile")
-            ],
-            currentIndex: _selectedIndex,
-            showUnselectedLabels: true,
-            unselectedItemColor: MyColors.bottomNavigationUnselectedColor,
-            selectedItemColor: MyColors.bottomNavigationSelectedColor,
-            elevation: 5,
-            onTap: _onItemTapped,
+              );
+            }),
           ),
         ),
+        // Container(
+        //   // color: MyColors.blackBG,
+        //   child: BottomNavigationBar(
+        //     backgroundColor: MyColors.blackBG,
+        //     items: const <BottomNavigationBarItem>[
+        //       BottomNavigationBarItem(
+        //         icon: Icon(
+        //           Icons.home_outlined,
+        //           color: MyColors.bottomNavigationUnselectedColor,
+        //         ),
+        //         activeIcon: Icon(
+        //           Icons.home,
+        //           color: MyColors.bottomNavigationSelectedColor,
+        //         ),
+        //         label: "Home",
+        //       ),
+        //       BottomNavigationBarItem(
+        //           icon: Icon(
+        //             Icons.category_outlined,
+        //             color: MyColors.bottomNavigationUnselectedColor,
+        //           ),
+        //           activeIcon: Icon(
+        //             Icons.category_rounded,
+        //             color: MyColors.bottomNavigationSelectedColor,
+        //           ),
+        //           label: "Categories"),
+        //       // BottomNavigationBarItem(
+        //       //   backgroundColor: MyColors.redBG,
+        //       //     icon: Icon(
+        //       //       Icons.folder,
+        //       //       color: MyColors.bottomNavigationUnselectedColor,
+        //       //     ),
+        //       //     activeIcon: Icon(
+        //       //       Icons.category_rounded,
+        //       //       color: MyColors.bottomNavigationSelectedColor,
+        //       //     ),
+        //       //     label: "PayBill"),
+        //       BottomNavigationBarItem(
+        //           icon: Icon(
+        //             Icons.favorite_border,
+        //             color: MyColors.bottomNavigationUnselectedColor,
+        //           ),
+        //           activeIcon: Icon(
+        //             Icons.favorite,
+        //             color: MyColors.bottomNavigationSelectedColor,
+        //           ),
+        //           label: "Bookmark"),
+        //       BottomNavigationBarItem(
+        //           icon: Icon(
+        //             Icons.person_outline,
+        //             color: MyColors.bottomNavigationUnselectedColor,
+        //           ),
+        //           activeIcon: Icon(
+        //             Icons.person,
+        //             color: MyColors.bottomNavigationSelectedColor,
+        //           ),
+        //           label: "Profile")
+        //     ],
+        //     currentIndex: _selectedIndex,
+        //     showUnselectedLabels: true,
+        //     unselectedItemColor: MyColors.bottomNavigationUnselectedColor,
+        //     selectedItemColor: MyColors.bottomNavigationSelectedColor,
+        //     elevation: 5,
+        //     onTap: _onItemTapped,
+        //   ),
+        // ),
       ),
     );
   }

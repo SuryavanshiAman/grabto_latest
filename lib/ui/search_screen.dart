@@ -4,9 +4,16 @@ import 'package:grabto/model/store_model.dart';
 import 'package:grabto/services/api.dart';
 import 'package:grabto/ui/coupon_fullview_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:grabto/ui/pay_bill_screen.dart';
 import 'package:http/http.dart' as http;
 
+import '../model/regular_offer_model.dart';
+import '../services/api_services.dart';
+
 class SearchStoreScreen extends StatefulWidget {
+  final String status;
+
+  const SearchStoreScreen({super.key,required this.status});
   @override
   _SearchStoreScreenState createState() => _SearchStoreScreenState();
 }
@@ -76,14 +83,15 @@ class _SearchStoreScreenState extends State<SearchStoreScreen> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
+
               // Navigate to coupon full view screen here
               // You can use Navigator to push a new screen onto the navigation stack
-              Navigator.push(
+            widget.status=="0"?  Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
                         CouponFullViewScreen("${_filteredStores[index].id}")),
-              );
+              ):regularOffer(_filteredStores[index].id.toString(),index);
             },
             child: ListTile(
               title: Text(
@@ -104,5 +112,39 @@ class _SearchStoreScreenState extends State<SearchStoreScreen> {
         },
       ),
     );
+  }
+  List<RegularOfferModel> regularofferlist = [];
+  Future<void> regularOffer(String store_id,int index) async {
+    print('regularOffer: store_id $store_id');
+    try {
+      final body = {"store_id": "$store_id"};
+      final response = await ApiServices.RegularOffer(body);
+      print('regularOffer: response $response');
+      if (response != null) {
+        setState(() {
+          regularofferlist = response;
+          // isLoading = false; // Set isLoading to false when fetching ends
+        });
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  PayBillScreen(
+                    regularofferlist[0],
+                      _filteredStores[index].storeName,
+                      "${_filteredStores[index].address} ${_filteredStores[index].address2} ${_filteredStores[index].country} ${_filteredStores[index].state}, ${_filteredStores[index].postcode}"
+                  )),
+        );
+      } else {
+        setState(() {
+          // isLoading = false; // Set isLoading to false when fetching ends
+        });
+      }
+    } catch (e) {
+      print('regularOffer: $e');
+      setState(() {
+        // isLoading = false; // Set isLoading to false in case of error
+      });
+    }
   }
 }

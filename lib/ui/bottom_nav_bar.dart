@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grabto/theme/theme.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
   @override
@@ -8,19 +9,19 @@ class CustomBottomNavBar extends StatefulWidget {
 class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   int _currentIndex = 2;
 
-  final List<IconData> _icons = [
-    Icons.home,
-    Icons.movie, // flicks
-    Icons.receipt_long, // pay bill
-    Icons.notifications, // bell
-    Icons.person, // profile
+  final List<String> _image = [
+    "assets/images/home_app_logo.png",
+    "assets/images/Menu Icons.png",
+    "assets/images/add_card.png",
+    "assets/images/travel_explore.png",
+    "assets/images/home_app_logo.png",
   ];
 
   final List<String> _labels = [
     "Home",
-    "Flicks",
+    "Explore",
     "Pay Bill",
-    "Bell",
+    "Flicks",
     "Profile",
   ];
 
@@ -36,10 +37,10 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
           //   topRight: Radius.circular(20),
           // ),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(_icons.length, (index) {
+          children: List.generate(_image.length, (index) {
             final isSelected = _currentIndex == index;
             return GestureDetector(
               onTap: () {
@@ -60,27 +61,28 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                         bottomRight: Radius.circular(10),
                       // ),
                     )),
-                    child: Icon(
-                      _icons[index],
-                      color: isSelected ? Colors.white : Colors.white70,
-                      size: isSelected ? 28 : 24,
-                    ),
+                    child: Image(image: AssetImage(_image[index],),color:  isSelected ? MyColors.redBG : Colors.white70,)
+                    // Icon(
+                    //   _icons[index],
+                    //   color: isSelected ? Colors.white : Colors.white70,
+                    //   size: isSelected ? 28 : 24,
+                    // ),
                   ),
-                  if (index == 4)
-                    CircleAvatar(
-                      radius: 12,
-                      backgroundImage: NetworkImage(
-                        "https://i.pravatar.cc/150?img=3",
-                      ),
-                    )
-                  else
+                  // if (index == 4)
+                  //   CircleAvatar(
+                  //     radius: 12,
+                  //     backgroundImage: NetworkImage(
+                  //       "https://i.pravatar.cc/150?img=3",
+                  //     ),
+                  //   )
+                  // else
                     Text(
                       _labels[index],
                       style: TextStyle(
                         color: isSelected ? Colors.red : Colors.white70,
                         fontSize: 12,
-                      ),
-                    ),
+                      ),)
+                  //   ),
                 ],
               ),
             );

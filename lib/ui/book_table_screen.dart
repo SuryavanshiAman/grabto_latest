@@ -187,7 +187,7 @@ int isLunchTimeSlotsVisibleIndex=-1;
     //   _selectedDate = DateTime(now.year, now.month, now.day); // Aaj ki date
     // }
 
-    prebookoffer(widget.store_id,"");
+    prebookoffer(widget.store_id,"","");
     print("😋😋😋😋${widget.store_id}");
     fetchStoresTermCondition();
     checkTimeSlotsVisibility(_selectedDate);
@@ -478,6 +478,7 @@ int isLunchTimeSlotsVisibleIndex=-1;
                                 fontSize: 14, fontWeight: FontWeight.w500),
                           ),
                         ),
+
                         bookModel.isNotEmpty&&bookModel.toString()!=""?  ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
@@ -615,7 +616,7 @@ int isLunchTimeSlotsVisibleIndex=-1;
                                                 // availableSeat=data.t02Noofseats??0;
                                                 availableSeat=data.t02Noofseats??0;
                                               });
-                                              prebookoffer(widget.store_id,data.to2Id.toString());
+                                              prebookoffer(widget.store_id,data.to2Id.toString(),DateFormat('yyyy-MM-dd').format(_selectedDate));
                                               selectTimeSlot(
                                                 data.t01Time.toString()??"",
                                                 widget.category_name ==
@@ -1111,11 +1112,11 @@ int isLunchTimeSlotsVisibleIndex=-1;
     }
   }
 
-  Future<void> prebookoffer(String store_id,dynamic time_id) async {
+  Future<void> prebookoffer(String store_id,dynamic time_id,dynamic bookingDate) async {
     print('prebookoffer: store_id $store_id');
     print('😊😊😊');
     try {
-      final body = {"store_id": "$store_id","time_id":time_id};
+      final body = {"store_id": "$store_id","time_id":time_id,"booking_date":bookingDate};
       final response = await ApiServices.PreBookOffer(body);
       print('prebookoffer: response $response');
       if (response != null) {
