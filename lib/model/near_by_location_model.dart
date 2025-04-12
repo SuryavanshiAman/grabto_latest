@@ -32,6 +32,7 @@ class Data {
   dynamic storeType;
   dynamic ownerMobile;
   dynamic storeName;
+  dynamic dish;
   dynamic mobile;
   dynamic password;
   dynamic categoryId;
@@ -70,6 +71,7 @@ class Data {
   dynamic alternateMobile;
   dynamic position;
   dynamic commission;
+  dynamic subCategoriesName;
   dynamic featureNames;
   dynamic discountPercentage;
   dynamic availableSeat;
@@ -81,6 +83,7 @@ class Data {
         this.storeType,
         this.ownerMobile,
         this.storeName,
+        this.dish,
         this.mobile,
         this.password,
         this.categoryId,
@@ -119,6 +122,7 @@ class Data {
         this.alternateMobile,
         this.position,
         this.commission,
+        this.subCategoriesName,
         this.featureNames,
         this.discountPercentage,
         this.availableSeat,
@@ -130,6 +134,7 @@ class Data {
     storeType = json['store_type'];
     ownerMobile = json['owner_mobile'];
     storeName = json['store_name'];
+    dish = json['dish'];
     mobile = json['mobile'];
     password = json['password'];
     categoryId = json['category_id'];
@@ -168,6 +173,7 @@ class Data {
     alternateMobile = json['alternate_mobile'];
     position = json['position'];
     commission = json['commission'];
+    subCategoriesName = json['subcategory_name'];
     featureNames = json['feature_names'];
     discountPercentage = json['discount_percentage'];
     availableSeat = json['available_seat'];
@@ -186,6 +192,7 @@ class Data {
     data['store_type'] = this.storeType;
     data['owner_mobile'] = this.ownerMobile;
     data['store_name'] = this.storeName;
+    data['dish'] = this.dish;
     data['mobile'] = this.mobile;
     data['password'] = this.password;
     data['category_id'] = this.categoryId;
@@ -224,6 +231,7 @@ class Data {
     data['alternate_mobile'] = this.alternateMobile;
     data['position'] = this.position;
     data['commission'] = this.commission;
+    data['subcategory_name'] = this.subCategoriesName;
     data['feature_names'] = this.featureNames;
     data['discount_percentage'] = this.discountPercentage;
     data['available_seat'] = this.availableSeat;

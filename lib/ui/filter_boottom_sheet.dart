@@ -729,13 +729,13 @@ void showFilterBottomSheet(
   Map<String, List<String>> subCategories = {
     "Distance": [
       "Within 5km",
-      "All",
       "Within 2km",
       "Within 10km",
       "Within 15km"
+          "All",
     ],
-    "Ratings": ["Rating 4.5+", "Rating 4+", "Rating 3.5+"],
-    "Discount": ["Up to 10% off"],
+    "Ratings": [ "Rating 2","Rating 2.5+" "Rating 3+","Rating 3.5+", "Rating 4+","Rating 4.5+","Rating 5+",],
+    "Discount": ["Up to 5% off","Up to 10% off","Up to 20% off","Up to 50% off"],
   };
 
   bool isLoading = false;

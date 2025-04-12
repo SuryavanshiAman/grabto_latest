@@ -236,7 +236,7 @@ class StoreWidget extends StatelessWidget {
                                     MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        "2",
+                                        store.rating,
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 12,

@@ -6,6 +6,7 @@ import 'package:grabto/helper/shared_pref.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/model/coupon_model.dart';
 import 'package:grabto/model/features_model.dart';
+import 'package:grabto/model/filtered_data_model.dart';
 import 'package:grabto/model/menu_model.dart';
 import 'package:grabto/model/pre_book_table_model.dart';
 import 'package:grabto/model/regular_offer_model.dart';
@@ -22,6 +23,7 @@ import 'package:grabto/ui/book_table_screen.dart';
 import 'package:grabto/ui/gallery_screen.dart';
 import 'package:grabto/ui/pay_bill_screen.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
+import 'package:grabto/view_model/filter_view_model.dart';
 import 'package:grabto/widget/add_rating_widget.dart';
 import 'package:grabto/widget/all_coupons_widget.dart';
 import 'package:grabto/widget/coupon_card.dart';
@@ -36,6 +38,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
@@ -322,9 +325,11 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>with TickerP
     ),
     // Add more restaurants here
   ];
+  bool viewTime=false;
   @override
   Widget build(BuildContext context) {
     TabController tabController = TabController(length: 5, vsync: this);
+    final data=Provider.of<FilterViewModel>(context);
     return WillPopScope(
       onWillPop: () async {
         // Call the fetchStoresCoupons function when navigating back from ScreenB
@@ -582,6 +587,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>with TickerP
                                     ),
                                   ),
                                   SizedBox(
+                                    // height: MediaQuery
                                     height: MediaQuery
                                         .of(context)
                                         .size
@@ -654,7 +660,14 @@ SizedBox(width: widths*0.2,)
                                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                                       children: [
                                         Text("Open",style: TextStyle(fontSize: 12,color: MyColors.lightGreen,fontWeight: FontWeight.w600),),
-                                        Text("View Timing",style: TextStyle(fontSize: 12,color: MyColors.blackBG),),
+                                        InkWell(
+                                          onTap: (){
+                                            setState(() {
+                                              viewTime=!viewTime;
+                                            });
+                                          },
+
+                                            child: Text("View Timing",style: TextStyle(fontSize: 12,color: MyColors.blackBG),)),
                                         InkWell(
                                             onTap: (){
                                               _makePhoneCall(
@@ -663,6 +676,60 @@ SizedBox(width: widths*0.2,)
                                             child: Text("Call 📞",style: TextStyle(color: MyColors.blackBG,fontSize: 12),)),
                                         SizedBox(width: widths*0.2,)
                                       ],
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: viewTime==true,
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 10),
+                                      child: Card(
+                                        color: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                          side: const BorderSide(
+                                              color: MyColors.primaryColor,
+                                              width: 1), // Define the border side
+                                        ),
+                                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                                        elevation: 3,
+                                        child: Container(
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 10),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.only(
+                                                    top: 0,
+                                                    left: 5,
+                                                    right: 15,
+                                                    bottom: 10),
+                                                child: const Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      "Timing",
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                          FontWeight.w800),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+
+                                              Visibility(
+                                                visible: timeList.isNotEmpty,
+                                                child: OpeningHours(
+                                                    timeList, getTimeList(timeList)),
+                                              ),
+                                              const SizedBox(height: 10),
+
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   Container(
@@ -1133,56 +1200,56 @@ SizedBox(width: widths*0.2,)
                                 ],
                               ),
                             ),
-                            Positioned(
-                              top: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width *
-                                  0.420,
-                              child: Container(
-                                width: widths*0.3,
-                                margin: EdgeInsets.only(top:
-                                    MediaQuery
-                                        .of(context)
-                                        .size
-                                        .height *
-                                        0.15,left: widths*0.7),
-                                // Adjust according to your requirement
-                                child: InkWell(
-                                  onTap: () {
-                                    navigateToGallerScreen(storeId);
-                                  },
-                                  child: Center(
-                                    child: ClipRRect(
-                                      borderRadius:
-                                      BorderRadius.circular(20),
-                                      // Rounded corners for the container
-                                      child: Container(
-                                        color: const Color(0x50000000),
-                                        // Transparent black color (#50000000)
-                                        padding:
-                                        const EdgeInsets.symmetric(
-                                            vertical: 3,
-                                            horizontal: 10),
-                                        child: const Text(
-                                          "Gallery",
-                                          style: TextStyle(
-                                              color:
-                                              MyColors.whiteBG,
-                                              fontWeight:
-                                              FontWeight.w400),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-
-                                  // child: Icon(
-                                  //   Icons.camera_alt_outlined,
-                                  //   color: MyColors.primaryColor,
-                                  // ),
-                                ),
-                              ),
-                            ),
+                            // Positioned(
+                            //   top: MediaQuery
+                            //       .of(context)
+                            //       .size
+                            //       .width *
+                            //       0.420,
+                            //   child: Container(
+                            //     width: widths*0.3,
+                            //     margin: EdgeInsets.only(top:
+                            //         MediaQuery
+                            //             .of(context)
+                            //             .size
+                            //             .height *
+                            //             0.15,left: widths*0.7),
+                            //     // Adjust according to your requirement
+                            //     child: InkWell(
+                            //       onTap: () {
+                            //         navigateToGallerScreen(storeId);
+                            //       },
+                            //       child: Center(
+                            //         child: ClipRRect(
+                            //           borderRadius:
+                            //           BorderRadius.circular(20),
+                            //           // Rounded corners for the container
+                            //           child: Container(
+                            //             color: const Color(0x50000000),
+                            //             // Transparent black color (#50000000)
+                            //             padding:
+                            //             const EdgeInsets.symmetric(
+                            //                 vertical: 3,
+                            //                 horizontal: 10),
+                            //             child: const Text(
+                            //               "Gallery",
+                            //               style: TextStyle(
+                            //                   color:
+                            //                   MyColors.whiteBG,
+                            //                   fontWeight:
+                            //                   FontWeight.w400),
+                            //             ),
+                            //           ),
+                            //         ),
+                            //       ),
+                            //
+                            //       // child: Icon(
+                            //       //   Icons.camera_alt_outlined,
+                            //       //   color: MyColors.primaryColor,
+                            //       // ),
+                            //     ),
+                            //   ),
+                            // ),
 
 
                           ],
@@ -1329,169 +1396,56 @@ SizedBox(width: widths*0.2,)
                       //     height: 8,
                       //   ),
                       /// timing
-                      Visibility(
-                        visible: storeSubcategory_names.isNotEmpty ||
-                            timeList.isNotEmpty,
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 10),
-                          child: Card(
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              side: const BorderSide(
-                                  color: MyColors.primaryColor,
-                                  width: 1), // Define the border side
-                            ),
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            elevation: 3,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 10),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        top: 0,
-                                        left: 5,
-                                        right: 15,
-                                        bottom: 10),
-                                    child: const Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "Timing",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight:
-                                              FontWeight.w800),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  // Visibility(
-                                  //   visible:
-                                  //   storeSubcategory_names.isNotEmpty,
-                                  //   child: Container(
-                                  //     margin: EdgeInsets.only(bottom: 10),
-                                  //     child: Row(
-                                  //       children: [
-                                  //         Container(
-                                  //           width: 18,
-                                  //           height: 18,
-                                  //           child: Icon(
-                                  //             Icons.food_bank_outlined,
-                                  //             size: 18,
-                                  //           ),
-                                  //         ),
-                                  //         SizedBox(width: 5),
-                                  //         Expanded(
-                                  //           child: Text(
-                                  //             storeSubcategory_names,
-                                  //             style: TextStyle(
-                                  //               fontSize: 14,
-                                  //               fontWeight:
-                                  //               FontWeight.w500,
-                                  //             ),
-                                  //           ),
-                                  //         ),
-                                  //       ],
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  Visibility(
-                                    visible: timeList.isNotEmpty,
-                                    child: OpeningHours(
-                                        timeList, getTimeList(timeList)),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  // Visibility(
-                                  //   visible: storeAddress.isNotEmpty ||
-                                  //       storeAddress2.isNotEmpty ||
-                                  //       storeState.isNotEmpty ||
-                                  //       storeCountry.isNotEmpty ||
-                                  //       storePostcode.isNotEmpty,
-                                  //   child: Container(
-                                  //     child: Row(
-                                  //       children: [
-                                  //         Container(
-                                  //           width: 18,
-                                  //           height: 18,
-                                  //           child: Icon(
-                                  //             Icons.location_on_outlined,
-                                  //             size: 18,
-                                  //           ),
-                                  //         ),
-                                  //         SizedBox(width: 5),
-                                  //         Expanded(
-                                  //           child: Text(
-                                  //             "$storeAddress $storeAddress2 $storeState $storeCountry , $storePostcode",
-                                  //             style: TextStyle(
-                                  //               fontSize: 14,
-                                  //               fontWeight: FontWeight.w500,
-                                  //             ),
-                                  //           ),
-                                  //         ),
-                                  //       ],
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+
 /// feature
-                      Visibility(
-                        visible: featuresList.isNotEmpty,
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 10),
-                          child: Card(
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              side: const BorderSide(
-                                  color: MyColors.primaryColor,
-                                  width: 1), // Define the border side
-                            ),
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            elevation: 3,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 10),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        top: 0,
-                                        left: 5,
-                                        right: 15,
-                                        bottom: 10),
-                                    child: const Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "Features",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight:
-                                              FontWeight.w800),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
+//                       Visibility(
+//                         visible: featuresList.isNotEmpty,
+//                         child: Container(
+//                           margin: const EdgeInsets.symmetric(
+//                               horizontal: 10, vertical: 10),
+//                           child: Card(
+//                             color: Colors.white,
+//                             shape: RoundedRectangleBorder(
+//                               borderRadius: BorderRadius.circular(8),
+//                               side: const BorderSide(
+//                                   color: MyColors.primaryColor,
+//                                   width: 1), // Define the border side
+//                             ),
+//                             clipBehavior: Clip.antiAliasWithSaveLayer,
+//                             elevation: 3,
+//                             child: Container(
+//                               margin: const EdgeInsets.symmetric(
+//                                   vertical: 10, horizontal: 10),
+//                               child: Column(
+//                                 children: [
+//                                   Container(
+//                                     margin: const EdgeInsets.only(
+//                                         top: 0,
+//                                         left: 5,
+//                                         right: 15,
+//                                         bottom: 10),
+//                                     child: const Row(
+//                                       mainAxisAlignment:
+//                                       MainAxisAlignment.spaceBetween,
+//                                       children: [
+//                                         Text(
+//                                           "Features",
+//                                           style: TextStyle(
+//                                               fontSize: 16,
+//                                               fontWeight:
+//                                               FontWeight.w800),
+//                                         ),
+//                                       ],
+//                                     ),
+//                                   ),
+//
+//                                 ],
+//                               ),
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+SizedBox(height: heights*0.02,),
                       Visibility(
                         visible: menuList.isNotEmpty,
                         child: Container(
@@ -1812,7 +1766,6 @@ SizedBox(width: widths*0.2,)
                        SizedBox(
                          height: 20,
                        ),
-
                        Container(
                          height: heights*0.4,
                          width:widths*0.9,
@@ -1829,9 +1782,56 @@ SizedBox(width: widths*0.2,)
                            },
                          ),
                        ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 10, left: 15,right: 15),
+                        child: Row(
+                          // mainAxisAlignment:
+                          // MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              height: heights*0.02,
+                              width: 2,
+                              color: MyColors.redBG,
+                            ),
+                            SizedBox(width: 5,),
+                            const Text(
+                              " Restaurants Nearby",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: heights*0.25,
+                        width:widths*0.9,
+                        // color: Colors.red,
+                        child: ListView.builder(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          itemCount: data.filterList.data?.data?.length??0,
+                          scrollDirection: Axis.horizontal,
+                          // physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return RestaurantsNearBy(
+                                index:index,name: selectedName,filter:data.filterList.data!.data![index]);
+                          },
+                        ),
+                      ),
+
+
+
+
+
+
+
                       const SizedBox(
                         height: 150,
                       ),
+
+
+
                     ],
                   ),
                 ),
@@ -1867,127 +1867,125 @@ SizedBox(width: widths*0.2,)
                       children: [
                         /// qwerty
                         // First Button Container
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () async {
-                              UserModel n = await SharedPref.getUser();
-                              print(n.name);
-                              if(n.id==0){
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
+                        GestureDetector(
+                          onTap: () async {
+                            UserModel n = await SharedPref.getUser();
+                            print(n.name);
+                            if(n.id==0){
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
 
-                              }else{
-                  if(kyc_status=="Approve"){
-                              if(prebookofferlist.isEmpty){
-                                showErrorMessage(context, message: "Pre-Book Offer not available");
+                            }else{
+                                          if(kyc_status=="Approve"){
+                            if(prebookofferlist.isEmpty){
+                              showErrorMessage(context, message: "Pre-Book Offer not available");
 
-                              }else {
-                                // showErrorMessage(context, message: end_time);
+                            }else {
+                              // showErrorMessage(context, message: end_time);
 
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          BookTableScreen(
-                                              "$start_time",
-                                              // "$end_time",
-                                              "$storeName",
-                                              "${widget.id}",
-                                            "$category_name"
-                                          )),
-                                );
-                              }
-                  }else{
-                    showErrorMessage(context, message: "Store temporarily unavailable here.  Kindly visit store for more details.");
-                  }}
-                            },
-                            child: Container(
-                              height: 49,
-                              // Height for the button
-                              margin: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                              // Add margin for spacing
-                              decoration: BoxDecoration(
-                                color: MyColors.whiteBG,
-                                borderRadius: BorderRadius.circular(
-                                    10), // Rounded corners
-                              ),
-                              child: Center(
-                                child: Text(
-                                  textAlign: TextAlign.center,
-                                  category_name=="Salon"&& kyc_status!="Pending"? "Book Appointment": category_name!="Salon"&& kyc_status!="Pending"?"Book a Table":"Service Unavailable",
-                                  style: const TextStyle(
-                                      color: MyColors.blackBG,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
-                                ),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        BookTableScreen(
+                                            "$start_time",
+                                            // "$end_time",
+                                            "$storeName",
+                                            "${widget.id}",
+                                          "$category_name"
+                                        )),
+                              );
+                            }
+                                          }else{
+                                            showErrorMessage(context, message: "Store temporarily unavailable here.  Kindly visit store for more details.");
+                                          }}
+                          },
+                          child: Container(
+                            height: 49,
+                            padding: EdgeInsets.fromLTRB(30,10,30,10),
+                            // Height for the button
+                            // margin: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                            // Add margin for spacing
+                            decoration: BoxDecoration(
+                              color: MyColors.whiteBG,
+                              borderRadius: BorderRadius.circular(
+                                  10), // Rounded corners
+                            ),
+                            child: Center(
+                              child: Text(
+                                textAlign: TextAlign.center,
+                                category_name=="Salon"&& kyc_status!="Pending"? "Book Appointment": category_name!="Salon"&& kyc_status!="Pending"?"Book a Table":"Service Unavailable",
+                                style: const TextStyle(
+                                    color: MyColors.blackBG,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500),
                               ),
                             ),
                           ),
                         ),
                         // Second Button Container
                         /// qwerty
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () async {
-                              UserModel n = await SharedPref.getUser();
-                              print(n.name);
-                              if(n.id==0){
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
+                        GestureDetector(
+                          onTap: () async {
+                            UserModel n = await SharedPref.getUser();
+                            print(n.name);
+                            if(n.id==0){
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
 
-                              }else {
-                                if (kyc_status == "Approve") {
-                                  if (regularofferlist.isEmpty) {
-                                    showErrorMessage(context,
-                                        message: "Regular Offer not available");
-                                  } else {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              PayBillScreen(
-                                                  regularofferlist[0],
-                                                  storeName,
-                                                  "$storeAddress $storeAddress2 $storeCountry $storeState, $storePostcode")),
-                                    );
-                                  }
-                                } else {
+                            }else {
+                              if (kyc_status == "Approve") {
+                                if (regularofferlist.isEmpty) {
                                   showErrorMessage(context,
-                                      message: "Store temporarily unavailable here.  Kindly visit store for more details.");
+                                      message: "Regular Offer not available");
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            PayBillScreen(
+                                                regularofferlist[0],
+                                                storeName,
+                                                "$storeAddress $storeAddress2 $storeCountry $storeState, $storePostcode")),
+                                  );
                                 }
-                                // if(regularofferlist.isEmpty){
-                                //   showErrorMessage(context, message: "Regular Offer not available");
-                                //
-                                // }else {
-                                //
-                                //   Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //         builder: (context) =>
-                                //             PayBillScreen(
-                                //                 regularofferlist[0], storeName,
-                                //                 "$storeAddress $storeAddress2 $storeCountry $storeState, $storePostcode")),
-                                //   );
-                                // }
+                              } else {
+                                showErrorMessage(context,
+                                    message: "Store temporarily unavailable here.  Kindly visit store for more details.");
                               }
-                            },
-                            child: Container(
-                              height: 49,
-                              // Height for the button
-                              margin: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                              // Add margin for spacing
-                              decoration: BoxDecoration(
-                                color: MyColors.primaryColor,
-                                borderRadius: BorderRadius.circular(
-                                    10), // Rounded corners
-                              ),
-                              child: Center(
-                                child: Text(
-                                  kyc_status!="Pending"?'Pay Bill Now':"Service Unavailable",
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      color: MyColors.whiteBG,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
-                                ),
+                              // if(regularofferlist.isEmpty){
+                              //   showErrorMessage(context, message: "Regular Offer not available");
+                              //
+                              // }else {
+                              //
+                              //   Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) =>
+                              //             PayBillScreen(
+                              //                 regularofferlist[0], storeName,
+                              //                 "$storeAddress $storeAddress2 $storeCountry $storeState, $storePostcode")),
+                              //   );
+                              // }
+                            }
+                          },
+                          child: Container(
+                            height: 49,
+                            // Height for the button
+                            padding: EdgeInsets.fromLTRB(30,10,30,10),
+                            // margin: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                            // Add margin for spacing
+                            decoration: BoxDecoration(
+                              color: MyColors.primaryColor,
+                              borderRadius: BorderRadius.circular(
+                                  10), // Rounded corners
+                            ),
+                            child: Center(
+                              child: Text(
+                                kyc_status!="Pending"?'Pay Bill Now':"Service Unavailable",
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                    color: MyColors.whiteBG,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500),
                               ),
                             ),
                           ),
@@ -2833,9 +2831,7 @@ class OfferCardRow extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text("• "), // Bullet point
-                      Expanded(
-                        child: Text(term),
-                      ),
+                      Text(term),
                     ],
                   ),
                 );
@@ -2849,6 +2845,7 @@ class OfferCardRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -2989,6 +2986,7 @@ class _OfferSliderState extends State<OfferSlider> {
   @override
   void initState() {
     super.initState();
+
     _pageController.addListener(
             () => setState(() => _currentPage = _pageController.page!.round()));
   }
@@ -3129,9 +3127,7 @@ class PrebookOfferListWidget extends StatelessWidget {
                             const Text("• ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18)),
-                            Expanded(
-                              child: Text(term.termCondition),
-                            ),
+                            Text(term.termCondition),
                           ],
                         ),
                       );
@@ -3542,9 +3538,7 @@ class RegularOfferListWidget extends StatelessWidget {
                             const Text("• ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18)),
-                            Expanded(
-                              child: Text(term.termCondition),
-                            ),
+                            Text(term.termCondition),
                           ],
                         ),
                       );
@@ -4091,5 +4085,274 @@ width: 316,
     } finally {
       isLoading = false;
     }
+  }
+}
+
+class RestaurantsNearBy extends StatefulWidget {
+  final int index;
+  final String name;
+  final Data filter;
+
+  RestaurantsNearBy({required this.index, required this.name, required this.filter});
+
+  @override
+  State<RestaurantsNearBy> createState() => _RestaurantsNearByState();
+}
+
+class _RestaurantsNearByState extends State<RestaurantsNearBy> {
+  List ambienceList = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchGalleryImagesAmbience("177", "ambience");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(8),
+      height: 250,
+      width: 100,
+      decoration: BoxDecoration(
+          // color: MyColors.whiteBG,
+          borderRadius: BorderRadius.circular(10)
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image with overlay
+          Stack(
+            children: [
+              CarouselSlider(
+                items:widget.filter.image?.map((img) {
+                  return GestureDetector(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10)),
+                      child: CachedNetworkImage(
+                        imageUrl:  img.url.toString(),
+                        fit: BoxFit.fill,
+                        placeholder: (context, url) => Image.asset(
+                          'assets/images/placeholder.png',
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                        ),
+                        errorWidget: (context, url, error) =>
+                        const Center(child: Icon(Icons.error)),
+                      ),
+                    ),
+                  );
+                }).toList() ?? [],
+                options: CarouselOptions(
+                  height: 100,
+                  enlargeCenterPage: true,
+                  autoPlay: true,
+                  reverse: true,
+                  disableCenter: true,
+                  aspectRatio: 1 / 9,
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  enableInfiniteScroll: true,
+                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                  viewportFraction: 1,
+                ),
+              ),
+              Positioned(
+                bottom: 10,
+                left: 2,
+                right: 0,
+                child: Text("Flat ${widget.filter.discountPercentage.toString()}% off  ",style: TextStyle(color: MyColors.whiteBG,fontWeight: FontWeight.w600),),
+
+              ),
+              Positioned(
+                top: 10,
+                left: 10,
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
+                      decoration: BoxDecoration(
+                        color:Colors.green,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Text(
+                        "${widget.filter.avgRating.toStringAsFixed(1)}/5",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: widths*0.08,),
+                    CircleAvatar(
+                      radius: 12,
+                      backgroundColor: MyColors.whiteBG,
+                      child:InkWell(
+                        onTap: (){
+                          fetchStoresFullView(widget.filter.id.toString());
+                          wishlist("${widget.filter.id.toString()}");
+                        },
+                        child: Icon(
+                          wishlist_status == 'true'
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: 16,
+                          color:
+                          wishlist_status == 'true' ? Colors.red : Colors.black,
+                        ),
+                      ),
+                      // InkWell(
+                      //   onTap: (){
+                      //     setState(() {
+                      //       selectedIndex=widget.index;
+                      //     });
+                      //   },
+                      //   child: Icon(
+                      //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
+                      //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
+                      //     size: 16,
+                      //   ),
+                      // )
+                    )
+                  ],
+                ),
+              ),
+
+            ],
+          ),
+
+          Padding(
+            padding: EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.filter.storeName,
+                  style: TextStyle(
+                    overflow: TextOverflow.ellipsis,
+                      fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                // SizedBox(height: 4),
+
+                // Text(
+                //   widget.restaurant.location,
+                //   style: TextStyle(color: MyColors.textColorTwo, fontSize: 14),
+                // ),
+
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool isLoading = true;
+
+  Future<void> fetchGalleryImagesAmbience(
+      String store_id, String food_type) async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final body = {"store_id": "$store_id", "food_type": "$food_type"};
+      final response = await ApiServices.store_multiple_galleryJson(body);
+      print("object: $response");
+      if (response != null) {
+        setState(() {
+          ambienceList = response;
+
+          print('fetchGalleryImagesAmbience: $response');
+        });
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      print('fetchGalleryImagesAmbience: $e');
+    } finally {
+      isLoading = false;
+    }
+  }
+  String wishlist_status = '';
+  StoreModel? store;
+  Future<void> wishlist(dynamic store_id) async {
+    UserModel n = await SharedPref.getUser();
+    try {
+      final body = {"user_id": n.id.toString(), "store_id": store_id};
+      final response = await ApiServices.wishlist(body);
+
+      // Check if the response is null or doesn't contain the expected data
+      if (response != null &&
+          response.containsKey('res') &&
+          response['res'] == 'success') {
+        final msg = response['msg'] as String;
+
+        setState(() {
+          wishlist_status = response['wishlist_status'] as String;
+          wishlist_status == "true"
+              ? showSuccessMessage(context, message: msg)
+              : showErrorMessage(context, message: msg);
+        });
+      } else if (response != null) {
+        String msg = response['msg'];
+
+        showErrorMessage(context, message: msg);
+      }
+    } catch (e) {
+      //print('verify_otp error: $e');
+      // Handle error
+      //showErrorMessage(context, message: 'An error occurred: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+  Future<void> fetchStoresFullView(String store_id) async {
+    try {
+      UserModel n = await SharedPref.getUser();
+      final body = {
+        "store_id": "${store_id.toString()}",
+        "user_id": n.id,
+      };
+      final response = await ApiServices.api_store_fullview(body);
+
+      if (response != null &&
+          response.containsKey('res') &&
+          response['res'] == 'success') {
+        final data = response['data'];
+        print("Aman:$data");
+
+        // Ensure that the response data is in the expected format
+        if (data != null && data is Map<String, dynamic>) {
+
+          store = StoreModel.fromMap(data);
+
+          setState(() {
+            wishlist_status = store!.wishlistStatus;
+          });
+
+          print("store: " + data.toString());
+          // print('fetchStoresFullView data: ${category_name}');
+        } else {
+          // Handle invalid response data format
+          // showErrorMessage(context, message: 'Invalid response data format');
+        }
+
+      } else if (response != null) {
+        String msg = response['msg'];
+
+        // Handle unsuccessful response or missing 'res' field
+        // showErrorMessage(context, message: msg);
+      }
+    } catch (e) {
+      //print('verify_otp error: $e');
+      // Handle error
+      //showErrorMessage(context, message: 'An error occurred: $e');
+    } finally {}
   }
 }

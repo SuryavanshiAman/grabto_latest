@@ -43,7 +43,7 @@ class SubCategoriesCardWidget extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     SizedBox(
-                      height: heights*0.15,
+                      height: heights*0.1513,
                       width: double.infinity,
                       child: CachedNetworkImage(
                         imageUrl: imgUrl,
@@ -78,7 +78,7 @@ class SubCategoriesCardWidget extends StatelessWidget {
                           subcategoryName,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: MyColors.whiteBG,
+                            color: MyColors.blackBG,
                             fontSize: 12,
                             // overflow: TextOverflow.ellipsis,
                           ),

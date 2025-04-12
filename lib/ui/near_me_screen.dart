@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
+import 'package:grabto/widget/rating.dart';
 import 'package:provider/provider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../helper/shared_pref.dart';
 import '../model/features_model.dart';
@@ -441,8 +443,12 @@ class _RestaurantCardState extends State<RestaurantCard> {
       fetchStoresFullView(widget.filter.id, "${userId}");
     });
   }
+  final CarouselSliderController _carouselController =
+  CarouselSliderController();
+  int _currentIndex = 0;
   @override
   Widget build(BuildContext context) {
+    final imageList = widget.filter.image ?? [];
     return  InkWell(
       onTap: (){
         Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -474,10 +480,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                   items: widget.filter.image?.map((img) {
                     return GestureDetector(
                       child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
-                        ),
+                        borderRadius: BorderRadius.circular(10),
                         child: CachedNetworkImage(
                           imageUrl: img.url.toString(),
                           fit: BoxFit.fill,
@@ -492,7 +495,9 @@ class _RestaurantCardState extends State<RestaurantCard> {
                         ),
                       ),
                     );
-                  }).toList() ?? [], // Use empty list if image is null
+                  }).toList() ?? [],
+                  carouselController:
+                  _carouselController, // Use empty list if image is null
                   options: CarouselOptions(
                     height: heights * 0.22,
                     enlargeCenterPage: true,
@@ -504,21 +509,81 @@ class _RestaurantCardState extends State<RestaurantCard> {
                     enableInfiniteScroll: true,
                     autoPlayAnimationDuration: const Duration(milliseconds: 800),
                     viewportFraction: 1,
+                    onPageChanged: (index, reason) {
+                      setState(() {
+                        _currentIndex = index;
+                      });
+                    },
                   ),
                 ),
                 Positioned(
+                  bottom: 10,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: AnimatedSmoothIndicator(
+                      activeIndex: _currentIndex,
+                      count: imageList.length,
+                      effect: const ExpandingDotsEffect(
+                        dotHeight: 6,
+                        dotWidth: 6,
+                        spacing: 6,
+                        expansionFactor: 3,
+                        activeDotColor: MyColors.whiteBG,
+                        dotColor: Colors.white70,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 20,
+                  left: 0,
+                  right: 0,
+                  child: Row(
+                    children: [
+                      Container(
+                        // width: widths*0.3,
+
+                        decoration: BoxDecoration(
+                            color: MyColors.blackBG.withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(15)),
+                        margin: EdgeInsets.all(8),
+                        padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset("assets/images/local_cafe.png"),
+                            const SizedBox(width: 5),
+                            Text(
+                              widget.filter.subCategoriesName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: MyColors.whiteBG,
+                                fontSize: 12,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                widget.filter.availableSeat!=null?   Positioned(
                   top: 10,
                   left: 10,
                   child: Row(
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: MyColors.redBG,
+                          color:int.parse(widget.filter.availableSeat) <=5?MyColors.redBG:MyColors.green ,
+                          // color:MyColors.green ,
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Text(
-                          "${widget.filter.availableSeat} seat left",
+                          "${widget.filter.availableSeat.toString()??""} seat left",
                           style: TextStyle(
                               color: MyColors.whiteBG,
                               fontWeight: FontWeight.bold,
@@ -545,39 +610,112 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           ),
                         ),
                       ),
+
                       CircleAvatar(
-                          radius: 12,
-                          backgroundColor: MyColors.whiteBG,
-                          child: InkWell(
-                            onTap: (){
-                              wishlist("$userId", "${widget.filter.id}");
-                            },
-                            child: Icon(
-                              wishlist_status == 'true'
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              size: 16,
-                              color:
-                              wishlist_status == 'true' ? Colors.red : Colors.black,
-                            ),
+                        radius: 12,
+                        backgroundColor: MyColors.whiteBG,
+                        child:InkWell(
+                          onTap: (){
+                            wishlist("$userId", "${widget.filter.id}");
+                          },
+                          child: Icon(
+                            wishlist_status == 'true'
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            size: 16,
+                            color:
+                            wishlist_status == 'true' ? Colors.red : Colors.black,
                           ),
-                          // InkWell(
-                          //   onTap: (){
-                          //     setState(() {
-                          //       selectedIndex=widget.index;
-                          //     });
-                          //   },
-                          //   child: Icon(
-                          //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
-                          //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
-                          //     size: 16,
-                          //   ),
-                          // )
+                        ),
+                        // InkWell(
+                        //   onTap: (){
+                        //     setState(() {
+                        //       selectedIndex=widget.index;
+                        //     });
+                        //   },
+                        //   child: Icon(
+                        //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
+                        //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
+                        //     size: 16,
+                        //   ),
+                        // )
                       )
                       // Icon(Icons.favorite_border, color: Colors.white),
                     ],
                   ),
-                ),
+                ):Container(),
+                // Positioned(
+                //   top: 10,
+                //   left: 10,
+                //   child: Row(
+                //     children: [
+                //       Container(
+                //         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                //         decoration: BoxDecoration(
+                //           color: MyColors.redBG,
+                //           borderRadius: BorderRadius.circular(5),
+                //         ),
+                //         child: Text(
+                //           "${widget.filter.availableSeat} seat left",
+                //           style: TextStyle(
+                //               color: MyColors.whiteBG,
+                //               fontWeight: FontWeight.bold,
+                //               fontSize: 12),
+                //         ),
+                //       ),
+                //       // Spacer(),
+                //       SizedBox(
+                //         width: widths * 0.43,
+                //       ),
+                //       Container(
+                //         margin: EdgeInsets.only(right: 15),
+                //         padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
+                //         decoration: BoxDecoration(
+                //           color: Colors.green,
+                //           borderRadius: BorderRadius.circular(5),
+                //         ),
+                //         child: Text(
+                //           "${widget.filter.avgRating.toStringAsFixed(1)}/5",
+                //           style: const TextStyle(
+                //             color: Colors.white,
+                //             fontWeight: FontWeight.bold,
+                //             fontSize: 12,
+                //           ),
+                //         ),
+                //       ),
+                //       CircleAvatar(
+                //           radius: 12,
+                //           backgroundColor: MyColors.whiteBG,
+                //           child: InkWell(
+                //             onTap: (){
+                //               wishlist("$userId", "${widget.filter.id}");
+                //             },
+                //             child: Icon(
+                //               wishlist_status == 'true'
+                //                   ? Icons.favorite
+                //                   : Icons.favorite_border,
+                //               size: 16,
+                //               color:
+                //               wishlist_status == 'true' ? Colors.red : Colors.black,
+                //             ),
+                //           ),
+                //           // InkWell(
+                //           //   onTap: (){
+                //           //     setState(() {
+                //           //       selectedIndex=widget.index;
+                //           //     });
+                //           //   },
+                //           //   child: Icon(
+                //           //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
+                //           //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
+                //           //     size: 16,
+                //           //   ),
+                //           // )
+                //       )
+                //       // Icon(Icons.favorite_border, color: Colors.white),
+                //     ],
+                //   ),
+                // ),
                 // Positioned(
                 //   top: 10,
                 //   right: 10,
@@ -596,7 +734,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                   Row(
                     children: [
                       Container(
-                        width: widths * 0.66,
+                        width: widths * 0.58,
                         // color: Colors.red,
                         child: Text(
                           widget.filter.storeName,
@@ -606,18 +744,14 @@ class _RestaurantCardState extends State<RestaurantCard> {
                       ),
                       Spacer(),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 3, vertical: 1),
                         decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                            border: Border.all(
+                                color: Colors.grey.withOpacity(0.3)),
                             // color: Color(0xff00bd62),
-                            borderRadius: BorderRadius.circular(3)
-                        ),
-                        child: Text("⭐⭐⭐",
-                            style: TextStyle(
-                              color:MyColors.whiteBG,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12,
-                            )),
+                            borderRadius: BorderRadius.circular(3)),
+                        child:  StarRating(color: Colors.yellow,rating: double.parse(widget.filter.avgRating.toStringAsFixed(1).toString()),size: 20,),
                       ),
                       // CircleAvatar(
                       //     radius: 9,
@@ -672,21 +806,49 @@ class _RestaurantCardState extends State<RestaurantCard> {
                   //   ],
                   // ),
                   Divider(),
+                  widget.filter.dish != null
+                      ? Text(
+                    widget.filter.dish.toString(),
+                    style: TextStyle(
+                        color: Colors.grey[600], fontSize: 14),
+                  )
+                      : Container(),
+                  widget.filter.dish != null
+                      ? Divider(
+                    color: MyColors.textColorTwo.withOpacity(0.3),
+                  )
+                      : Container(),
                   Container(
-            padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-            decoration: BoxDecoration(
-            color: Color(0xff00bd62),
-            borderRadius: BorderRadius.circular(3)
-            ),
-            child: Text(
-          "Flat 50% off on pre-booking       +${widget.filter.offers} offers",
-            style: TextStyle(
-            color:MyColors.whiteBG,
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-            )),
-
+                    width: widths,
+                    padding:
+                    EdgeInsets.symmetric(horizontal: 3, vertical: 5),
+                    decoration: BoxDecoration(
+                        color: Color(0xff00bd62),
+                        borderRadius: BorderRadius.circular(3)),
+                    child: Text(
+                        widget.filter.offers!=""? "% Flat ${widget.filter.discountPercentage.toString()}% off on pre-booking       +${widget.filter.offers.toString()} offers":
+                        "% Flat ${widget.filter.discountPercentage.toString()??""}% off on pre-booking",
+                        style: TextStyle(
+                          color: MyColors.whiteBG,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        )),
                   ),
+          //         Container(
+          //   padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+          //   decoration: BoxDecoration(
+          //   color: Color(0xff00bd62),
+          //   borderRadius: BorderRadius.circular(3)
+          //   ),
+          //   child: Text(
+          // "Flat 50% off on pre-booking       +${widget.filter.offers} offers",
+          //   style: TextStyle(
+          //   color:MyColors.whiteBG,
+          //   fontWeight: FontWeight.w500,
+          //   fontSize: 14,
+          //   )),
+          //
+          //         ),
                 ],
               ),
             ),

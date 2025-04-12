@@ -602,7 +602,7 @@ print("dsd ${banners.length}");
             //   topRight: Radius.circular(20),
             // ),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 0),
+          // padding: const EdgeInsets.symmetric(vertical: 1),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(_image.length, (index) {
@@ -617,40 +617,41 @@ print("dsd ${banners.length}");
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: index==2? EdgeInsets.all(10):null,
                         decoration: BoxDecoration(
-                            color: isSelected ? Colors.red : Colors.transparent,
-                            // borderRadius: BorderRadius.circular(16),
+                            color: index==2? Colors.red : Colors.transparent,
                             borderRadius: const BorderRadius.only(
                               bottomLeft: Radius.circular(10),
                               bottomRight: Radius.circular(10),
-                              // ),
-                            )),
+                            ),
+                        border:index==2?Border(top: BorderSide(color: MyColors.whiteBG)):null
+                        ),
+
                         child:index==4?CircleAvatar(
                           radius: 10,
                           backgroundImage: NetworkImage(userimage),
-                        ): Image(image: AssetImage(_image[index],),color:  MyColors.whiteBG ,)
-                      // Icon(
-                      //   _icons[index],
-                      //   color: isSelected ? Colors.white : Colors.white70,
-                      //   size: isSelected ? 28 : 24,
-                      // ),
+                        ):
+                        Column(
+                          children: [
+                            index!=2?   Image(image: AssetImage(_image[index],),color:_selectedIndex==index?  MyColors.redBG:MyColors.whiteBG):
+                            Image(image: AssetImage(_image[index],),color:MyColors.whiteBG),
+
+              index==2?Text(
+              _labels[index],
+              style: TextStyle(
+              color: MyColors.whiteBG,
+              fontSize: 12,
+                fontWeight: FontWeight.w500
+              ),):Container()
+                          ],
+                        )
                     ),
-                    // if (index == 4)
-                    //   CircleAvatar(
-                    //     radius: 12,
-                    //     backgroundImage: NetworkImage(
-                    //       "https://i.pravatar.cc/150?img=3",
-                    //     ),
-                    //   )
-                    // else
-                    Text(
+                    index!=2? Text(
                       _labels[index],
                       style: TextStyle(
-                        color: MyColors.whiteBG,
+                        color:_selectedIndex==index?  MyColors.redBG:MyColors.whiteBG,
                         fontSize: 12,
-                      ),)
-                    //   ),
+                      ),):Container()
                   ],
                 ),
               );

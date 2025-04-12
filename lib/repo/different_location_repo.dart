@@ -32,7 +32,7 @@ class DifferentLocationRepo {
       return NearByLocationModel.fromJson(response);
     } catch (e) {
       if (kDebugMode) {
-        print('Error occurred during differentLocationApi: $e');
+        print('Error occurred during find-nearby-places: $e');
       }
       rethrow;
     }

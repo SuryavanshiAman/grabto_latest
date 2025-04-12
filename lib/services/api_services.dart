@@ -1055,8 +1055,9 @@ print(url);
   static Future<Map<String, dynamic>?> wishlist(Map body) async {
     const url = '$BASE_URL/wishlist';
     final uri = Uri.parse(url);
+    // print("KAMA");
     final response = await http.post(uri, body: body);
-
+    print("KAMA");
     if (response.statusCode == 200) {
       // Parse the JSON response
       final jsonResponse = json.decode(response.body) as Map<String, dynamic>;
@@ -1089,8 +1090,9 @@ print(url);
   static Future<List<PreBookTable>?> PreBookOffer(Map body) async {
     const url = '$BASE_URL/PreBookOffer';
     final uri = Uri.parse(url);
+    print("ram");
     final response = await http.post(uri, body: body);
-
+    print("ram");
     if (response.statusCode == 200) {
       // Parse the JSON response
       final jsonResponse = json.decode(response.body) as Map;
@@ -1099,9 +1101,10 @@ print(url);
       if (res == "success") {
         print('PreBookOffer: $jsonResponse');
         final data = jsonResponse['data'] as List<dynamic>;
-
+        print("qscfffff");
         final prebooktable = data.map((e) {
           print("PreBookOffer:redeems $e");
+
           return PreBookTable.fromMap(e);
         }).toList();
 

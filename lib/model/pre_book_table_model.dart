@@ -1,13 +1,13 @@
 class PreBookTable {
   final int id;
-  final String store_id;
-  final String title;
-  final String discount_percentage;
-  final String booking_fee; // Nullable type for booking_fee
-  final String available_seat;
-  final String status;
-  final String created_at;
-  final String updated_at;
+  final dynamic store_id;
+  final dynamic title;
+  final dynamic discount_percentage;
+  final dynamic booking_fee; // Nullable type for booking_fee
+  final dynamic available_seat;
+  final dynamic status;
+  final dynamic created_at;
+  final dynamic updated_at;
 
   PreBookTable({
     required this.id,

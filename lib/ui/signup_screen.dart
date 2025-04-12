@@ -351,11 +351,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                                     setState(() {
                                                       _selectedDate = selectedDate;
                                                     });
-                                                    // withdraw.withdrawHistoryApi("", "", _selectedDate, context);
-                                                    // if (kDebugMode) {
-                                                    //   print('Selected Date: $selectedDate');
-                                                    //   print('object');
-                                                    // }
                                                   },
                                                 ),
                                               ],

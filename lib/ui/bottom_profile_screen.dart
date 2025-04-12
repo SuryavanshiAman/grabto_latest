@@ -154,9 +154,9 @@ class _ProfileBottomScreenState extends State<ProfileBottomScreen> {
                  buildText("Email", userEmail.isNotEmpty
                      ? userEmail
                      : "Update your email"),
-                 // buildText("Dath of Birth", userDob.isNotEmpty
-                 //     ? userDob
-                 //     : "Update your Dob"),
+                 buildText("Dath of Birth", userDob.isNotEmpty
+                     ? userDob
+                     : "Update your Dob"),
                  buildText("City", userLocation.isNotEmpty
                      ? userLocation
                      : "Update your city"),

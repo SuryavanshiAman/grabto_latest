@@ -9,10 +9,12 @@ import 'package:grabto/model/user_model.dart';
 import 'package:grabto/services/api.dart';
 import 'package:grabto/services/api_services.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
+import 'package:grabto/widget/filter_date-formate.dart';
 import 'package:grabto/widget/item_list_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../theme/theme.dart';
@@ -258,18 +260,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         controller: emailController,
                         initialValue: userEmail.isNotEmpty ? userEmail : null,
                       ),
-                      // buildTextField(
-                      //   labelText: "DOB",
-                      //   placeholder: "Enter Your DOB",
-                      //   isPasswordTextField: false,
-                      //   isReadOnly: true,
-                      //   controller: _dobController,
-                      //   initialValue: userDob.isNotEmpty ? userDob : "",
-                      //   onTap: () {
-                      //     _selectDate(
-                      //         context); // Open date picker when tapping on TextField
-                      //   },
-                      // ),
+                      buildTextField(
+                        labelText: "DOB",
+                        placeholder: "Enter Your DOB",
+                        isPasswordTextField: false,
+                        isReadOnly: true,
+                        controller: _dobController,
+                        initialValue: userDob.isNotEmpty ? userDob : "",
+                        suffixIcon: Container(
+                          color: MyColors.blackBG,
+                          child: FilterDateFormat(
+                            onDateSelected:
+                                (DateTime selectedDate) {
+                              setState(() {
+                                _selectedDate = selectedDate;
+                                _dobController.text =
+                                    DateFormat('dd-MM-yyyy').format(selectedDate);
+                              });
+                            },
+                          ),
+                        ),
+
+                      ),
+
                       buildTextField(
                         labelText: "Location",
                         placeholder: "Enter Your City",
@@ -320,8 +333,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               final email = emailController.text;
                               final city_id = cityId;
                               final cityName = locationController.text;
-                              // final dob = _dobController.text;
-                              final dob = "";
+                              final dob = _dobController.text;
+                              // final dob = "";
 
                               update_profile(
                                   '$user_Id', name, email, city_id,cityName, dob);
@@ -579,6 +592,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required String placeholder,
     bool isPasswordTextField = false,
     bool isReadOnly = false,
+    Widget? suffixIcon,
     required TextEditingController controller,
     String? initialValue,
     Function()? onTap, // Optional onTap parameter
@@ -602,19 +616,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           fontWeight: FontWeight.w600,
         ),
         decoration: InputDecoration(
-          suffixIcon: isPasswordTextField
-              ? IconButton(
-                  onPressed: () {
-                    // Toggle password visibility
-                    showPassword = !showPassword;
-                    controller.clear();
-                  },
-                  icon: Icon(
-                    Icons.remove_red_eye,
-                    color: Colors.grey,
-                  ),
-                )
-              : null,
+          // prefixIcon:prefixIcon ,
+          suffixIcon: suffixIcon,
+              // ? IconButton(
+              //     onPressed: () {
+              //       // Toggle password visibility
+              //       showPassword = !showPassword;
+              //       controller.clear();
+              //     },
+              //     icon: Icon(
+              //       Icons.remove_red_eye,
+              //       color: Colors.grey,
+              //     ),
+              //   )
+              // : null,
           contentPadding: EdgeInsets.only(bottom: 3),
           labelText: labelText,
           floatingLabelBehavior: FloatingLabelBehavior.always,
