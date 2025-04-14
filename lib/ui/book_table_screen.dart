@@ -341,44 +341,22 @@ int isLunchTimeSlotsVisibleIndex=-1;
                           child: Row(
                             children: List.generate(bookModel[0].days?.length??0, (index) {
                               final data= bookModel[0].days?[index];
-                              // String endTime = "11:19 PM";
-                              // DateTime now = DateTime.now();
-                              // DateTime todayEndTime =
-                              //     DateFormat("hh:mm a").parse(endTime);
-                              // todayEndTime = DateTime(
-                              //   now.year,
-                              //   now.month,
-                              //   now.day,
-                              //   todayEndTime.hour,
-                              //   todayEndTime.minute,
-                              // );
                               DateTime date =
                                   DateTime.now().add(Duration(days: index));
-                              // if (index == 0 &&
-                              //     DateTime.now().isAfter(todayEndTime)) {
-                              //   return SizedBox(
-                              //     width: 10,
-                              //   ); // Return an empty widget instead of null
-                              // }
-                              // String dateString =
-                              //     DateFormat('d MMM').format(date);
-                              // String dayString = DateFormat('EEE').format(date);
-                              //
                               double leftMargin = index == 0 ? 16 : 4;
                               double rightMargin = index == 29 ? 16 : 4;
-                              String dateString = data?.date.toString()??"2025-01-25"; // Given date format
-
-                              // Parse the date
+                              String dateString = data?.date.toString()??"2025-01-25";
                               DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(dateString);
-
-                              // Format the date to "19-March"
                               String formattedDate = DateFormat("dd-MMM").format(parsedDate);
-
                               return GestureDetector(
                                 onTap: (){
-                                timeSlot(widget.store_id,data?.date,data?.day);
-                                  data?.status!="Non-Active"? _updateSelectedDate(parsedDate):
+                                  setState(() {
+                                    selectedIndex=index;
+                                    timeSlot(widget.store_id,data?.date,data?.day);
+                                    data?.status!="Non-Active"? _updateSelectedDate(parsedDate):
                                     showErrorMessage(context, message: "Booking is close on $formattedDate");
+                                  });
+
 
                                 },
                                 child: Container(
@@ -387,17 +365,17 @@ int isLunchTimeSlotsVisibleIndex=-1;
                                   margin: EdgeInsets.fromLTRB(
                                       leftMargin, 0, rightMargin, 0),
                                   decoration: BoxDecoration(
-                                    color: _selectedDate.year == date.year &&
-                                            _selectedDate.month == date.month &&
-                                            _selectedDate.day == date.day
+                                    // color: _selectedDate.year == date.year && _selectedDate.month == date.month && _selectedDate.day == date.day
+                                    color:selectedIndex==index
                                         ? MyColors.primaryColor2
                                         : Colors.white,
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
-                                      color: _selectedDate.year == date.year &&
-                                              _selectedDate.month ==
-                                                  date.month &&
-                                              _selectedDate.day == date.day
+                                      // color: _selectedDate.year == date.year &&
+                                      //         _selectedDate.month ==
+                                      //             date.month &&
+                                      //         _selectedDate.day == date.day
+                                      color:selectedIndex==index
                                           ? MyColors.primary
                                           : Colors.grey,
                                       width: 0.6,
@@ -416,11 +394,12 @@ int isLunchTimeSlotsVisibleIndex=-1;
                                         style: TextStyle(
 
                                           fontSize: 15,
-                                          color: _selectedDate.year ==
-                                                      date.year &&
-                                                  _selectedDate.month ==
-                                                      date.month &&
-                                                  _selectedDate.day == date.day
+                                          // color: _selectedDate.year ==
+                                          //             date.year &&
+                                          //         _selectedDate.month ==
+                                          //             date.month &&
+                                          //         _selectedDate.day == date.day
+                                          color:selectedIndex==index
                                               ? MyColors.primary
                                               : Colors.black,
                                         ),
@@ -432,11 +411,12 @@ int isLunchTimeSlotsVisibleIndex=-1;
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
-                                          color: _selectedDate.year ==
-                                                      date.year &&
-                                                  _selectedDate.month ==
-                                                      date.month &&
-                                                  _selectedDate.day == date.day
+                                          // color: _selectedDate.year ==
+                                          //             date.year &&
+                                          //         _selectedDate.month ==
+                                          //             date.month &&
+                                          //         _selectedDate.day == date.day
+                                          color:selectedIndex==index
                                               ? MyColors.primary
                                               : Colors.black,
                                         ),
@@ -588,6 +568,7 @@ int isLunchTimeSlotsVisibleIndex=-1;
                                           return
                                             TimeSlotCard(
                                             timeSlot: data.t01Time.toString()??"",
+                                            id: data.to2Id.toString()??"",
                                             isSelected:
                                             selectedTimeSlot ==  data.t01Time,
                                             onTap: (){
@@ -1010,11 +991,13 @@ int isLunchTimeSlotsVisibleIndex=-1;
 
 class TimeSlotCard extends StatelessWidget {
   final String timeSlot;
+  final String id;
   final bool isSelected;
   final VoidCallback onTap;
 
   TimeSlotCard({
     required this.timeSlot,
+    required this.id,
     required this.isSelected,
     required this.onTap,
   });
@@ -1053,8 +1036,8 @@ class TimeSlotCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(10.0),
           ),
           child: Text(
-            DateFormat('hh:mm a').format(DateTime.parse(timeSlot))
-            , // Keep original format
+            // id
+            DateFormat('hh:mm a').format(DateTime.parse(timeSlot)), // Keep original format
             style: TextStyle(
               fontSize: 12.0,
               fontWeight: FontWeight.bold,
