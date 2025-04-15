@@ -769,7 +769,8 @@ int isLunchTimeSlotsVisibleIndex=-1;
                           showErrorMessage(context,
                               message: 'There is not a sufficient seats');
                         } else {
-
+                          (int.tryParse(availableSeat.toString()) ?? 0) <= 0?showErrorMessage(context,
+                              message: 'There is not a sufficient seats'):
                           Navigator.push(
                             context,
                             MaterialPageRoute(

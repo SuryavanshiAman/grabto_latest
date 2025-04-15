@@ -10,6 +10,7 @@ import 'package:grabto/ui/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:grabto/view_model/different_location_view_model.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
+import 'package:grabto/view_model/grabto_grab_view_model.dart';
 // import 'package:in_app_update/in_app_update.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
@@ -203,6 +204,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => Address()),
         ChangeNotifierProvider(create: (_) => FilterViewModel()),
         ChangeNotifierProvider(create: (_) => DifferentLocationViewModel()),
+        ChangeNotifierProvider(create: (_) => GrabtoGrabViewModel()),
       ],
       child: MaterialApp(
         title: 'Grabto',

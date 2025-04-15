@@ -29,6 +29,7 @@ import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:grabto/utils/time_slot.dart';
 import 'package:grabto/view_model/different_location_view_model.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
+import 'package:grabto/view_model/grabto_grab_view_model.dart';
 import 'package:grabto/widget/rating.dart';
 import 'package:grabto/widget/title_description_widget.dart';
 import 'package:flutter/material.dart';
@@ -109,6 +110,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
     getBanners();
     Provider.of<DifferentLocationViewModel>(context, listen: false)
         .differentLocationApi(context);
+    Provider.of<GrabtoGrabViewModel>(context, listen: false)
+        .grabtoGrabApi(context);
     // fetchSubCategories()
   }
 
@@ -293,87 +296,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
     FirstList("Up to 10% off"),
   ];
   String selectedName = "";
-  // final List<Restaurant> restaurants = [
-  //   Restaurant(
-  //     name: "Rocca By Hyatt Regency",
-  //     location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-  //     cuisine: "Continental, North Indian",
-  //     rating: 4.0,
-  //     price: "₹1500 for two", // Example image URL
-  //     offers: [
-  //       "Flat 50% off on pre-booking"
-  //           "                 +4 more",
-  //       // "Get extra 10% off using GIRFNEXT150",
-  //     ],
-  //   ),
-  //   Restaurant(
-  //     name: "Que",
-  //     location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-  //     cuisine: "Continental, North Indian",
-  //     rating: 4.0,
-  //     price: "₹1500 for two", // Example image URL
-  //     offers: [
-  //       "Flat 50% off on pre-booking"
-  //           "                 +4 more",
-  //     ],
-  //   ),
-  //   Restaurant(
-  //     name: "Que",
-  //     location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-  //     cuisine: "Continental, North Indian",
-  //     rating: 4.0,
-  //     price: "₹1500 for two", // Example image URL
-  //     offers: [
-  //       "Flat 50% off on pre-booking"
-  //           "                 +4 more",
-  //     ],
-  //   ),
-  //   Restaurant(
-  //     name: "Que",
-  //     location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-  //     cuisine: "Continental, North Indian",
-  //     rating: 4.0,
-  //     price: "₹1500 for two", // Example image URL
-  //     offers: [
-  //       "Flat 50% off on pre-booking"
-  //           "                 +4 more",
-  //     ],
-  //   ),
-  //   Restaurant(
-  //     name: "Que",
-  //     location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-  //     cuisine: "Continental, North Indian",
-  //     rating: 4.0,
-  //     price: "₹1500 for two", // Example image URL
-  //     offers: [
-  //       "Flat 50% off on pre-booking"
-  //           "                 +4 more",
-  //     ],
-  //   ),
-  //   Restaurant(
-  //     name: "Que",
-  //     location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-  //     cuisine: "Continental, North Indian",
-  //     rating: 4.0,
-  //     price: "₹1500 for two", // Example image URL
-  //     offers: [
-  //       "Flat 50% off on pre-booking"
-  //           "                 +4 more",
-  //     ],
-  //   ),
-  //   Restaurant(
-  //     name: "Que",
-  //     location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-  //     cuisine: "Continental, North Indian",
-  //     rating: 4.0,
-  //     price: "₹1500 for two", // Example image URL
-  //     offers: [
-  //       "Flat 50% off on pre-booking"
-  //           "                 +4 more",
-  //     ],
-  //   ),
-  //   // Add more restaurants here
-  // ];
   List<FirstList> selectedList = [];
   void toggleSelection(FirstList item) {
     setState(() {
@@ -385,13 +307,18 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
     });
   }
 
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
+  int sliderIndex = 0;
   @override
   Widget build(BuildContext context) {
     List<FirstList> orderedList = list;
     final location = Provider.of<Address>(context);
     final differentLocation = Provider.of<DifferentLocationViewModel>(context);
     final data = Provider.of<FilterViewModel>(context);
+    final grab = Provider.of<GrabtoGrabViewModel>(context).grabList.data?.data;
     print(location.area);
+    final imageList = grab?[0].image ?? [];
     return categories.isNotEmpty
         ? Scaffold(
             // key: _scaffoldKey,
@@ -883,6 +810,401 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                         //   },
                         // ),
                       ),
+                     grab!=""&&grab!=null? Container(
+                        height: heights * 0.55,
+                        margin: EdgeInsets.symmetric(vertical: 15),
+                        decoration: BoxDecoration(
+                            // color: MyColors.redBG,
+                            image: DecorationImage(
+                                image: NetworkImage(grab?[0].backgroundimage),
+                                fit: BoxFit.fill)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(
+                              "Grabto Grab",
+                              style: TextStyle(
+                                  color: MyColors.whiteBG,
+                                  fontFamily: 'vast',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return CouponFullViewScreen(
+                                      grab?[0].id.toString() ?? "");
+                                }));
+                              },
+                              child: Container(
+                                margin: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  // color: MyColors.whiteBG,
+                                  color: Color(0xffffffff),
+                                  borderRadius: BorderRadius.circular(10),
+                                  // color: Colors.red
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.3),
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Image with overlay
+                                    Stack(
+                                      children: [
+                                        CarouselSlider(
+                                          items: grab?[0].image?.map((img) {
+                                                return GestureDetector(
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    child: CachedNetworkImage(
+                                                      imageUrl:
+                                                          img.url.toString(),
+                                                      fit: BoxFit.fill,
+                                                      placeholder:
+                                                          (context, url) =>
+                                                              Image.asset(
+                                                        'assets/images/placeholder.png',
+                                                        fit: BoxFit.cover,
+                                                        width: double.infinity,
+                                                        height: double.infinity,
+                                                      ),
+                                                      errorWidget: (context,
+                                                              url, error) =>
+                                                          const Center(
+                                                              child: Icon(
+                                                                  Icons.error)),
+                                                    ),
+                                                  ),
+                                                );
+                                              }).toList() ??
+                                              [],
+                                          carouselController:
+                                              _carouselController, // Use empty list if image is null
+                                          options: CarouselOptions(
+                                            height: heights * 0.22,
+                                            enlargeCenterPage: true,
+                                            autoPlay: true,
+                                            reverse: true,
+                                            disableCenter: true,
+                                            aspectRatio: 1 / 9,
+                                            autoPlayCurve: Curves.fastOutSlowIn,
+                                            enableInfiniteScroll: true,
+                                            autoPlayAnimationDuration:
+                                                const Duration(
+                                                    milliseconds: 800),
+                                            viewportFraction: 1,
+                                            onPageChanged: (index, reason) {
+                                              setState(() {
+                                                sliderIndex = index;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                        Positioned(
+                                          top: 10,
+                                          left: 10,
+                                          child: Row(
+                                            children: [
+                                              grab?[0].availableSeat != null
+                                                  ? Container(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 8,
+                                                              vertical: 2),
+                                                      decoration: BoxDecoration(
+                                                        color: int.parse(grab?[
+                                                                        0]
+                                                                    .availableSeat) <=
+                                                                5
+                                                            ? MyColors.redBG
+                                                            : MyColors.green,
+                                                        // color:MyColors.green ,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      ),
+                                                      child: Text(
+                                                        "${grab?[0].availableSeat.toString() ?? ""} seat left",
+                                                        style: TextStyle(
+                                                            color: MyColors
+                                                                .whiteBG,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 12),
+                                                      ),
+                                                    )
+                                                  : Container(),
+                                              // Spacer(),
+                                              SizedBox(
+                                                width: widths * 0.43,
+                                              ),
+                                              Container(
+                                                margin:
+                                                    EdgeInsets.only(right: 15),
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        6, 4, 8, 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.green,
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                ),
+                                                child: Text(
+                                                  "${grab?[0].rating ?? "0"}/5",
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ),
+
+                                              CircleAvatar(
+                                                  radius: 12,
+                                                  backgroundColor:
+                                                      MyColors.whiteBG,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      fetchStoresFullView(
+                                                          grab?[0]
+                                                                  .id
+                                                                  .toString() ??
+                                                              "");
+                                                      wishlist(grab?[0]
+                                                              .id
+                                                              .toString() ??
+                                                          "");
+                                                    },
+                                                    child: Icon(
+                                                      wishlist_status == 'true'
+                                                          ? Icons.favorite
+                                                          : Icons
+                                                              .favorite_border,
+                                                      size: 16,
+                                                      color: wishlist_status ==
+                                                              'true'
+                                                          ? Colors.red
+                                                          : Colors.black,
+                                                    ),
+                                                  )),
+                                              //   // InkWell(
+                                              //   //   onTap: (){
+                                              //   //     setState(() {
+                                              //   //       selectedIndex=widget.index;
+                                              //   //     });
+                                              //   //   },
+                                              //   //   child: Icon(
+                                              //   //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
+                                              //   //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
+                                              //   //     size: 16,
+                                              //   //   ),
+                                              //   // )
+                                              // )
+                                              // Icon(Icons.favorite_border, color: Colors.white),
+                                            ],
+                                          ),
+                                        ),
+                                        Positioned(
+                                          bottom: 10,
+                                          left: 0,
+                                          right: 0,
+                                          child: Center(
+                                            child: AnimatedSmoothIndicator(
+                                              activeIndex: sliderIndex,
+                                              count: imageList.length,
+                                              effect: const ExpandingDotsEffect(
+                                                dotHeight: 6,
+                                                dotWidth: 6,
+                                                spacing: 6,
+                                                expansionFactor: 3,
+                                                activeDotColor:
+                                                    MyColors.whiteBG,
+                                                dotColor: Colors.white70,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                          bottom: 20,
+                                          left: 0,
+                                          right: 0,
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                // width: widths*0.3,
+
+                                                decoration: BoxDecoration(
+                                                    color: MyColors.blackBG
+                                                        .withOpacity(0.6),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15)),
+                                                margin: EdgeInsets.all(8),
+                                                padding: EdgeInsets.fromLTRB(
+                                                    8, 2, 8, 2),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Image.asset(
+                                                        "assets/images/local_cafe.png"),
+                                                    const SizedBox(width: 5),
+                                                    Text(
+                                                      grab?[0]
+                                                              .subcategoryName
+                                                              .toString() ??
+                                                          "",
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: MyColors.whiteBG,
+                                                        fontSize: 12,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+
+                                    Padding(
+                                      padding: EdgeInsets.all(12),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: widths * 0.58,
+                                                // color: Colors.red,
+                                                child: Text(
+                                                  grab?[0]
+                                                          .storeName
+                                                          .toString() ??
+                                                      "",
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                ),
+                                              ),
+                                              Spacer(),
+                                              grab?[0].rating != ""
+                                                  ? Container(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 3,
+                                                              vertical: 1),
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color: Colors.grey
+                                                                  .withOpacity(
+                                                                      0.3)),
+                                                          // color: Color(0xff00bd62),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(3)),
+                                                      child: StarRating(
+                                                        color: Colors.yellow,
+                                                        rating: double.parse(grab?[
+                                                                    0]
+                                                                .rating
+                                                                .toStringAsFixed(
+                                                                    1)
+                                                                .toString() ??
+                                                            "0.0"),
+                                                        size: 20,
+                                                      ),
+                                                    )
+                                                  : Container(),
+                                            ],
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            grab?[0].address.toString() ?? "",
+                                            style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontSize: 14),
+                                          ),
+                                          Divider(
+                                            color: MyColors.textColorTwo
+                                                .withOpacity(0.3),
+                                          ),
+                                          Container(
+                                            width: widths,
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 3, vertical: 5),
+                                            decoration: BoxDecoration(
+                                                color: Color(0xff00bd62),
+                                                borderRadius:
+                                                    BorderRadius.circular(3)),
+                                            child: Text(
+                                                grab?[0].offers != ""
+                                                    ? "% Flat ${grab?[0].discountPercentage.toString()}% off on pre-booking       +${grab?[0].offers.toString()} offers"
+                                                    : "% Flat ${grab?[0].discountPercentage.toString() ?? ""}% off on pre-booking",
+                                                style: TextStyle(
+                                                  color: MyColors.whiteBG,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 14,
+                                                )),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                      return CouponFullViewScreen(
+                                          grab?[0].id.toString() ?? "");
+                                    }));
+                              },
+                              child: Container(
+                                  width: widths * 0.33,
+                                  margin: EdgeInsets.only(bottom: 10),
+                                  padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                  decoration: BoxDecoration(
+                                    color: MyColors.redBG,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        "GRAB NOW ",
+                                        style: TextStyle(
+                                            color: MyColors.whiteBG,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14),
+                                      ),
+                                      Image.asset(
+                                        "assets/images/arrow_outward.png",
+                                        color: MyColors.whiteBG,
+                                      )
+                                    ],
+                                  )),
+                            )
+                          ],
+                        ),
+                      ):Container(),
 
                       if (!localtiyList.isEmpty)
                         Container(
@@ -900,13 +1222,11 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                           ),
                         ),
                       if (!localtiyList.isEmpty) LocationWidget(localtiyList),
-                      SizedBox(
-                        height: 0,
-                      ),
+
                       if (!trendingStoreList.isEmpty)
                         Container(
                           margin: EdgeInsets.only(
-                              top: 25, left: 15, right: 15, bottom: 15),
+                              top: 10, left: 15, right: 15, bottom: 15),
                           child: Row(
                             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -1020,7 +1340,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                         height: heights * 0.06,
                         child: ListView.builder(
                           itemCount: differentLocation
@@ -1299,14 +1620,15 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                           ? Icon(
                                               Icons.filter_alt_outlined,
                                               size: 18,
-                                        color:isSelected?MyColors.whiteBG: Colors.black,
+                                              color: isSelected
+                                                  ? MyColors.whiteBG
+                                                  : Colors.black,
                                             )
                                           : index == 1
                                               ? Icon(
                                                   Icons
                                                       .keyboard_arrow_down_outlined,
                                                   size: 20,
-
                                                 )
                                               : isSelected
                                                   ? Icon(
@@ -1321,7 +1643,9 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                         child: Text(
                                           item.name,
                                           style: TextStyle(
-                                              color:isSelected?MyColors.whiteBG: Colors.black,
+                                              color: isSelected
+                                                  ? MyColors.whiteBG
+                                                  : Colors.black,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w500),
                                         ),
@@ -1761,6 +2085,87 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
               color: MyColors.primary,
             ),
           );
+  }
+
+  String wishlist_status = '';
+  StoreModel? store;
+
+  Future<void> wishlist(String store_id) async {
+    print("☕");
+    try {
+      UserModel n = await SharedPref.getUser();
+      final body = {"user_id": n.id.toString(), "store_id": store_id};
+      final response = await ApiServices.wishlist(body);
+
+      // Check if the response is null or doesn't contain the expected data
+      if (response != null &&
+          response.containsKey('res') &&
+          response['res'] == 'success') {
+        final msg = response['msg'] as String;
+        print("☕");
+        setState(() {
+          wishlist_status = response['wishlist_status'] as String;
+          wishlist_status == "true"
+              ? showSuccessMessage(context, message: msg)
+              : showErrorMessage(context, message: msg);
+        });
+      } else if (response != null) {
+        String msg = response['msg'];
+
+        showErrorMessage(context, message: msg);
+      }
+    } catch (e) {
+      //print('verify_otp error: $e');
+      // Handle error
+      //showErrorMessage(context, message: 'An error occurred: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> fetchStoresFullView(String store_id) async {
+    print("strollll:${store_id}");
+    UserModel n = await SharedPref.getUser();
+    try {
+      final body = {
+        "store_id": "$store_id",
+        "user_id": "${n.id}",
+      };
+      final response = await ApiServices.api_store_fullview(body);
+
+      if (response != null &&
+          response.containsKey('res') &&
+          response['res'] == 'success') {
+        final data = response['data'];
+        print("Aman:$data");
+
+        // Ensure that the response data is in the expected format
+        if (data != null && data is Map<String, dynamic>) {
+          store = StoreModel.fromMap(data);
+          setState(() {
+            wishlist_status = store!.wishlistStatus;
+          });
+
+          print("storeeeeee: " + data.toString());
+
+          // print('fetchStoresFullView data: ${category_name}');
+        } else {
+          // Handle invalid response data format
+          // showErrorMessage(context, message: 'Invalid response data format');
+        }
+      } else if (response != null) {
+        String msg = response['msg'];
+
+        // Handle unsuccessful response or missing 'res' field
+        // showErrorMessage(context, message: msg);
+      }
+    } catch (e) {
+      //print('verify_otp error: $e');
+      // Handle error
+      //showErrorMessage(context, message: 'An error occurred: $e');
+    } finally {}
   }
 
   List<FeaturesModel> featureData = [];
@@ -2713,15 +3118,12 @@ class TrendingRestruantWidget extends StatelessWidget {
                       ],
                     ),
                   ),
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width * 0.7,
-                  height: heights*0.05,
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  height: heights * 0.05,
                 ),
               ),
               Padding(
-                padding:  EdgeInsets.fromLTRB(3,0,3,18),
+                padding: EdgeInsets.fromLTRB(3, 0, 3, 18),
                 child: Text(
                   offers,
                   style: TextStyle(
@@ -2734,7 +3136,7 @@ class TrendingRestruantWidget extends StatelessWidget {
               ),
               // SizedBox(height: 10),
               Container(
-                margin: EdgeInsets.fromLTRB(3,0,3,3),
+                margin: EdgeInsets.fromLTRB(3, 0, 3, 3),
                 child: Text(
                   restaurantName,
                   style: TextStyle(
@@ -3251,40 +3653,31 @@ class RecentJoinedWidget extends StatelessWidget {
               ),
             ),
           ),
-
           Positioned(
             bottom: 8,
             child: Align(
               alignment: Alignment.centerLeft,
               child: Container(
                 margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.45,
-                height: heights*0.03,
+                width: MediaQuery.of(context).size.width * 0.45,
+                height: heights * 0.03,
                 // Adjust the width according to your requirement
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black87,
-                      Colors.black
-                    ],
+                    colors: [Colors.transparent, Colors.black87, Colors.black],
                   ),
                   borderRadius: BorderRadius.only(
-                    // bottomRight: Radius.circular(15),
-                    // bottomLeft: Radius.circular(15),
-                  ),
+                      // bottomRight: Radius.circular(15),
+                      // bottomLeft: Radius.circular(15),
+                      ),
                 ),
-
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(8.0,0,8,10),
+            padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 10),
             child: Text(
               offers,
               style: TextStyle(
@@ -3558,13 +3951,13 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           },
                         ),
                       ),
-                       Positioned(
-                              top: 10,
-                              left: 10,
-                              child: Row(
-                                children: [
-                                  widget.filter.availableSeat != null
-                                      ?   Container(
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        child: Row(
+                          children: [
+                            widget.filter.availableSeat != null
+                                ? Container(
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 8, vertical: 2),
                                     decoration: BoxDecoration(
@@ -3583,65 +3976,65 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                           fontWeight: FontWeight.bold,
                                           fontSize: 12),
                                     ),
-                                  ):Container(),
-                                  // Spacer(),
-                                  SizedBox(
-                                    width: widths * 0.43,
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(right: 15),
-                                    padding:
-                                        const EdgeInsets.fromLTRB(6, 4, 8, 4),
-                                    decoration: BoxDecoration(
-                                      color: Colors.green,
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: Text(
-                                      "${widget.filter.avgRating.toStringAsFixed(1)}/5",
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ),
-
-                                  CircleAvatar(
-                                    radius: 12,
-                                    backgroundColor: MyColors.whiteBG,
-                                    child: InkWell(
-                                      onTap: () {
-                                        fetchStoresFullView(
-                                            widget.filter.id.toString());
-                                        wishlist(widget.filter.id.toString());
-                                      },
-                                      child: Icon(
-                                        wishlist_status == 'true'
-                                            ? Icons.favorite
-                                            : Icons.favorite_border,
-                                        size: 16,
-                                        color: wishlist_status == 'true'
-                                            ? Colors.red
-                                            : Colors.black,
-                                      ),
-                                    ),
-                                    // InkWell(
-                                    //   onTap: (){
-                                    //     setState(() {
-                                    //       selectedIndex=widget.index;
-                                    //     });
-                                    //   },
-                                    //   child: Icon(
-                                    //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
-                                    //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
-                                    //     size: 16,
-                                    //   ),
-                                    // )
                                   )
-                                  // Icon(Icons.favorite_border, color: Colors.white),
-                                ],
+                                : Container(),
+                            // Spacer(),
+                            SizedBox(
+                              width: widths * 0.43,
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right: 15),
+                              padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Text(
+                                "${widget.filter.avgRating.toStringAsFixed(1)}/5",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
+
+                            CircleAvatar(
+                              radius: 12,
+                              backgroundColor: MyColors.whiteBG,
+                              child: InkWell(
+                                onTap: () {
+                                  fetchStoresFullView(
+                                      widget.filter.id.toString());
+                                  wishlist(widget.filter.id.toString());
+                                },
+                                child: Icon(
+                                  wishlist_status == 'true'
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  size: 16,
+                                  color: wishlist_status == 'true'
+                                      ? Colors.red
+                                      : Colors.black,
+                                ),
+                              ),
+                              // InkWell(
+                              //   onTap: (){
+                              //     setState(() {
+                              //       selectedIndex=widget.index;
+                              //     });
+                              //   },
+                              //   child: Icon(
+                              //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
+                              //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
+                              //     size: 16,
+                              //   ),
+                              // )
+                            )
+                            // Icon(Icons.favorite_border, color: Colors.white),
+                          ],
+                        ),
+                      ),
                       Positioned(
                         bottom: 10,
                         left: 0,

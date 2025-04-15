@@ -16,9 +16,9 @@ class _FeaturesWidgetState extends State<FeaturesWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       height: 50,
-      // color: Colors.red,
+      // color: Colors.blue,
       child: ListView.builder(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
@@ -26,15 +26,11 @@ class _FeaturesWidgetState extends State<FeaturesWidget> {
         scrollDirection: Axis.horizontal,
         itemCount:widget.featuresList.length,
         itemBuilder: (context, index) {
-          // final int firstIndex = index * 2;
-          // final int secondIndex = firstIndex + 1;
           return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Expanded(
-              child: FeatureTile(
-                title: widget.featuresList[index].name,
-                image: widget.featuresList[index].image,
-              ),
+            padding: const EdgeInsets.only(left: 8.0,right: 8),
+            child: FeatureTile(
+              title: widget.featuresList[index].name,
+              image: widget.featuresList[index].image,
             ),
           );
         },

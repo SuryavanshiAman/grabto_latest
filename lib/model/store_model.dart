@@ -31,10 +31,12 @@ class StoreModel {
   final String country;
   final String state;
   final String postcode;
+  final String description;
   final String categoryName;
   final String subcategoryName;
   final String wishlistStatus; // Add wishlistStatus field
   final String kycStatus;
+  final String seat;
 
   StoreModel({
     required this.id,
@@ -69,10 +71,12 @@ class StoreModel {
     required this.country,
     required this.state,
     required this.postcode,
+    required this.description,
     required this.categoryName,
     required this.subcategoryName,
     required this.wishlistStatus, // Initialize wishlistStatus
     required this.kycStatus, // Initialize wishlistStatus
+    required this.seat, // Initialize wishlistStatus
   });
 
   factory StoreModel.fromMap(Map<String, dynamic> map) {
@@ -109,10 +113,12 @@ class StoreModel {
       country: map['country'] ?? '',
       state: map['state'] ?? '',
       postcode: map['postcode'] ?? '',
+      description: map['description'] ?? '',
       categoryName: map['category_name'] ?? '',
       subcategoryName: map['subcategory_name'] ?? '',
       wishlistStatus: map['wishlist_status'] ?? '', // Initialize wishlistStatus
       kycStatus: map['kyc_status'] ?? '', // Initialize wishlistStatus
+      seat: map['available_seat'] ?? '', // Initialize wishlistStatus
     );
   }
 }

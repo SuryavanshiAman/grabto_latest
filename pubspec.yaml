@@ -74,9 +74,14 @@ flutter:
         - asset: assets/fonts/Ubuntu-Italic.ttf
         - asset: assets/fonts/Ubuntu-Light.ttf
         - asset: assets/fonts/Ubuntu-LightItalic.ttf
+        - asset: assets/fonts/VastShadow-Regular.ttf
 
     - family: afacadFlux
       fonts:
         - asset: assets/fonts/AfacadFlux-Regular.ttf
+
+    - family: vast
+      fonts:
+        - asset: assets/fonts/VastShadow-Regular.ttf
 
 

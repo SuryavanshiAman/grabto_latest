@@ -31,7 +31,7 @@ class SubCategoriesCardWidget extends StatelessWidget {
         child: Card(
           color: Colors.white,
           clipBehavior: Clip.antiAliasWithSaveLayer,
-          elevation: 5,
+          elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),

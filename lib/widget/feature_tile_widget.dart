@@ -8,13 +8,15 @@ class FeatureTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
+      // color: Colors.yellow,
       height: 100, // Set a fixed height for consistent grid items
       child: Column(
         children: [
-          Container(
+          SizedBox(
             width: 22.22,
             height: 20,
+            // color: Colors.red,
             child: Image.network(
               image,
               fit: BoxFit.cover,
@@ -24,12 +26,10 @@ class FeatureTile extends StatelessWidget {
               },
             ),
           ),
-          SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              title,
-              style: TextStyle(fontSize: 12),
-            ),
+          // SizedBox(width: 8),
+          Text(
+            title,
+            style: TextStyle(fontSize: 12),
           ),
         ],
       ),
