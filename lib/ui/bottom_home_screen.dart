@@ -35,7 +35,6 @@ import 'package:grabto/widget/title_description_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:grabto/model/pre_book_table_history.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -156,8 +155,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
     setState(() {
       isLoading = true;
     });
-    // SharedPref sharedPref=new SharedPref();
-    // userName = (await SharedPref.getUser()).name;
     UserModel n = await SharedPref.getUser();
     print("getUserDetails: bottomHomeScreen " + n.home_location);
     UserPreBookTableHistory("${n.id}");
@@ -279,7 +276,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
   bool _showTitle = true;
   void _handleScroll() {
     setState(() {
-      if (_scrollController.position.pixels > 1500) {
+      if (_scrollController.position.pixels > 2500) {
         _showTitle = false;
       } else {
         _showTitle = true;
@@ -321,7 +318,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
     final imageList = grab?[0].image ?? [];
     return categories.isNotEmpty
         ? Scaffold(
-            // key: _scaffoldKey,
             backgroundColor: MyColors.backgroundBg,
             body: Container(
               color: MyColors.backgroundBg,
@@ -339,6 +335,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                     children: [
                       InkWell(
                         onTap: () {
+                          print(widget.bannersDa[0].url);
+                          print("widget.bannersDa[0].url");
                           widget.bannersDa[0].type == "1"
                               ? navigateToAllCouponScreen(
                                   context,
@@ -353,7 +351,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                               "${widget.bannersDa[0].url}")));
                         },
                         child: Container(
-                          height: heights * 0.46,
+                          height: heights * 0.53,
                           decoration: BoxDecoration(
                               // color: Colors.red,
                               image: DecorationImage(
@@ -387,7 +385,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                           color: MyColors.whiteBG,
                                         )),
                                     SizedBox(
-                                      width: widths * 0.05,
+                                      width: widths * 0.03,
                                     ),
                                     InkWell(
                                       onTap: () {
@@ -401,87 +399,70 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                       },
                                       child: Container(
                                         width: widths * 0.8,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                        child: Row(
+                                          // crossAxisAlignment:
+                                          //     CrossAxisAlignment.start,
+                                          // mainAxisAlignment: MainAxisAlignment.start,
                                           children: [
-                                            //
-                                            Row(
+                                            Image.asset("assets/images/pin_drop.png",scale: 0.8,),
+                                            SizedBox(width: widths*0.02,),
+                                            Column(
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                               children: [
-                                                Icon(
-                                                  LucideIcons.navigation,
-                                                  size: 16,
-                                                  color: MyColors.whiteBG,
-                                                ),
-                                                SizedBox(
-                                                  width: 2,
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      margin: EdgeInsets.only(top: 2),
+                                                        // width: widths * 0.6,
+                                                        child: Text(
+                                                          address.toString() != ""
+                                                              ? address
+                                                                  .toString()
+                                                                  .split(',')[0]
+                                                              : location.address
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            overflow: TextOverflow
+                                                                .ellipsis,
+                                                            color: MyColors.whiteBG,
+                                                          ),
+                                                        )),
+                                                    Icon(
+                                                      Icons
+                                                          .keyboard_arrow_down_outlined,
+                                                      size: 16,
+                                                      color: MyColors.whiteBG,
+                                                    ),
+                                                  ],
                                                 ),
                                                 Container(
-                                                    width: widths * 0.6,
+                                                    width: widths * 0.68,
                                                     child: Text(
-                                                      address.toString() != ""
+                                                      address != ""
                                                           ? address
-                                                              .toString()
-                                                              .split(',')[0]
-                                                          : location.address
-                                                              .toString(),
+                                                          : location.area,
+                                                      maxLines: 1,
                                                       style: TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
+                                                        fontSize: 12,
+                                                        fontWeight: FontWeight.w600,
+                                                        overflow:
+                                                        TextOverflow.ellipsis,
                                                         color: MyColors.whiteBG,
                                                       ),
                                                     )),
-                                                Icon(
-                                                  Icons
-                                                      .keyboard_arrow_down_outlined,
-                                                  size: 16,
-                                                  color: MyColors.whiteBG,
-                                                ),
                                               ],
                                             ),
-                                            Container(
-                                                width: widths * 0.7,
-                                                child: Text(
-                                                  address != ""
-                                                      ? address
-                                                      : location.area,
-                                                  maxLines: 1,
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w600,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    color: MyColors.whiteBG,
-                                                  ),
-                                                )),
+
                                           ],
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                // Row(
-                                //   children: [
-                                //     Text(
-                                //       "Welcome,",
-                                //       style: TextStyle(
-                                //           fontSize: 18,
-                                //           fontWeight: FontWeight.bold,
-                                //           color: MyColors.whiteBG),
-                                //     ),
-                                //     Text(
-                                //       "$userName",
-                                //       style: TextStyle(
-                                //           fontSize: 23,
-                                //           fontWeight: FontWeight.w900,
-                                //           color: MyColors.whiteBG),
-                                //     ),
-                                //   ],
-                                // ),
-
                                 InkWell(
                                   onTap: () {
                                     _navigateToSearchScreen(context);
@@ -643,39 +624,41 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                   builder: (context) => NearMeScreen()));
                         },
                         child: Container(
-                          margin: EdgeInsets.only(top: 10),
-                          height: heights * 0.11,
+                          margin: EdgeInsets.only(top: 10,left: 14, right: 14,),
+                          height: heights * 0.15,
                           width: widths,
                           padding: EdgeInsets.only(left: 10, right: 10),
                           decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  colors: [
-                                Color(0xffE8F5FD),
-                                Color(0xffD8DCF9),
-                                Color(0xffC5E7F3),
-                              ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Restaurants \nNear Me",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w600),
-                              ),
-                              Container(
-                                margin: EdgeInsets.all(10),
-                                height: heights * 0.1,
-                                width: widths * 0.2,
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: AssetImage(
-                                            "assets/images/near_me.png"),
-                                        fit: BoxFit.fill)),
-                              ),
-                            ],
+                            image: DecorationImage(image:AssetImage("assets/images/near_me.png"),fit: BoxFit.fill),
+                              // gradient: LinearGradient(
+                              //     colors: [
+                              //   Color(0xffE8F5FD),
+                              //   Color(0xffD8DCF9),
+                              //   Color(0xffC5E7F3),
+                              // ],
+                              //     begin: Alignment.topLeft,
+                              //     end: Alignment.bottomRight)
                           ),
+                          // child: Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     Text(
+                          //       "Restaurants \nNear Me",
+                          //       style: TextStyle(
+                          //           fontSize: 18, fontWeight: FontWeight.w600),
+                          //     ),
+                          //     Container(
+                          //       margin: EdgeInsets.all(10),
+                          //       height: heights * 0.1,
+                          //       width: widths * 0.2,
+                          //       decoration: BoxDecoration(
+                          //           image: DecorationImage(
+                          //               image: AssetImage(
+                          //                   "assets/images/near_me.png"),
+                          //               fit: BoxFit.fill)),
+                          //     ),
+                          //   ],
+                          // ),
                         ),
                       ),
 
@@ -699,53 +682,117 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                             Text(
                               "Explore Categories",
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w500),
+                                  fontSize: 14, fontWeight: FontWeight.w500),
                             ),
-                            // InkWell(
-                            //   onTap: () {
-                            //     navigateToTopCategoriesScreen();
-                            //   },
-                            //   child: Row(
-                            //     children: [
-                            //       Text(
-                            //         "View All",
-                            //         style: TextStyle(
-                            //             color: MyColors.txtDescColor,
-                            //             fontSize: 14,
-                            //             fontWeight: FontWeight.w300),
-                            //       ),
-                            //       SizedBox(
-                            //         width: 5,
-                            //       ),
-                            //       Icon(
-                            //         Icons.arrow_forward,
-                            //         size: 15,
-                            //         color: MyColors.primaryColor,
-                            //       )
-                            //     ],
-                            //   ),
-                            // ),
                           ],
                         ),
                       ),
+                      // Container(
+                      //   height: heights * 0.162,
+                      //   margin: EdgeInsets.only(left: widths * 0.03),
+                      //   // color: Colors.red,
+                      //   child: ListView.builder(
+                      //     padding: EdgeInsets.zero,
+                      //     shrinkWrap: true,
+                      //     // physics: NeverScrollableScrollPhysics(),
+                      //     itemCount: subCategoriesList
+                      //         .length, // Use the length of the list
+                      //     scrollDirection: Axis.horizontal,
+                      //     itemBuilder: (context, index) {
+                      //       SubCategoriesModel subCategoriesModel =
+                      //           subCategoriesList[index];
+                      //       return SubCategoriesCardWidget(
+                      //         imgUrl: subCategoriesModel.image,
+                      //         subcategoryName:
+                      //             subCategoriesModel.subcategory_name,
+                      //         spotAvailable: "",
+                      //         redeemed: "",
+                      //         onTap: () {
+                      //           print(subCategoriesModel.category_id);
+                      //           print(subCategoriesModel.id);
+                      //           print("subCategoriesModel.id");
+                      //           navigateToAllCouponScreen(
+                      //             context,
+                      //             subCategoriesModel.subcategory_name,
+                      //             subCategoriesModel.category_id,
+                      //             subCategoriesModel.id,
+                      //           );
+                      //         },
+                      //       );
+                      //       // final store = restaurantsItems[index];
+                      //       // return buildRestaurantsWidget(
+                      //       //     context,
+                      //       //     store.id,
+                      //       //     store.banner,
+                      //       //     // Use the logo property from StoreModel
+                      //       //     store.storeName,
+                      //       //     // Use the store_name property from StoreModel
+                      //       //     store.address,
+                      //       //     // Use the address property from StoreModel
+                      //       //     store.distance,
+                      //       //     // Use the distance property from StoreModel
+                      //       //     store.offers);
+                      //     },
+                      //   ),
+                      //   // GridView.builder(
+                      //   //   padding: EdgeInsets.zero,
+                      //   //   shrinkWrap: true,
+                      //   //   physics: NeverScrollableScrollPhysics(),
+                      //   //   itemCount: subCategoriesList.length,
+                      //   //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      //   //     crossAxisCount: 3,
+                      //   //     crossAxisSpacing: 8,
+                      //   //     mainAxisSpacing: 8,
+                      //   //     mainAxisExtent: 100
+                      //   //   ),
+                      //   //   itemBuilder: (BuildContext context, int index) {
+                      //   //     SubCategoriesModel subCategoriesModel =
+                      //   //     subCategoriesList[index];
+                      //   //     return SubCategoriesCardWidget(
+                      //   //       imgUrl: subCategoriesModel.image,
+                      //   //       subcategoryName:
+                      //   //       subCategoriesModel.subcategory_name,
+                      //   //       spotAvailable: "",
+                      //   //       redeemed: "",
+                      //   //       onTap: () {
+                      //   //         print(subCategoriesModel.category_id);
+                      //   //         print(subCategoriesModel.id);
+                      //   //         print("subCategoriesModel.id");
+                      //   //         navigateToAllCouponScreen(
+                      //   //           context,
+                      //   //           subCategoriesModel.subcategory_name,
+                      //   //           subCategoriesModel.category_id,
+                      //   //           subCategoriesModel.id,
+                      //   //         );
+                      //   //       },
+                      //   //     );
+                      //   //   },
+                      //   // ),
+                      // ),
                       Container(
-                        height: heights * 0.162,
-                        margin: EdgeInsets.only(left: widths * 0.03),
+                        height: heights * 0.49,
+                        margin: EdgeInsets.only(top: heights * 0.02 ),
+                        padding: EdgeInsets.only(left: widths * 0.03,right:widths * 0.03 ),
                         // color: Colors.red,
-                        child: ListView.builder(
+                        child:
+                        GridView.builder(
                           padding: EdgeInsets.zero,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
-                          itemCount: subCategoriesList
-                              .length, // Use the length of the list
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
+                          itemCount: subCategoriesList.length,
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 5,
+                            mainAxisSpacing: 5,
+                            mainAxisExtent: 180
+                          ),
+                          itemBuilder: (BuildContext context, int index) {
                             SubCategoriesModel subCategoriesModel =
-                                subCategoriesList[index];
+                            subCategoriesList[index];
                             return SubCategoriesCardWidget(
                               imgUrl: subCategoriesModel.image,
                               subcategoryName:
-                                  subCategoriesModel.subcategory_name,
+                              subCategoriesModel.subcategory_name,
                               spotAvailable: "",
                               redeemed: "",
                               onTap: () {
@@ -760,55 +807,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                 );
                               },
                             );
-                            // final store = restaurantsItems[index];
-                            // return buildRestaurantsWidget(
-                            //     context,
-                            //     store.id,
-                            //     store.banner,
-                            //     // Use the logo property from StoreModel
-                            //     store.storeName,
-                            //     // Use the store_name property from StoreModel
-                            //     store.address,
-                            //     // Use the address property from StoreModel
-                            //     store.distance,
-                            //     // Use the distance property from StoreModel
-                            //     store.offers);
                           },
                         ),
-                        // GridView.builder(
-                        //   padding: EdgeInsets.zero,
-                        //   shrinkWrap: true,
-                        //   physics: NeverScrollableScrollPhysics(),
-                        //   itemCount: subCategoriesList.length,
-                        //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        //     crossAxisCount: 3,
-                        //     crossAxisSpacing: 8,
-                        //     mainAxisSpacing: 8,
-                        //     mainAxisExtent: 100
-                        //   ),
-                        //   itemBuilder: (BuildContext context, int index) {
-                        //     SubCategoriesModel subCategoriesModel =
-                        //     subCategoriesList[index];
-                        //     return SubCategoriesCardWidget(
-                        //       imgUrl: subCategoriesModel.image,
-                        //       subcategoryName:
-                        //       subCategoriesModel.subcategory_name,
-                        //       spotAvailable: "",
-                        //       redeemed: "",
-                        //       onTap: () {
-                        //         print(subCategoriesModel.category_id);
-                        //         print(subCategoriesModel.id);
-                        //         print("subCategoriesModel.id");
-                        //         navigateToAllCouponScreen(
-                        //           context,
-                        //           subCategoriesModel.subcategory_name,
-                        //           subCategoriesModel.category_id,
-                        //           subCategoriesModel.id,
-                        //         );
-                        //       },
-                        //     );
-                        //   },
-                        // ),
                       ),
                      grab!=""&&grab!=null? Container(
                         height: heights * 0.55,
@@ -838,7 +838,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                 }));
                               },
                               child: Container(
-                                margin: EdgeInsets.all(8),
+                                margin: EdgeInsets.symmetric(horizontal: 15,vertical: 8),
                                 decoration: BoxDecoration(
                                   // color: MyColors.whiteBG,
                                   color: Color(0xffffffff),
@@ -938,8 +938,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                             color: MyColors
                                                                 .whiteBG,
                                                             fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 12),
+                                                                FontWeight.w500,
+                                                            fontSize: 11),
                                                       ),
                                                     )
                                                   : Container(),
@@ -962,8 +962,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                   "${grab?[0].rating ?? "0"}/5",
                                                   style: const TextStyle(
                                                     color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 11,
                                                   ),
                                                 ),
                                               ),
@@ -1067,7 +1067,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                         fontWeight:
                                                             FontWeight.w500,
                                                         color: MyColors.whiteBG,
-                                                        fontSize: 12,
+                                                        fontSize: 10,
                                                         overflow: TextOverflow
                                                             .ellipsis,
                                                       ),
@@ -1098,7 +1098,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                           .toString() ??
                                                       "",
                                                   style: TextStyle(
-                                                      fontSize: 16,
+                                                      fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w500),
                                                 ),
@@ -1128,7 +1128,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                                     1)
                                                                 .toString() ??
                                                             "0.0"),
-                                                        size: 20,
+                                                        size: 16,
                                                       ),
                                                     )
                                                   : Container(),
@@ -1138,8 +1138,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                           Text(
                                             grab?[0].address.toString() ?? "",
                                             style: TextStyle(
-                                                color: Colors.grey[600],
-                                                fontSize: 14),
+                                                color: MyColors.textColorTwo,
+                                                fontSize: 12),
                                           ),
                                           Divider(
                                             color: MyColors.textColorTwo
@@ -1240,9 +1240,9 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                               ),
                               Text(
                                 // "Trending Restaurants",
-                                "Something is Trending",
+                                "Trending Restaurants",
                                 style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w500),
+                                    fontSize: 14, fontWeight: FontWeight.w500),
                               ),
                               // InkWell(
                               //   onTap: () {
@@ -1502,45 +1502,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                 // "Trending Restaurants",
                                 "All Restaurants",
                                 style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w500),
+                                    fontSize: 14, fontWeight: FontWeight.w500),
                               ),
-                              // InkWell(
-                              //   onTap: () {
-                              //     Navigator.push(context,
-                              //         MaterialPageRoute(builder: (context) {
-                              //           return AllCouponScreen(
-                              //               "Trending Restaurants",
-                              //               "",
-                              //               "",
-                              //               "",
-                              //               "",
-                              //               "1",
-                              //               "",
-                              //               "",
-                              //               "$cityId",
-                              //               "");
-                              //         }));
-                              //   },
-                              //   child: Row(
-                              //     children: [
-                              //       Text(
-                              //         "View All",
-                              //         style: TextStyle(
-                              //             color: MyColors.txtDescColor,
-                              //             fontSize: 14,
-                              //             fontWeight: FontWeight.w300),
-                              //       ),
-                              //       SizedBox(
-                              //         width: 5,
-                              //       ),
-                              //       Icon(
-                              //         Icons.arrow_forward,
-                              //         size: 15,
-                              //         color: MyColors.primaryColor,
-                              //       )
-                              //     ],
-                              //   ),
-                              // ),
                             ],
                           ),
                         ),
@@ -1549,7 +1512,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
 
                         // color: MyColors.whiteBG,
                         child: SizedBox(
-                          height: 55,
+                          height: 50,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: orderedList.length,
@@ -2663,7 +2626,10 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
 
   Future<void> fetchShowSlider(
     String city_id,
+
   ) async {
+    print(city_id);
+    print("☕☕☕☕☕");
     try {
       final body = {
         "city_id": "$city_id",
@@ -3010,8 +2976,9 @@ class TrendingRestruantWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 210,
+      height: 290,
       margin: EdgeInsets.symmetric(horizontal: 10),
+      // color: Colors.red,
       child: ListView.builder(
         itemBuilder: (context, index) {
           final store = restaurantsItems[index];
@@ -3039,7 +3006,7 @@ class TrendingRestruantWidget extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 1, vertical: 0),
       // Margins ko responsive banane ke liye adjust kiya gaya hai
-      width: MediaQuery.of(context).size.width * 0.31,
+      width: MediaQuery.of(context).size.width * 0.55,
       // width: 110,
       // Container ki width ko screen ke 90% par set kiya gaya hai
       child: InkWell(
@@ -3060,7 +3027,7 @@ class TrendingRestruantWidget extends StatelessWidget {
             children: [
               Container(
                 width: double.infinity,
-                height: 210,
+                height: 290,
                 child: CachedNetworkImage(
                   imageUrl: imgUrl,
                   fit: BoxFit.fill,
@@ -3113,40 +3080,45 @@ class TrendingRestruantWidget extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.63),
+                        Colors.black.withOpacity(0.9),
                         Colors.black
                       ],
                     ),
                   ),
                   width: MediaQuery.of(context).size.width * 0.7,
-                  height: heights * 0.05,
+                  height: heights * 0.1,
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(3, 0, 3, 18),
-                child: Text(
-                  offers,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    fontSize: 12,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-              // SizedBox(height: 10),
               Container(
-                margin: EdgeInsets.fromLTRB(3, 0, 3, 3),
+                alignment: Alignment.bottomLeft,
+                margin: EdgeInsets.fromLTRB(10, 0, 3, 25),
                 child: Text(
                   restaurantName,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     color: MyColors.whiteBG,
-                    fontSize: 12,
+                    fontSize: 18,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(10, 0, 3, 3),
+                  child: Text(
+                    offers,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: MyColors.redBG,
+                      fontSize: 18,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+              ),
+              // SizedBox(height: 10),
+
             ],
           ),
         ),
@@ -3306,7 +3278,7 @@ class RecentJoinedWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(top: 10),
-      height: heights * 0.35,
+      height: heights * 0.4,
       color: Color(0xff1e1f16),
       child: Column(
         children: [
@@ -3327,51 +3299,14 @@ class RecentJoinedWidget extends StatelessWidget {
                   "Recent Joinees",
                   style: TextStyle(
                       color: MyColors.whiteBG,
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500),
                 ),
-                // InkWell(
-                //   onTap: () {
-                //     Navigator.push(context,
-                //         MaterialPageRoute(builder: (context) {
-                //           return AllCouponScreen(
-                //               "Recent Joined",
-                //               "",
-                //               "",
-                //               "",
-                //               "",
-                //               "",
-                //               "1",
-                //               "",
-                //               "$cityId",
-                //               "");
-                //         }));
-                //   },
-                //   child: Row(
-                //     children: [
-                //       Text(
-                //         "View All",
-                //         style: TextStyle(
-                //             color: MyColors.txtDescColor,
-                //             fontSize: 14,
-                //             fontWeight: FontWeight.w300),
-                //       ),
-                //       SizedBox(
-                //         width: 5,
-                //       ),
-                //       Icon(
-                //         Icons.arrow_forward,
-                //         size: 15,
-                //         color: MyColors.primaryColor,
-                //       )
-                //     ],
-                //   ),
-                // ),
               ],
             ),
           ),
           Container(
-            height: heights * 0.26,
+            height: heights * 0.33,
             child: ListView.builder(
               shrinkWrap: true,
               itemBuilder: (context, index) {
@@ -3592,8 +3527,8 @@ class RecentJoinedWidget extends StatelessWidget {
         alignment: Alignment.bottomCenter,
         children: [
           Container(
-            width: MediaQuery.of(context).size.width * 0.45,
-            margin: EdgeInsets.all(8),
+            width: MediaQuery.of(context).size.width * 0.53,
+            margin: EdgeInsets.fromLTRB(8,8,5,8),
             // Adjust the height according to your requirement
             decoration: BoxDecoration(
               color: Colors.black,
@@ -3627,7 +3562,7 @@ class RecentJoinedWidget extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(bottom: 55.0),
+            padding: const EdgeInsets.only(bottom: 60.0),
             child: Text(
               categoryName,
               style: TextStyle(
@@ -3639,7 +3574,7 @@ class RecentJoinedWidget extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(bottom: 30.0),
+            padding: const EdgeInsets.only(bottom: 35.0),
             child: Container(
               alignment: Alignment.center,
               height: heights * 0.03,
@@ -3659,14 +3594,14 @@ class RecentJoinedWidget extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Container(
                 margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                width: MediaQuery.of(context).size.width * 0.45,
+                width: MediaQuery.of(context).size.width * 0.53,
                 height: heights * 0.03,
                 // Adjust the width according to your requirement
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black87, Colors.black],
+                    colors: [Colors.transparent, Colors.black.withOpacity(0.6), Colors.black],
                   ),
                   borderRadius: BorderRadius.only(
                       // bottomRight: Radius.circular(15),
@@ -3677,7 +3612,7 @@ class RecentJoinedWidget extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 10),
+            padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 15),
             child: Text(
               offers,
               style: TextStyle(
@@ -3889,7 +3824,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
               }));
             },
             child: Container(
-              margin: EdgeInsets.all(8),
+              margin: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
               decoration: BoxDecoration(
                 // color: MyColors.whiteBG,
                 color: Color(0xffffffff),
@@ -3973,8 +3908,8 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                       "${widget.filter.availableSeat.toString() ?? ""} seat left",
                                       style: TextStyle(
                                           color: MyColors.whiteBG,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 11),
                                     ),
                                   )
                                 : Container(),
@@ -3993,8 +3928,8 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                 "${widget.filter.avgRating.toStringAsFixed(1)}/5",
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 11,
                                 ),
                               ),
                             ),
@@ -4018,18 +3953,6 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                       : Colors.black,
                                 ),
                               ),
-                              // InkWell(
-                              //   onTap: (){
-                              //     setState(() {
-                              //       selectedIndex=widget.index;
-                              //     });
-                              //   },
-                              //   child: Icon(
-                              //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
-                              //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
-                              //     size: 16,
-                              //   ),
-                              // )
                             )
                             // Icon(Icons.favorite_border, color: Colors.white),
                           ],
@@ -4078,7 +4001,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w500,
                                       color: MyColors.whiteBG,
-                                      fontSize: 12,
+                                      fontSize: 11,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
@@ -4104,7 +4027,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                               child: Text(
                                 widget.filter.storeName.toString(),
                                 style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500),
+                                    fontSize: 14, fontWeight: FontWeight.w500),
                               ),
                             ),
                             Spacer(),
@@ -4121,7 +4044,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                 rating: double.parse(widget.filter.avgRating
                                     .toStringAsFixed(1)
                                     .toString()),
-                                size: 20,
+                                size: 14,
                               ),
                             ),
                           ],
@@ -4130,7 +4053,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                         Text(
                           widget.filter.address.toString(),
                           style:
-                              TextStyle(color: Colors.grey[600], fontSize: 14),
+                              TextStyle(color:MyColors.textColorTwo, fontSize: 12),
                         ),
                         Divider(
                           color: MyColors.textColorTwo.withOpacity(0.3),
@@ -4139,7 +4062,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                             ? Text(
                                 widget.filter.dish.toString(),
                                 style: TextStyle(
-                                    color: Colors.grey[600], fontSize: 14),
+                                    color: MyColors.textColorTwo, fontSize: 14),
                               )
                             : Container(),
                         widget.filter.dish != null

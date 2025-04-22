@@ -50,6 +50,6 @@ class MyColors {
   static const Color txtHintColor = Colors.black26;
   static const Color txtHintColor2 = Colors.white10;
   static const Color offerCardColor = Color(0xFF6200EE);
-  static const Color textColorTwo = Color(0xFF9A9492);
+  static const Color textColorTwo = Color(0xFF8597a7);
   static const Color lightGreen = Color(0xFF60d69d);
 }

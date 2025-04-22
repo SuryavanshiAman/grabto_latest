@@ -586,8 +586,8 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           "${widget.filter.availableSeat.toString()??""} seat left",
                           style: TextStyle(
                               color: MyColors.whiteBG,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 11),
                         ),
                       ),
                       // Spacer(),
@@ -605,8 +605,8 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           "${widget.filter.avgRating.toStringAsFixed(1)}/5",
                           style: const TextStyle(
                             color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 11,
                           ),
                         ),
                       ),
@@ -739,7 +739,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                         child: Text(
                           widget.filter.storeName,
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500),
+                              fontSize: 14, fontWeight: FontWeight.w500),
                         ),
                       ),
                       Spacer(),
@@ -751,7 +751,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                 color: Colors.grey.withOpacity(0.3)),
                             // color: Color(0xff00bd62),
                             borderRadius: BorderRadius.circular(3)),
-                        child:  StarRating(color: Colors.yellow,rating: double.parse(widget.filter.avgRating.toStringAsFixed(1).toString()),size: 20,),
+                        child:  StarRating(color: Colors.yellow,rating: double.parse(widget.filter.avgRating.toStringAsFixed(1).toString()),size: 16,),
                       ),
                       // CircleAvatar(
                       //     radius: 9,
@@ -769,9 +769,13 @@ class _RestaurantCardState extends State<RestaurantCard> {
                     ],
                   ),
                   SizedBox(height: 4),
-                  Text(
-                    widget.filter.address,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  Container(
+                    width: widths*0.85,
+                    // color: MyColors.redBG,
+                    child: Text(
+                      "${widget.filter.address}-${widget.filter.distance}Km",
+                      style: TextStyle(color: MyColors.textColorTwo, fontSize: 12),
+                    ),
                   ),
                   SizedBox(height: 4),
                   // Text(
@@ -810,7 +814,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                       ? Text(
                     widget.filter.dish.toString(),
                     style: TextStyle(
-                        color: Colors.grey[600], fontSize: 14),
+                        color: MyColors.textColorTwo, fontSize: 12),
                   )
                       : Container(),
                   widget.filter.dish != null

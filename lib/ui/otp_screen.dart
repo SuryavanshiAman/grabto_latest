@@ -234,13 +234,15 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   Future<void> send_otp(String mobile) async {
+  print(mobile);
     try {
       setState(() {
         isLoading = true;
       });
       final body = {"mobile": mobile};
+      print(body);
       final response = await ApiServices.send_otp(context, body);
-
+      print(body);
       // Check if the response is null or doesn't contain the expected data
       if (response != null &&
           response.containsKey('res') &&

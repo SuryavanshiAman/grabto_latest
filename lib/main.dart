@@ -10,7 +10,11 @@ import 'package:grabto/ui/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:grabto/view_model/different_location_view_model.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
+import 'package:grabto/view_model/flicks_view_model.dart';
 import 'package:grabto/view_model/grabto_grab_view_model.dart';
+import 'package:grabto/view_model/recommended_view_model.dart';
+import 'package:grabto/view_model/similar_restro_view_model.dart';
+import 'package:grabto/view_model/vibe_view_model.dart';
 // import 'package:in_app_update/in_app_update.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
@@ -205,6 +209,10 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => FilterViewModel()),
         ChangeNotifierProvider(create: (_) => DifferentLocationViewModel()),
         ChangeNotifierProvider(create: (_) => GrabtoGrabViewModel()),
+        ChangeNotifierProvider(create: (_) => SimilarRestroViewModel()),
+        ChangeNotifierProvider(create: (_) => RecommendedViewModel()),
+        ChangeNotifierProvider(create: (_) => VibeViewModel()),
+        ChangeNotifierProvider(create: (_) => FlicksViewModel()),
       ],
       child: MaterialApp(
         title: 'Grabto',

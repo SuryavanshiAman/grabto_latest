@@ -4,6 +4,7 @@ import 'package:grabto/model/store_model.dart';
 import 'package:grabto/theme/theme.dart';
 import 'package:grabto/ui/coupon_fullview_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:grabto/widget/rating.dart';
 
 class StoreWidget extends StatelessWidget {
   final List<StoreModel> storeList;
@@ -91,12 +92,11 @@ class StoreWidget extends StatelessWidget {
                                               // color: Color(0xff00bd62),
                                               borderRadius: BorderRadius.circular(3)
                                           ),
-                                          child: Text("⭐⭐⭐",
-                                              style: TextStyle(
-                                                color:MyColors.whiteBG,
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 12,
-                                              )),
+                                          child:StarRating(
+                                            color: Colors.yellow,
+                                            rating: double.parse( store.rating.toString()),
+                                            size: 14,
+                                          ),
                                         ),
                                       ],
                                     ),

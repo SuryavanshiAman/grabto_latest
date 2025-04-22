@@ -205,6 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoading = true;
       });
       final body = {"mobile": mobile};
+      print(body);
       final response = await ApiServices.apiUserLogin(context, body);
 
       // Check if the response is null or doesn't contain the expected data
@@ -237,10 +238,11 @@ class _LoginScreenState extends State<LoginScreen> {
         // Handle unsuccessful response or missing 'res' field
 
       }
-    } catch (e) {
+    }
+    catch (e) {
       print('user_login error: $e');
       // Handle error
-      showErrorMessage(context, message: 'An error occurred: $e');
+      showErrorMessage(context, message: 'An r occurred: $e');
     } finally {
       setState(() {
         isLoading = false;

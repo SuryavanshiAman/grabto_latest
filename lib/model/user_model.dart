@@ -164,8 +164,8 @@ class BannerModel {
   final dynamic url;
   final dynamic image;
   final dynamic status;
-  final dynamic category_id; // Added
-  final dynamic subcategory_name; // Added
+  final dynamic category_id;
+  final dynamic subcategory_name;
   final dynamic created_at;
   final dynamic updated_at;
 
