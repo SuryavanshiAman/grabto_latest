@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:grabto/helper/shared_pref.dart';
 import 'package:grabto/main.dart';
@@ -286,6 +287,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
 
   List<FirstList> list = [
     FirstList("Filter"),
+    FirstList("ShortBy"),
     FirstList(
       "Rating 4+",
     ),
@@ -1205,7 +1207,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                           ],
                         ),
                       ):Container(),
-
                       if (!localtiyList.isEmpty)
                         Container(
                           margin: EdgeInsets.only(
@@ -1222,7 +1223,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                           ),
                         ),
                       if (!localtiyList.isEmpty) LocationWidget(localtiyList),
-
                       if (!trendingStoreList.isEmpty)
                         Container(
                           margin: EdgeInsets.only(
@@ -1385,105 +1385,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                           },
                         ),
                       ),
-                      // Container(
-                      //   margin: EdgeInsets.symmetric(horizontal: 12),
-                      //   height: heights * 0.06,
-                      //   child: ListView.builder(
-                      //     itemCount: differentLocation.locationList.data?.data1?.length??0,
-                      //     scrollDirection: Axis.horizontal,
-                      //     itemBuilder: (context, index) {
-                      //       final data=differentLocation.locationList.data?.data1?[index];
-                      //       return InkWell(
-                      //         onTap: (){
-                      //           differentLocation.nearByPlacesApi(context, data?.localityName??"");
-                      //         },
-                      //         child: Container(
-                      //           padding: EdgeInsets.symmetric(
-                      //               vertical: 7, horizontal: 30),
-                      //           margin: EdgeInsets.symmetric(
-                      //               horizontal: 5, vertical: 5),
-                      //           // height: heights*0.03,
-                      //           alignment: Alignment.center,
-                      //           decoration: BoxDecoration(
-                      //               boxShadow: [
-                      //                 BoxShadow(
-                      //                   color: Colors.grey,
-                      //                   spreadRadius: 0.5,
-                      //                   offset: Offset(2, 2),
-                      //                   blurRadius: 2,
-                      //                 ),
-                      //               ],
-                      //               color: Color(0xfffde39f),
-                      //               borderRadius: BorderRadius.circular(10)),
-                      //           child: Text(
-                      //               data?.localityName??"",
-                      //             style: TextStyle(
-                      //                 fontWeight: FontWeight.w600, fontSize: 12),
-                      //           ),
-                      //         ),
-                      //       );
-                      //     },
-                      //   ),
-                      // ),
-
                       if (!topCollectionStoreList.isEmpty)
-                        //   Container(
-                        //     margin: EdgeInsets.only(
-                        //         top: 25, left: 15, right: 15, bottom: 15),
-                        //     child: Row(
-                        //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        //       children: [
-                        //         Text(
-                        //           "Top Collections",
-                        //           style: TextStyle(
-                        //               fontSize: 18, fontWeight: FontWeight.w500),
-                        //         ),
-                        //         InkWell(
-                        //           onTap: () {
-                        //             Navigator.push(context,
-                        //                 MaterialPageRoute(builder: (context) {
-                        //                   return AllCouponScreen(
-                        //                       "Top Collections",
-                        //                       "",
-                        //                       "",
-                        //                       "",
-                        //                       "",
-                        //                       "",
-                        //                       "",
-                        //                       "1",
-                        //                       "$cityId",
-                        //                       "");
-                        //                 }));
-                        //           },
-                        //           child: Row(
-                        //             children: [
-                        //               Text(
-                        //                 "View All",
-                        //                 style: TextStyle(
-                        //                     color: MyColors.txtDescColor,
-                        //                     fontSize: 14,
-                        //                     fontWeight: FontWeight.w300),
-                        //               ),
-                        //               SizedBox(
-                        //                 width: 5,
-                        //               ),
-                        //               Icon(
-                        //                 Icons.arrow_forward,
-                        //                 size: 15,
-                        //                 color: MyColors.primaryColor,
-                        //               )
-                        //             ],
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ),
-                        // if (!topCollectionStoreList.isEmpty)
-                        //   TopCollectionWidget(topCollectionStoreList, 0.0),
-                        /// abhi kholna hai
-                        // SizedBox(
-                        //   height: 20,
-                        // ),
                         Container(
                           margin: EdgeInsets.only(
                               top: 25, left: 15, right: 15, bottom: 15),
@@ -1499,7 +1401,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                 width: 5,
                               ),
                               Text(
-                                // "Trending Restaurants",
                                 "All Restaurants",
                                 style: TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.w500),
@@ -1534,10 +1435,11 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                 long,
                                                 featureData,
                                                 subCategoriesList)
-                                            : index == 1
+                                            : index==1?showSortBottomSheet(context):
+                                    index == 2
                                                 ? data.filterApi(context, lat,
                                                     long, "4", "", "", [], [])
-                                                : index == 2
+                                                : index == 3
                                                     ? data.filterApi(
                                                         context,
                                                         lat,
@@ -1631,13 +1533,47 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                     data.filterList.data?.data?.length ?? 0,
                                 physics: NeverScrollableScrollPhysics(),
                                 itemBuilder: (context, index) {
+                                  double userLat =double.parse(lat); // apna nikala hua latitude
+                                  double userLng = double.parse(long); // apna nikala hua longitude
+
+// Distance calculate karne ke liye helper function
+                                  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+                                    const double p = 0.017453292519943295; // pi/180
+                                    final double a = 0.5 -
+                                        cos((lat2 - lat1) * p) / 2 +
+                                        cos(lat1 * p) * cos(lat2 * p) *
+                                            (1 - cos((lon2 - lon1) * p)) / 2;
+                                    return 12742 * asin(sqrt(a)); // 2 * R * asin...
+                                  }
+                                  List<Data> highToLow = data.filterList.data?.data ?? [];
+                                  highToLow.sort((a, b) {
+                                    double ratingA = double.tryParse(a.avgRating ?? "0") ?? 0;
+                                    double ratingB = double.tryParse(b.avgRating ?? "0") ?? 0;
+                                    return ratingB.compareTo(ratingA); // descending
+                                  });
+                                  List<Data> lowToHigh = data.filterList.data?.data ?? [];
+                                  lowToHigh.sort((a, b) {
+                                    double ratingA = double.tryParse(a.avgRating ?? "0") ?? 0;
+                                    double ratingB = double.tryParse(b.avgRating ?? "0") ?? 0;
+                                    return ratingA.compareTo(ratingB); // descending
+                                  });
+                                  List<Data> distanceSorted = data.filterList.data?.data ?? [];
+                                  distanceSorted.sort((a, b) {
+                                    double latA = double.tryParse(a.lat ?? "0") ?? 0;
+                                    double lngA = double.tryParse(a.long ?? "0") ?? 0;
+                                    double latB = double.tryParse(b.lat ?? "0") ?? 0;
+                                    double lngB = double.tryParse(b.long ?? "0") ?? 0;
+
+                                    double distA = calculateDistance(userLat, userLng, latA, lngA);
+                                    double distB = calculateDistance(userLat, userLng, latB, lngB);
+                                    return distA.compareTo(distB); // nearest first
+                                  });
                                   return data.filterList.data?.data?.length == 0
                                       ? Text("Nodata")
                                       : RestaurantCard(
                                           index: index,
                                           name: selectedName,
-                                          filter: data
-                                              .filterList.data!.data![index]);
+                                          filter:filterIndex==0? data.filterList.data!.data![index]:filterIndex==1?distanceSorted[index]:filterIndex==3?lowToHigh[index]:highToLow[index]);
                                 },
                               ),
                             )
@@ -2048,6 +1984,52 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
               color: MyColors.primary,
             ),
           );
+  }
+  int filterIndex=0;
+  void showSortBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        List<String> options = [
+          "Relevance",
+          "Distance: Nearby To Far",
+          "Popularity: High to Low",
+          "Cost for two: Low to High",
+          "Cost for two: High to Low",
+        ];
+
+        String selectedOption = options[0]; // default
+
+        return StatefulBuilder(builder: (context, setState) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: List.generate(options.length, (index) {
+                return RadioListTile<String>(
+                  contentPadding: EdgeInsets.zero,
+                  value: options[index],
+                  groupValue: selectedOption,
+                  title: Text(options[index],style: TextStyle(color:MyColors.blackBG),),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedOption = value!;
+                      filterIndex=index;
+                      print("Selected: $selectedOption");
+                      Provider.of<FilterViewModel>(context,listen: false).filterApi(context, lat, long, "", "", "", [], []);
+                    });
+                  },
+                  activeColor: MyColors.redBG,
+                );
+              }),
+            ),
+          );
+        });
+      },
+    );
   }
 
   String wishlist_status = '';
@@ -2887,6 +2869,87 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
         isLoading = false; // Set isLoading to false in case of error
       });
     }
+  }
+}
+class CustomDropdown extends StatefulWidget {
+  final String selectedOption;
+  final Function(String) onSelect;
+
+  const CustomDropdown({
+    required this.selectedOption,
+    required this.onSelect,
+    super.key,
+  });
+
+  @override
+  State<CustomDropdown> createState() => _CustomDropdownState();
+}
+
+class _CustomDropdownState extends State<CustomDropdown> {
+  late String selected;
+
+  List<String> options = [
+    "Relevance",
+    "Distance: Nearby To Far",
+    "Popularity: High to Low",
+    "Cost for two: Low to High",
+    "Cost for two: High to Low",
+  ];
+
+  @override
+  void initState() {
+    selected = widget.selectedOption;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<String>(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      offset: Offset(0, 40),
+      constraints: BoxConstraints(minWidth: 250),
+      onSelected: (value) {
+        setState(() {
+          selected = value;
+        });
+        widget.onSelect(value);
+      },
+      itemBuilder: (context) {
+        return options.map((e) {
+          return PopupMenuItem(
+            value: e,
+            child: Row(
+              children: [
+                Icon(
+                  selected == e ? Icons.radio_button_checked : Icons.radio_button_off,
+                  color: selected == e ? Colors.orange : Colors.grey,
+                  size: 20,
+                ),
+                SizedBox(width: 10),
+                Expanded(child: Text(e, style: TextStyle(fontSize: 14))),
+              ],
+            ),
+          );
+        }).toList();
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.grey.withOpacity(0.5)),
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Row(
+          children: [
+            Text(
+              selected,
+              style: TextStyle(fontSize: 12),
+            ),
+            Icon(Icons.keyboard_arrow_down),
+          ],
+        ),
+      ),
+    );
   }
 }
 

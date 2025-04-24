@@ -22,6 +22,7 @@ class FilterViewModel with ChangeNotifier {
       List<String> amenities,
       List<String> restaurantCategories,
       ) async {
+    print("$long,$lat");
     setFilterList(ApiResponse.loading());
     Map data={
       "latitude": lat,
