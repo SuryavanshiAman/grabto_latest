@@ -12,6 +12,8 @@ import 'package:grabto/view_model/different_location_view_model.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
 import 'package:grabto/view_model/flicks_view_model.dart';
 import 'package:grabto/view_model/grabto_grab_view_model.dart';
+import 'package:grabto/view_model/menu_data_view_model.dart';
+import 'package:grabto/view_model/menu_type_view_model.dart';
 import 'package:grabto/view_model/recommended_view_model.dart';
 import 'package:grabto/view_model/similar_restro_view_model.dart';
 import 'package:grabto/view_model/vibe_view_model.dart';
@@ -213,6 +215,8 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => RecommendedViewModel()),
         ChangeNotifierProvider(create: (_) => VibeViewModel()),
         ChangeNotifierProvider(create: (_) => FlicksViewModel()),
+        ChangeNotifierProvider(create: (_) => MenuDataViewModel()),
+        ChangeNotifierProvider(create: (_) => MenuTypeViewModel()),
       ],
       child: MaterialApp(
         title: 'Grabto',

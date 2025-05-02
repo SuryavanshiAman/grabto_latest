@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grabto/helper/shared_pref.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/model/coupon_model.dart';
@@ -26,10 +28,12 @@ import 'package:grabto/ui/pay_bill_screen.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
 import 'package:grabto/view_model/flicks_view_model.dart';
+import 'package:grabto/view_model/menu_data_view_model.dart';
 import 'package:grabto/view_model/recommended_view_model.dart';
 import 'package:grabto/view_model/similar_restro_view_model.dart';
 import 'package:grabto/view_model/vibe_view_model.dart';
 import 'package:grabto/widget/add_rating_widget.dart';
+import 'package:grabto/widget/coupon_card.dart';
 import 'package:grabto/widget/doted_line.dart';
 import 'package:grabto/widget/features_widget.dart';
 import 'package:grabto/widget/menu_card_widget.dart';
@@ -182,6 +186,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
     Provider.of<RecommendedViewModel>(context,listen: false).recomendedApi(context);
     Provider.of<VibeViewModel>(context,listen: false).vibeApi(context,widget.id);
     Provider.of<FlicksViewModel>(context,listen: false).flicksApi(context,widget.id);
+    Provider.of<MenuDataViewModel>(context,listen: false).menuDataApi(context, widget.id);
 
 
   }
@@ -257,90 +262,18 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
   }
 
   String selectedName = "";
-  final List<Restaurant> restaurants = [
-    Restaurant(
-      name: "Rocca By Hyatt Regency",
-      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-      cuisine: "Continental, North Indian",
-      rating: 4.0,
-      price: "₹1500 for two", // Example image URL
-      offers: [
-        "Flat 50% off on pre-booking"
-            "       +4 more",
-        // "Get extra 10% off using GIRFNEXT150",
-      ],
-    ),
-    Restaurant(
-      name: "Que",
-      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-      cuisine: "Continental, North Indian",
-      rating: 4.0,
-      price: "₹1500 for two", // Example image URL
-      offers: [
-        "Flat 50% off on pre-booking"
-            "       +4 more",
-      ],
-    ),
-    Restaurant(
-      name: "Que",
-      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-      cuisine: "Continental, North Indian",
-      rating: 4.0,
-      price: "₹1500 for two", // Example image URL
-      offers: [
-        "Flat 50% off on pre-booking"
-            "       +4 more",
-      ],
-    ),
-    Restaurant(
-      name: "Que",
-      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-      cuisine: "Continental, North Indian",
-      rating: 4.0,
-      price: "₹1500 for two", // Example image URL
-      offers: [
-        "Flat 50% off on pre-booking"
-            "       +4 more",
-      ],
-    ),
-    Restaurant(
-      name: "Que",
-      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-      cuisine: "Continental, North Indian",
-      rating: 4.0,
-      price: "₹1500 for two", // Example image URL
-      offers: [
-        "Flat 50% off on pre-booking"
-            "       +4 more",
-      ],
-    ),
-    Restaurant(
-      name: "Que",
-      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-      cuisine: "Continental, North Indian",
-      rating: 4.0,
-      price: "₹1500 for two", // Example image URL
-      offers: [
-        "Flat 50% off on pre-booking"
-            "       +4 more",
-      ],
-    ),
-    Restaurant(
-      name: "Que",
-      location: "Hotel Savvy Grand, Gomti Nagar, 4.3 km",
-      cuisine: "Continental, North Indian",
-      rating: 4.0,
-      price: "₹1500 for two", // Example image URL
-      offers: [
-        "Flat 50% off on pre-booking"
-            "       +4 more",
-      ],
-    ),
-    // Add more restaurants here
-  ];
   bool viewTime = false;
   List<String> tabItems = ['All Offers', 'Flicks', 'Menu', 'Gallery', 'Reviews'];
   int selectedIndex = 0;
+  final List<String> avatars = [
+    'assets/images/grabto_logo_with_text.png',
+    'assets/images/grabto_logo.png',
+    'assets/images/grabto_logo_with_text.png',
+    'assets/images/grabto_logo_with_text.png',
+    'assets/images/grabto_logo_with_text.png',
+    'assets/images/grabto_logo_with_text.png',
+  ];
+  final int maxVisibleAvatars = 5;
   @override
   Widget build(BuildContext context) {
     TabController tabController = TabController(length: 5, vsync: this);
@@ -349,6 +282,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
     final recommended = Provider.of<RecommendedViewModel>(context);
     final vibe =  Provider.of<VibeViewModel>(context).vibeList;
     final flick =  Provider.of<FlicksViewModel>(context).flickList;
+    final menuData =  Provider.of<MenuDataViewModel>(context).menuDataList;
     return WillPopScope(
       onWillPop: () async {
         // Call the fetchStoresCoupons function when navigating back from ScreenB
@@ -357,68 +291,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
       },
       child: Scaffold(
           backgroundColor: MyColors.backgroundBg,
-          // appBar: AppBar(
-          //   backgroundColor: MyColors.backgroundBg,
-          //   leading: InkWell(
-          //       onTap: () {
-          //         Navigator.pop(context);
-          //       },
-          //       child: const Icon(Icons.arrow_back_ios)),
-          //   actions: [
-          //     Container(
-          //       width: 45,
-          //       height: 45,
-          //       margin: const EdgeInsets.only(right: 15),
-          //       child: Card(
-          //         elevation: 2,
-          //         color: Colors.white,
-          //         shadowColor: MyColors.primaryColorLight,
-          //         shape: RoundedRectangleBorder(
-          //           borderRadius: BorderRadius.circular(40.0),
-          //         ),
-          //         child: IconButton(
-          //           icon: const Icon(
-          //             Icons.share,
-          //             size: 24,
-          //             color: MyColors.primaryColor,
-          //           ),
-          //           onPressed: () {
-          //             // Handle notification button press
-          //             // You can show a notification or navigate to a notification page, etc.
-          //             shareNetworkImage("$storeLogoImageUrl",
-          //                 "\nCheck out this store on Discount Deals! $storeName $playstoreLink");
-          //           },
-          //         ),
-          //       ),
-          //     ),
-          //     Container(
-          //       width: 45,
-          //       height: 45,
-          //       margin: const EdgeInsets.only(right: 15),
-          //       child: Card(
-          //         elevation: 2,
-          //         color: Colors.white,
-          //         shadowColor: MyColors.primaryColorLight,
-          //         shape: RoundedRectangleBorder(
-          //           borderRadius: BorderRadius.circular(40.0),
-          //         ),
-          //         child: IconButton(
-          //           icon: Icon(
-          //             wishlist_status == 'true'
-          //                 ? Icons.favorite
-          //                 : Icons.favorite_border,
-          //             size: 24,
-          //             color:
-          //             wishlist_status == 'true' ? Colors.red : Colors.black,
-          //           ),
-          //           onPressed: () {
-          //             wishlist("$userId", "${widget.id}");
-          //           },
-          //         ),
-          //       ),
-          //     ),
-          //   ],
-          // ),
+
           body: isLoading
               ? Center(
                   child: Container(
@@ -443,7 +316,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                         controller: _scrollController,
                         child: Column(
                           children: [
-                            Container(
+                            SizedBox(
                               width: widths,
                               // margin: const EdgeInsets.symmetric(
                               //     horizontal: 0,),
@@ -456,7 +329,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                       children: [
                                         InkWell(
                                             onTap: () {
-                                              navigateToGallerScreen(storeId);
+                                              // navigateToGallerScreen(storeId);
                                             },
                                             child: Container(
                                               // margin: const EdgeInsets.only(top: 0),
@@ -547,7 +420,127 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                           height: heights * 0.02,
                                         ),
                                         FeaturesWidget(featuresList),
+                                        Container(
+                                          margin: EdgeInsets.only(
+                                            top: 10,
+                                            left: 15,
+                                            right: 15,
+                                          ),
+                                          child: Row(
+                                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Container(
+                                                height: heights * 0.02,
+                                                width: 2,
+                                                color: MyColors.redBG,
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(
+                                                "See Who's going",
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                    FontWeight.w500),
+                                              ),
 
+                                              // InkWell(
+                                              //   onTap: () {
+                                              //     navigateToTopCategoriesScreen();
+                                              //   },
+                                              //   child: Row(
+                                              //     children: [
+                                              //       Text(
+                                              //         "View All",
+                                              //         style: TextStyle(
+                                              //             color: MyColors.txtDescColor,
+                                              //             fontSize: 14,
+                                              //             fontWeight: FontWeight.w300),
+                                              //       ),
+                                              //       SizedBox(
+                                              //         width: 5,
+                                              //       ),
+                                              //       Icon(
+                                              //         Icons.arrow_forward,
+                                              //         size: 15,
+                                              //         color: MyColors.primaryColor,
+                                              //       )
+                                              //     ],
+                                              //   ),
+                                              // ),
+                                            ],
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 90.0,right: 10),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(left: 0.0),
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    Stack(
+                                                      children: [
+                                                        // Show up to maxVisibleAvatars - 1 avatars
+                                                        ...avatars.asMap().entries.map((entry) {
+                                                          int idx = entry.key;
+                                                          String avatar = entry.value;
+
+                                                          if (idx < maxVisibleAvatars ) {
+                                                            return Transform.translate(
+                                                              offset: Offset(idx * -20.0, 0),
+                                                              child: Container(
+                                                                width: widths * 0.06,
+                                                                height: heights * 0.05,
+                                                                decoration: BoxDecoration(
+                                                                  shape: BoxShape.circle,
+                                                                  image: DecorationImage(
+                                                                    image: AssetImage(avatar),
+                                                                    fit: BoxFit.cover,
+                                                                  ),
+                                                                  border: Border.all(color: MyColors.whiteBG, width: 1),
+                                                                ),
+                                                              ),
+                                                            );
+                                                          } else {
+                                                            return SizedBox.shrink();
+                                                          }
+                                                        }).toList(),
+                                                        if (avatars.length > maxVisibleAvatars)
+                                                          Transform.translate(
+                                                            offset: Offset((maxVisibleAvatars -5) * -12.0, 0),
+                                                            child: Container(
+                                                              width: widths * 0.06,
+                                                              height: heights * 0.05,
+                                                              decoration: BoxDecoration(
+                                                                shape: BoxShape.circle,
+                                                                color: Colors.grey[400],
+                                                                border: Border.all(color: MyColors.whiteBG, width: 1),
+                                                              ),
+                                                              child: Center(
+                                                                child: Text(
+                                                                  '+${avatars.length - (maxVisibleAvatars - 1)}',
+                                                                  style: TextStyle(
+                                                                    fontSize: 12,
+                                                                    color: Colors.white,
+                                                                    fontWeight: FontWeight.bold,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Image.asset("assets/images/chevron_forward.png")
+                                            ],
+                                          ),
+                                        ),
                                         Container(
                                           margin: EdgeInsets.only(
                                             top: 10,
@@ -617,17 +610,14 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                                   horizontal: 3, vertical: 1),
                                               decoration: BoxDecoration(
                                                   border: Border.all(
-                                                      color: Colors.grey
-                                                          .withOpacity(0.3)),
+                                                      color: Colors.grey.withOpacity(0.3)),
                                                   // color: Color(0xff00bd62),
-                                                  borderRadius:
-                                                      BorderRadius.circular(3)),
-                                              child: Text("⭐⭐⭐",
-                                                  style: TextStyle(
-                                                    color: MyColors.whiteBG,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 12,
-                                                  )),
+                                                  borderRadius: BorderRadius.circular(3)),
+                                              child: StarRating(
+                                                color: Colors.yellow,
+                                                rating:star!=null ? double.parse(star??""):0.0,
+                                                size: 14,
+                                              ),
                                             ),
                                             Container(
                                               margin:
@@ -661,12 +651,11 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                           margin: EdgeInsets.only(left: 15),
                                           child: Text(
                                             description,
-                                            // "People Say This Place Is Known For Outdoor Seating, Weekend Brunch, Cafe, Good Music, Young Crowd, Elaborate Menu",
                                             style: TextStyle(
                                                 color: MyColors.textColorTwo),
                                           ),
                                         ),
-                                        Padding(
+                                       distance!=""&&seat!=""? Padding(
                                           padding: const EdgeInsets.only(
                                               left: 20.0, top: 5),
                                           child: Row(
@@ -674,7 +663,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                             //     MainAxisAlignment.spaceAround,
                                             children: [
                                               Text(
-                                                "${distance} away",
+                                                distance!=""? "${distance} away":"",
                                                 style: TextStyle(
                                                     fontSize: 12,
                                                     color:
@@ -684,7 +673,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                               ),
                                               SizedBox(width: widths*0.1,),
                                               Text(
-                                                "${seat } Seats left",
+                                                seat!=""? "${seat } Seats left":"",
                                                 style: TextStyle(
                                                     color: MyColors.redBG,
                                                     fontSize: 12,
@@ -696,7 +685,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                               )
                                             ],
                                           ),
-                                        ),
+                                        ):Container(),
                                         Padding(
                                           padding:
                                               const EdgeInsets.only(top: 10),
@@ -729,11 +718,16 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                                   onTap: () {
                                                     _makePhoneCall(storeMobile);
                                                   },
-                                                  child: Text(
-                                                    "Call 📞",
-                                                    style: TextStyle(
-                                                        color: MyColors.blackBG,
-                                                        fontSize: 12),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        "Call",
+                                                        style: TextStyle(
+                                                            color: MyColors.blackBG,
+                                                            fontSize: 12),
+                                                      ),
+                                                      SvgPicture.asset("assets/svg/call.svg")
+                                                    ],
                                                   )),
                                               SizedBox(
                                                 width: widths * 0.2,
@@ -851,160 +845,6 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                             },
                                           ),
                                         )
-///
-                                        // Container(
-                                        //   margin: const EdgeInsets.symmetric(
-                                        //       horizontal: 5),
-                                        //   child: SingleChildScrollView(
-                                        //     scrollDirection: Axis.horizontal,
-                                        //     child: Row(
-                                        //       mainAxisAlignment:
-                                        //       MainAxisAlignment
-                                        //           .spaceEvenly,
-                                        //       children: [
-                                        //         _buildCard(
-                                        //           context: context,
-                                        //           icon: Icons.pin_drop,
-                                        //           text: 'Location',
-                                        //           onTap: _launchMaps,
-                                        //         ),
-                                        //         _buildCard(
-                                        //           context: context,
-                                        //           icon: Icons.call,
-                                        //           text: 'Contact',
-                                        //           onTap: () {
-                                        //             _makePhoneCall(
-                                        //                 storeMobile);
-                                        //           },
-                                        //         ),
-                                        //         _buildCard(
-                                        //           context: context,
-                                        //           icon: Icons.edit_note,
-                                        //           text: 'Review',
-                                        //           onTap: () {
-                                        //             if (userId == 0) {
-                                        //               NavigationUtil
-                                        //                   .navigateToLogin(
-                                        //                   context);
-                                        //             } else {
-                                        //               _navigateToAddRatingScreen(
-                                        //                   context);
-                                        //             }
-                                        //           },
-                                        //         ),
-                                        //       ],
-                                        //     ),
-                                        //   ),
-                                        // ),
-                                        //
-                                        // if (avg_type.isNotEmpty ||
-                                        //     subcategory_name.isNotEmpty)
-                                        //   Row(
-                                        //     mainAxisAlignment: MainAxisAlignment
-                                        //         .center,
-                                        //     // Distributes the widgets with space between them
-                                        //     children: [
-                                        //       if (avg_type
-                                        //           .isNotEmpty) // Show the widget only if avg_type is not empty
-                                        //         _buildCard(
-                                        //           context: context,
-                                        //           icon: Icons.currency_rupee,
-                                        //           text: '$avg_type',
-                                        //           onTap: () {
-                                        //             // _makePhoneCall(storeMobile);
-                                        //           },
-                                        //         ),
-                                        //       if (avg_type.isNotEmpty &&
-                                        //           subcategory_name
-                                        //               .isNotEmpty) const SizedBox(
-                                        //           width: 16),
-                                        //       // Space between the containers if both are present
-                                        //       if (subcategory_name
-                                        //           .isNotEmpty) // Show the widget only if subcategory_name is not empty
-                                        //         _buildCard(
-                                        //           context: context,
-                                        //           icon: Icons.rice_bowl_outlined,
-                                        //           text: '$subcategory_name',
-                                        //           onTap: () {
-                                        //             navigateToAllCouponScreen(
-                                        //               context,
-                                        //               subcategory_name,
-                                        //               category_id,
-                                        //               subcategory_id,
-                                        //             );
-                                        //           },
-                                        //         ),
-                                        //     ],
-                                        //   ),
-
-                                        // Padding(
-                                        //   padding: const EdgeInsets.all(8.0),
-                                        //   child: Row(
-                                        //     mainAxisAlignment: MainAxisAlignment.start,
-                                        //     children: [
-                                        //       Container(
-                                        //         decoration: const BoxDecoration(
-                                        //           shape: BoxShape.circle
-                                        //         ),
-                                        //         child: Card(
-                                        //           elevation: 2,
-                                        //
-                                        //           color: Colors.green,
-                                        //           shape: RoundedRectangleBorder(
-                                        //             borderRadius:
-                                        //             BorderRadius.circular(20),
-                                        //
-                                        //           ),
-                                        //           child: const Padding(
-                                        //             padding: EdgeInsets.all(4.0),
-                                        //             child: Icon(
-                                        //               Icons.star,
-                                        //               color: Colors.white,
-                                        //               size: 18,
-                                        //             ),
-                                        //           ),
-                                        //         ),
-                                        //       ),
-                                        //       Text(
-                                        //         " ${star??"4.0"},",
-                                        //         style: const TextStyle(
-                                        //           color: Colors.black,
-                                        //           fontSize: 18,
-                                        //           fontWeight:
-                                        //           FontWeight.w600,
-                                        //             fontFamily: "afacadFlux"
-                                        //         ),
-                                        //       ),
-                                        //       Text(
-                                        //         "  ${noOfRating??"4.0"}",
-                                        //         style: const TextStyle(
-                                        //           color: Colors.black,
-                                        //           fontSize: 14,
-                                        //           fontWeight:
-                                        //           FontWeight.w600,
-                                        //             fontFamily: "afacadFlux"
-                                        //         ),
-                                        //       ),
-                                        //       const Text(
-                                        //         "  Google ratings",
-                                        //         style: TextStyle(
-                                        //           color: Colors.black,
-                                        //           fontSize: 14,
-                                        //           fontWeight:
-                                        //           FontWeight.w600,
-                                        //           fontFamily: "afacadFlux"
-                                        //         ),
-                                        //       ),
-                                        //     ],
-                                        //   ),
-                                        // ),
-                                        // SizedBox(
-                                        //   height: MediaQuery
-                                        //       .of(context)
-                                        //       .size
-                                        //       .width *
-                                        //       0.045, // Adjust according to your requirement
-                                        // ),
                                       ],
                                     ),
                                   ),
@@ -1044,7 +884,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                                       BorderRadius.circular(
                                                           250),
                                                 ),
-                                                child: Container(
+                                                child: SizedBox(
                                                   height: MediaQuery.of(context)
                                                           .size
                                                           .width *
@@ -1090,7 +930,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    Container(
+                                                    SizedBox(
                                                       width: widths * 0.6,
                                                       child: Text(
                                                         "$storeName ",
@@ -1104,7 +944,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                                             color: MyColors.whiteBG),
                                                       ),
                                                     ),
-                                                    Container(
+                                                    SizedBox(
                                                       width: widths * 0.6,
                                                       child: Text(
                                                         "$storeAddress $storeAddress2 $storeCountry $storeState, $storePostcode",
@@ -1348,7 +1188,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                 ],
                               ),
                             ),
-                            Container(
+                            flick.data?.data?.length!=null?  SizedBox(
                               height: heights * 0.38,
                               width: widths,
                               // color: MyColors.redBG,
@@ -1380,63 +1220,13 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                 },
 
                               ),
+                            ):Text(
+                              "No Flicks's are available",
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w200,
+                              ),
                             ),
-                            // if (!termConditionList.isEmpty)
-                            //   TermConditionWidget(termConditionList),
-                            // if (!termConditionList.isEmpty)
-                            //   SizedBox(
-                            //     height: 8,
-                            //   ),
-                            /// timing
-
-                            /// feature
-//                       Visibility(
-//                         visible: featuresList.isNotEmpty,
-//                         child: Container(
-//                           margin: const EdgeInsets.symmetric(
-//                               horizontal: 10, vertical: 10),
-//                           child: Card(
-//                             color: Colors.white,
-//                             shape: RoundedRectangleBorder(
-//                               borderRadius: BorderRadius.circular(8),
-//                               side: const BorderSide(
-//                                   color: MyColors.primaryColor,
-//                                   width: 1), // Define the border side
-//                             ),
-//                             clipBehavior: Clip.antiAliasWithSaveLayer,
-//                             elevation: 3,
-//                             child: Container(
-//                               margin: const EdgeInsets.symmetric(
-//                                   vertical: 10, horizontal: 10),
-//                               child: Column(
-//                                 children: [
-//                                   Container(
-//                                     margin: const EdgeInsets.only(
-//                                         top: 0,
-//                                         left: 5,
-//                                         right: 15,
-//                                         bottom: 10),
-//                                     child: const Row(
-//                                       mainAxisAlignment:
-//                                       MainAxisAlignment.spaceBetween,
-//                                       children: [
-//                                         Text(
-//                                           "Features",
-//                                           style: TextStyle(
-//                                               fontSize: 16,
-//                                               fontWeight:
-//                                               FontWeight.w800),
-//                                         ),
-//                                       ],
-//                                     ),
-//                                   ),
-//
-//                                 ],
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-//                       ),
                             SizedBox(
                               height: heights * 0.02,
                             ),
@@ -1475,10 +1265,11 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                 ),
                               ),
                             ),
-                            Visibility(
-                              visible: menuList.isNotEmpty,
-                              child: MenuWidget(menuList),
-                            ),
+                            // Visibility(
+                            //   visible: menuList.isNotEmpty,
+                            //   child: MenuWidget(menuData.data),
+                            // ),
+                            MenuWidget(menuData.data,storeId),
                             Container(
                               margin: const EdgeInsets.only(
                                   top: 15, left: 15, right: 15, bottom: 10),
@@ -1495,7 +1286,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                     width: 5,
                                   ),
                                   Text(
-                                    "What's the Vibe?",
+                                    "Restaurants Vibe!",
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold),
@@ -1503,45 +1294,40 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                 ],
                               ),
                             ),
-                            Container(
-                              height: heights * 0.35,
-                              // margin: EdgeInsets.only(left: widths * 0.03,right:widths * 0.03 ),
-                              padding: EdgeInsets.only(left: widths * 0.03,right:widths * 0.03 ),
+                            vibe.data?.data?.length==null?CircularProgressIndicator():vibe.data!.data!.isNotEmpty? Container(
+                              height: heights * 0.36,
                               // color: Colors.red,
-                              child:
-                              GridView.builder(
+                              padding: EdgeInsets.only(left: widths * 0.03,right:widths * 0.03 ),
+                              child: MasonryGridView.count(
                                 padding: EdgeInsets.zero,
-                                shrinkWrap: true,
                                 physics: NeverScrollableScrollPhysics(),
-                                itemCount: vibe.data?.data?.length??0,
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                    crossAxisSpacing: 8,
-                                    mainAxisSpacing: 8,
-                                    mainAxisExtent: 115
-                                ),
-                                itemBuilder: (BuildContext context, int index) {
-                                  // SubCategoriesModel subCategoriesModel =
-                                  // subCategoriesList[index];
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 8,
+                                crossAxisSpacing: 8,
+                                itemCount:vibe.data?.data?.length??0,
+                                itemBuilder: (context, index) {
+                                  print(vibe.data?.data?.length);
+                                  print("vibe.data?.data?.length");
                                   final data=vibe.data?.data?[index];
-                                  return VibeGridWidget(
-                                    imgUrl: data?.image??"",
-                                    subcategoryName:"",
-                                    spotAvailable: "",
-                                    redeemed: "",
-                                    onTap: () {
-                                      // print(subCategoriesModel.category_id);
-                                      // print(subCategoriesModel.id);
-                                      // print("subCategoriesModel.id");
-                                      // navigateToAllCouponScreen(
-                                      //   context,
-                                      //   subCategoriesModel.subcategory_name,
-                                      //   subCategoriesModel.category_id,
-                                      //   subCategoriesModel.id,
-                                      // );
-                                    },
-                                  );
+                                  return Image(image: NetworkImage(data?.image??""));
+                                    // CachedNetworkImage(
+                                    //   imageUrl: data?.image??"",
+                                    //   fit: BoxFit.fill,
+                                    //   placeholder: (context, url) => Image.asset(
+                                    //     'assets/images/placeholder.png',
+                                    //     fit: BoxFit.cover,
+                                    //     width: double.infinity,
+                                    //     height: double.infinity,
+                                    //   ),
+                                    //   errorWidget: (context, url, error) =>
+                                    //       Center(child: Icon(Icons.error)),
+                                    // );
                                 },
+                              ),
+                            ):Text("No Vibe's are available",
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w200,
                               ),
                             ),
                             Container(
@@ -1621,113 +1407,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                             reviewList.isNotEmpty
                                 ? Column(
                                     children: [
-                                      // Container(
-                                      //   margin: const EdgeInsets.only(
-                                      //       top: 10, left: 15),
-                                      //   child: Row(
-                                      //     children: [
-                                      //       Text(
-                                      //         "${avg_rating} ",
-                                      //         style: const TextStyle(
-                                      //             fontSize: 35,
-                                      //             fontWeight:
-                                      //             FontWeight.bold),
-                                      //       ),
-                                      //       Column(
-                                      //         crossAxisAlignment:
-                                      //         CrossAxisAlignment
-                                      //             .start,
-                                      //         children: [
-                                      //           RatingBar.builder(
-                                      //             initialRating:
-                                      //             double.parse(
-                                      //                 avg_rating),
-                                      //             minRating: 3,
-                                      //             direction:
-                                      //             Axis.horizontal,
-                                      //             allowHalfRating: true,
-                                      //             itemCount: 5,
-                                      //             itemSize: 15,
-                                      //             itemBuilder:
-                                      //                 (context, _) =>
-                                      //                 const Icon(
-                                      //                   Icons.star,
-                                      //                   color: Colors.amber,
-                                      //                 ),
-                                      //             onRatingUpdate:
-                                      //                 (rating) {
-                                      //               print(rating);
-                                      //             },
-                                      //           ),
-                                      //           Text(
-                                      //             "${review_count} reviews",
-                                      //             style: const TextStyle(
-                                      //               decoration:
-                                      //               TextDecoration
-                                      //                   .underline,
-                                      //               decorationColor:
-                                      //               MyColors
-                                      //                   .primaryColor,
-                                      //               color: MyColors
-                                      //                   .primaryColor,
-                                      //             ),
-                                      //           ),
-                                      //         ],
-                                      //       )
-                                      //     ],
-                                      //   ),
-                                      // ),
                                       _getReviewLay(reviewList),
-                                      // Container(
-                                      //   margin: const EdgeInsets.symmetric(
-                                      //       horizontal: 20),
-                                      //   child: Row(
-                                      //     children: [
-                                      //       Flexible(
-                                      //         flex: 1,
-                                      //         child: Container(
-                                      //           color:
-                                      //           MyColors.txtDescColor,
-                                      //           height: 1,
-                                      //         ),
-                                      //       ),
-                                      //       const SizedBox(
-                                      //         width: 10,
-                                      //       ),
-                                      //       InkWell(
-                                      //           onTap: () {
-                                      //             navigateToAllReviewScreen(
-                                      //                 context,
-                                      //                 reviewList);
-                                      //           },
-                                      //           child: const Text(
-                                      //             "See all reviews ",
-                                      //             style: TextStyle(
-                                      //               color: MyColors
-                                      //                   .txtDescColor,
-                                      //               fontSize: 15,
-                                      //             ),
-                                      //           )),
-                                      //       const Icon(
-                                      //         Icons.arrow_forward,
-                                      //         color:
-                                      //         MyColors.primaryColor,
-                                      //         size: 24,
-                                      //       ),
-                                      //       const SizedBox(
-                                      //         width: 2,
-                                      //       ),
-                                      //       Flexible(
-                                      //         flex: 1,
-                                      //         child: Container(
-                                      //           color:
-                                      //           MyColors.txtDescColor,
-                                      //           height: 1,
-                                      //         ),
-                                      //       ),
-                                      //     ],
-                                      //   ),
-                                      // ),
                                       const SizedBox(
                                         height: 20,
                                       ),
@@ -1745,9 +1425,6 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                                     BorderRadius.circular(12),
                                                 color: MyColors.textColorTwo
                                                     .withOpacity(0.3)
-                                                // border: Border.all(
-                                                //     color: MyColors
-                                                //         .primaryColor)
                                                 ),
                                             width: double.infinity,
                                             child: const Center(
@@ -1790,27 +1467,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                             SizedBox(
                               height: 20,
                             ),
-                            // (similarRest.similarList.data?.data != null && similarRest.similarList.data!.data!.isNotEmpty)?
-                            // Container(
-                            //   height: heights * 0.4,
-                            //   width: widths * 0.9,
-                            //   color: Colors.red,
-                            //   child: ListView.builder(
-                            //     padding: EdgeInsets.zero,
-                            //     shrinkWrap: true,
-                            //     itemCount:similarRest.similarList.data?.data?.length??0,
-                            //     scrollDirection: Axis.horizontal,
-                            //     itemBuilder: (context, index) {
-                            //       final data = similarRest.similarList.data?.data?[index];
-                            //       return RestaurantCard(
-                            //         index:index,
-                            //         data:data,
-                            //         name: selectedName,
-                            //       );
-                            //     },
-                            //   ),
-                            // ): Text("No Restaurent Found..."),
-                            Container(
+                            similarRest.similarList.data?.data?.length!=null?     SizedBox(
                               height: heights * 0.45, // You set a fixed height, that's good
                               width: widths * 0.9,
                               // color: Colors.red,
@@ -1822,7 +1479,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                 scrollDirection: Axis.horizontal, // Horizontal scroll
                                 itemBuilder: (context, index) {
                                   final data = similarRest.similarList.data?.data?[index];
-                                  return Container(
+                                  return SizedBox(
                                     width: widths * 0.75,
                                     child: RestaurantCard(
                                       index: index,
@@ -1837,6 +1494,11 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                   "No Restaurant Found...",
                                   style: TextStyle(color: Colors.white),
                                 ),
+                              ),
+                            ):Text("No Restaurants's are available",
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w200,
                               ),
                             ),
                             Container(
@@ -1863,7 +1525,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                 ],
                               ),
                             ),
-                            Container(
+                            data.filterList.data?.data?.length==null? Center(child: CircularProgressIndicator()):data.filterList.data!.data!.isNotEmpty? SizedBox(
                               height: heights * 0.25,
                               width: widths * 0.9,
                               // color: Colors.red,
@@ -1881,6 +1543,11 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                       filter:
                                           data.filterList.data!.data![index]);
                                 },
+                              ),
+                            ):Text("No Restaurant's are available",
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w200,
                               ),
                             ),
                             Container(
@@ -1906,7 +1573,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                 ],
                               ),
                             ),
-                            Container(
+                        recommended.recommendedList.data?.data?.length!=null?  SizedBox(
                               height: heights * 0.25,
                               width: widths * 0.9,
                               // color: Colors.red,
@@ -1925,7 +1592,12 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                       recommended.recommendedList.data!.data![index]);
                                 },
                               ),
-                            ),
+                            ):Text("No Restaurant's are available",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w200,
+                        ),
+                      ),
                             const SizedBox(
                               height: 150,
                             ),
@@ -1940,22 +1612,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                           height: 100, // Increase height for more space
                           padding: const EdgeInsets.fromLTRB(15, 10, 10, 15),
                           decoration: BoxDecoration(color: MyColors.textColor
-                              // gradient: LinearGradient(
-                              //   colors: [
-                              //     Colors.white.withOpacity(0.0),
-                              //     Colors.white.withOpacity(0.5),
-                              //     Colors.white,
-                              //     Colors.white,
-                              //   ],
-                              //   stops: [
-                              //     0.0,
-                              //     0.2,
-                              //     0.4,
-                              //     1.0,
-                              //   ],
-                              //   begin: Alignment.topCenter,
-                              //   end: Alignment.bottomCenter,
-                              // ),
+
                               ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -2155,14 +1812,14 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
     );
   }
 
-  Future<void> navigateToGallerScreen(int store_id) async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => GalleryScreen(store_id),
-      ),
-    );
-  }
+  // Future<void> navigateToGallerScreen(int store_id) async {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => GalleryScreen(store_id),
+  //     ),
+  //   );
+  // }
 
   Future<void> fetchStoresTermCondition(String store_id) async {
     try {
@@ -2582,7 +2239,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
             ),
           ),
           const SizedBox(height: 10),
-          Container(
+          SizedBox(
             width: 96,
             height: 96,
             child: ClipRRect(
@@ -2598,7 +2255,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                   } else {
                     // Image is still loading, display a loading indicator
                     return const Center(
-                      child: CircularProgressIndicator(),
+                      child: CircularProgressIndicator(color: MyColors.redBG),
                     );
                   }
                 },
@@ -3156,7 +2813,76 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
 //           );
 //   }
 // }
+class TicketPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    const radius = 12.0;
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..color = Colors.red;
 
+    final path = Path();
+
+    path.moveTo(0, 0);
+    path.lineTo(size.width, 0);
+    path.lineTo(size.width, size.height / 2 - radius);
+    path.arcToPoint(
+      Offset(size.width, size.height / 2 + radius),
+      radius: const Radius.circular(radius),
+      clockwise: false, // 👈 This makes it concave
+    );
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
+class TicketBorderPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    const borderRadius = 10.0;
+    const cutRadius = 20.0;
+    final paint = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+
+    final path = Path();
+
+    path.moveTo(borderRadius, 0);
+    path.lineTo(size.width - borderRadius, 0);
+    path.quadraticBezierTo(
+        size.width, 0, size.width, borderRadius); // top-right
+
+    path.lineTo(size.width, size.height / 2 - cutRadius);
+    path.arcToPoint(
+      Offset(size.width, size.height / 2.2 + cutRadius),
+      radius: Radius.circular(cutRadius),
+      clockwise: false,
+    );
+
+    path.lineTo(size.width, size.height - borderRadius);
+    path.quadraticBezierTo(size.width, size.height,
+        size.width - borderRadius, size.height); // bottom-right
+
+    path.lineTo(borderRadius, size.height);
+    path.quadraticBezierTo(
+        0, size.height, 0, size.height - borderRadius); // bottom-left
+
+    path.lineTo(0, borderRadius);
+    path.quadraticBezierTo(0, 0, borderRadius, 0); // top-left
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
 class PrebookOfferListWidget extends StatelessWidget {
   String start_time, end_time, storeName, storeId, kycStatus, categoryName;
 
@@ -3266,148 +2992,7 @@ class PrebookOfferListWidget extends StatelessWidget {
 
   Widget _buildPrebookOfferWidget(
       BuildContext context, PreBookTable prebooktable, categoryName) {
-    return
-        //   Container(
-        //   margin: const EdgeInsets.symmetric(horizontal: 15),
-        //   child: Center(
-        //     child: CouponCard(
-        //       backgroundColor: MyColors.primaryColor,
-        //       curveAxis: Axis.vertical,
-        //       firstChild: GestureDetector(
-        //         onTap: () {
-        //           _showBottomSheet(
-        //               context, "${prebooktable.title}");
-        //         },
-        //         child: Container(
-        //           padding: const EdgeInsets.all(5),
-        //           child: Column(
-        //             mainAxisSize: MainAxisSize.min,
-        //             crossAxisAlignment: CrossAxisAlignment.start,
-        //             children: <Widget>[
-        //
-        //               const SizedBox(height: 5),
-        //               const Text(
-        //                 "Today's Offer",
-        //                 style: TextStyle(
-        //                   color: Colors.white,
-        //                   fontSize: 17,
-        //                   fontWeight: FontWeight.bold,
-        //                   overflow: TextOverflow.clip,
-        //                 ),
-        //               ),
-        //               const SizedBox(height: 5),
-        //               Text(
-        //                 '${prebooktable.title}',
-        //                 style: const TextStyle(
-        //                   color: Colors.white,
-        //                   fontSize: 16,
-        //                   fontWeight: FontWeight.bold,
-        //                   overflow: TextOverflow.clip,
-        //                 ),
-        //               ),
-        //               // const Text(
-        //               //   'Available for limited',
-        //               //   style: TextStyle(
-        //               //     color: Colors.white,
-        //               //     fontSize: 13,
-        //               //     fontWeight: FontWeight.bold,
-        //               //     overflow: TextOverflow.clip,
-        //               //   ),
-        //               // ),
-        //               // const SizedBox(height: 5),
-        //               DottedLine(
-        //                 height: 2,
-        //                 color: Colors.white,
-        //                 width: double.infinity,
-        //                 dashWidth: 6.0,
-        //                 dashSpacing: 6.0,
-        //               ),
-        //               const SizedBox(height: 5),
-        //               Text(
-        //                 'Available for limited',
-        //                 style: TextStyle(
-        //                   color: Colors.white,
-        //                   fontSize: 13,
-        //                   fontWeight: FontWeight.bold,
-        //                   overflow: TextOverflow.clip,
-        //                 ),
-        //               ),
-        //               // Row(
-        //               //   mainAxisAlignment: MainAxisAlignment.center,
-        //               //   children: <Widget>[
-        //               //     Expanded(
-        //               //       child: Text(
-        //               //         '${prebooktable.available_seat} slots available',
-        //               //         style: const TextStyle(
-        //               //           color: Colors.white,
-        //               //           fontSize: 12,
-        //               //           fontWeight: FontWeight.bold,
-        //               //           overflow: TextOverflow.clip,
-        //               //         ),
-        //               //       ),
-        //               //     ),
-        //               //   ],
-        //               // ),
-        //             ],
-        //           ),
-        //         ),
-        //       ),
-        //       secondChild: Container(
-        //         decoration: const BoxDecoration(
-        //           color: MyColors.blackBG,
-        //         ),
-        //         child: Center(
-        //           child: Card(
-        //             elevation: 2,
-        //             color: MyColors.blackBG,
-        //             shape: RoundedRectangleBorder(
-        //               borderRadius: BorderRadius.circular(8),
-        //               side: const BorderSide(
-        //                 color: MyColors.primaryColor,
-        //                 width: 1.0,
-        //               ),
-        //             ),
-        //             child: Padding(
-        //               padding: const EdgeInsets.symmetric(
-        //                 vertical: 4,
-        //                 horizontal: 15,
-        //               ),
-        //               child: InkWell(
-        //                 onTap: () async{
-        //                   UserModel n = await SharedPref.getUser();
-        //                   print(n.name);
-        //                   if(n.id==0){
-        //                     Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
-        //
-        //                   }else{
-        //                     kycStatus=="Approve"?
-        //                     Navigator.push(
-        //                       context,
-        //                       MaterialPageRoute(
-        //                           builder: (context) =>
-        //                               BookTableScreen("$start_time",
-        //                                   // "$end_time",
-        //                                   "$storeName", "$storeId","$categoryName")),
-        //                     ):showErrorMessage(context, message: "Store temporarily unavailable here.Kindly visit store for more details.");
-        //                   }},
-        //                 child: const Text(
-        //                   'Book\nNow',
-        //                   textAlign: TextAlign.center,
-        //                   style: TextStyle(
-        //                     color: Colors.white,
-        //                     fontSize: 14,
-        //                     fontWeight: FontWeight.bold,
-        //                   ),
-        //                 ),
-        //               ),
-        //             ),
-        //           ),
-        //         ),
-        //       ),
-        //     ),
-        //   ),
-        // );
-        InkWell(
+    return     InkWell(
       onTap: () async {
         UserModel n = await SharedPref.getUser();
         print(n.name);
@@ -3417,212 +3002,278 @@ class PrebookOfferListWidget extends StatelessWidget {
         } else {
           kycStatus == "Approve"
               ? Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => BookTableScreen(
-                          "$start_time",
-                          // "$end_time",
-                          "$storeName",
-                          "$storeId",
-                          "$categoryName")),
-                )
+            context,
+            MaterialPageRoute(
+                builder: (context) => BookTableScreen(
+                    "$start_time",
+                    // "$end_time",
+                    "$storeName",
+                    "$storeId",
+                    "$categoryName")),
+          )
               : showErrorMessage(context,
-                  message:
-                      "Store temporarily unavailable here.Kindly visit store for more details.");
+              message:
+              "Store temporarily unavailable here.Kindly visit store for more details.");
         }
       },
-      child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 15),
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              border: Border.all(color: MyColors.redBG)),
+      child: CustomPaint(
+        painter: TicketBorderPainter(),
+        child: Container(
+          width: widths*0.9,
+          height: heights*0.13,
+          padding: const EdgeInsets.all(8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Today Offer",
-                style: TextStyle(
-                    color: MyColors.blackBG,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500),
+              Align(
+                alignment: Alignment.topRight,
+                child: Text(
+                  "Pre-Book Offer",
+                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 10),
+                ),
               ),
               Text(
-                prebooktable.title,
-                style: TextStyle(color: MyColors.textColorTwo, fontSize: 14),
+              prebooktable.title,
+                style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
               ),
-              SizedBox(
-                height: heights * 0.01,
+              const SizedBox(height: 5),
+              const Text(
+                "Get flat 40% off on bookings above ₹2000",
+                style: TextStyle(color: Colors.black87, fontSize: 12),
               ),
-              DottedLine(
-                height: 2,
-                color: MyColors.blackBG,
-                width: double.infinity,
-                dashWidth: 6.0,
-                dashSpacing: 6.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "LIMITED TIME",
-                    style: TextStyle(
-                        color: MyColors.green,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    "Apply",
-                    style: TextStyle(
-                        color: MyColors.blackBG,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ],
+             Divider(color: MyColors.textColorTwo.withOpacity(0.1)),
+              Center(
+                child: Text(
+                  "Book Now",
+                  style: TextStyle(
+                      color: MyColors.redBG, fontWeight: FontWeight.w500),
+                ),
               )
             ],
-          )
-
-          ///
-          //       Center(
-          //         child: CouponCard(
-          //           backgroundColor: MyColors.primaryColor,
-          //           curveAxis: Axis.vertical,
-          //           firstChild: GestureDetector(
-          //             onTap: () {
-          //               _showBottomSheet(
-          //                   context, "${prebooktable.title}");
-          //             },
-          //             child: Container(
-          //               padding: const EdgeInsets.all(5),
-          //               child: Column(
-          //                 mainAxisSize: MainAxisSize.min,
-          //                 crossAxisAlignment: CrossAxisAlignment.start,
-          //                 children: <Widget>[
-          //
-          //                   const SizedBox(height: 5),
-          //                   const Text(
-          //                     "Today's Offer",
-          //                     style: TextStyle(
-          //                       color: Colors.white,
-          //                       fontSize: 17,
-          //                       fontWeight: FontWeight.bold,
-          //                       overflow: TextOverflow.clip,
-          //                     ),
-          //                   ),
-          //                   const SizedBox(height: 5),
-          //                   Text(
-          //                     '${prebooktable.title}',
-          //                     style: const TextStyle(
-          //                       color: Colors.white,
-          //                       fontSize: 16,
-          //                       fontWeight: FontWeight.bold,
-          //                       overflow: TextOverflow.clip,
-          //                     ),
-          //                   ),
-          //                   // const Text(
-          //                   //   'Available for limited',
-          //                   //   style: TextStyle(
-          //                   //     color: Colors.white,
-          //                   //     fontSize: 13,
-          //                   //     fontWeight: FontWeight.bold,
-          //                   //     overflow: TextOverflow.clip,
-          //                   //   ),
-          //                   // ),
-          //                   // const SizedBox(height: 5),
-          //                   DottedLine(
-          //                     height: 2,
-          //                     color: Colors.white,
-          //                     width: double.infinity,
-          //                     dashWidth: 6.0,
-          //                     dashSpacing: 6.0,
-          //                   ),
-          //                   const SizedBox(height: 5),
-          //                   Text(
-          //                     'Available for limited',
-          //                     style: TextStyle(
-          //                       color: Colors.white,
-          //                       fontSize: 13,
-          //                       fontWeight: FontWeight.bold,
-          //                       overflow: TextOverflow.clip,
-          //                     ),
-          //                   ),
-          //                   // Row(
-          //                   //   mainAxisAlignment: MainAxisAlignment.center,
-          //                   //   children: <Widget>[
-          //                   //     Expanded(
-          //                   //       child: Text(
-          //                   //         '${prebooktable.available_seat} slots available',
-          //                   //         style: const TextStyle(
-          //                   //           color: Colors.white,
-          //                   //           fontSize: 12,
-          //                   //           fontWeight: FontWeight.bold,
-          //                   //           overflow: TextOverflow.clip,
-          //                   //         ),
-          //                   //       ),
-          //                   //     ),
-          //                   //   ],
-          //                   // ),
-          //                 ],
-          //               ),
-          //             ),
-          //           ),
-          //           secondChild: Container(
-          //             decoration: const BoxDecoration(
-          //               color: MyColors.blackBG,
-          //             ),
-          //             child: Center(
-          //               child: Card(
-          //                 elevation: 2,
-          //                 color: MyColors.blackBG,
-          //                 shape: RoundedRectangleBorder(
-          //                   borderRadius: BorderRadius.circular(8),
-          //                   side: const BorderSide(
-          //                     color: MyColors.primaryColor,
-          //                     width: 1.0,
-          //                   ),
-          //                 ),
-          //                 child: Padding(
-          //                   padding: const EdgeInsets.symmetric(
-          //                     vertical: 4,
-          //                     horizontal: 15,
-          //                   ),
-          //                   child: InkWell(
-          //                     onTap: () async{
-          //                       UserModel n = await SharedPref.getUser();
-          //                       print(n.name);
-          //                       if(n.id==0){
-          //                         Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
-          //
-          //                       }else{
-          // kycStatus=="Approve"?
-          //                       Navigator.push(
-          //                         context,
-          //                         MaterialPageRoute(
-          //                             builder: (context) =>
-          //                                 BookTableScreen("$start_time",
-          //                                     // "$end_time",
-          //                                     "$storeName", "$storeId","$categoryName")),
-          //                       ):showErrorMessage(context, message: "Store temporarily unavailable here.Kindly visit store for more details.");
-          //                     }},
-          //                     child: const Text(
-          //                      'Book\nNow',
-          //                       textAlign: TextAlign.center,
-          //                       style: TextStyle(
-          //                         color: Colors.white,
-          //                         fontSize: 14,
-          //                         fontWeight: FontWeight.bold,
-          //                       ),
-          //                     ),
-          //                   ),
-          //                 ),
-          //               ),
-          //             ),
-          //           ),
-          //         ),
-          //       ),
           ),
+        ),
+      ),
     );
+
+
+
+    ///
+    //     InkWell(
+    //   onTap: () async {
+    //     UserModel n = await SharedPref.getUser();
+    //     print(n.name);
+    //     if (n.id == 0) {
+    //       Navigator.push(context,
+    //           MaterialPageRoute(builder: (context) => BottomLoginScreen()));
+    //     } else {
+    //       kycStatus == "Approve"
+    //           ? Navigator.push(
+    //               context,
+    //               MaterialPageRoute(
+    //                   builder: (context) => BookTableScreen(
+    //                       "$start_time",
+    //                       // "$end_time",
+    //                       "$storeName",
+    //                       "$storeId",
+    //                       "$categoryName")),
+    //             )
+    //           : showErrorMessage(context,
+    //               message:
+    //                   "Store temporarily unavailable here.Kindly visit store for more details.");
+    //     }
+    //   },
+    //   child: Container(
+    //       margin: const EdgeInsets.symmetric(horizontal: 15),
+    //       padding: const EdgeInsets.all(10),
+    //       decoration: BoxDecoration(
+    //           borderRadius: BorderRadius.circular(5),
+    //           border: Border.all(color: MyColors.redBG)),
+    //       child: Column(
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: [
+    //           Text(
+    //             "Today Offer",
+    //             style: TextStyle(
+    //                 color: MyColors.blackBG,
+    //                 fontSize: 16,
+    //                 fontWeight: FontWeight.w500),
+    //           ),
+    //           Text(
+    //             prebooktable.title,
+    //             style: TextStyle(color: MyColors.textColorTwo, fontSize: 14),
+    //           ),
+    //           SizedBox(
+    //             height: heights * 0.01,
+    //           ),
+    //           DottedLine(
+    //             height: 2,
+    //             color: MyColors.blackBG,
+    //             width: double.infinity,
+    //             dashWidth: 6.0,
+    //             dashSpacing: 6.0,
+    //           ),
+    //           Row(
+    //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //             children: [
+    //               Text(
+    //                 "LIMITED TIME",
+    //                 style: TextStyle(
+    //                     color: MyColors.green,
+    //                     fontSize: 12,
+    //                     fontWeight: FontWeight.w600),
+    //               ),
+    //               Text(
+    //                 "Apply",
+    //                 style: TextStyle(
+    //                     color: MyColors.blackBG,
+    //                     fontSize: 12,
+    //                     fontWeight: FontWeight.w500),
+    //               ),
+    //             ],
+    //           )
+    //         ],
+    //       )
+    //
+    //       ///
+    //       //       Center(
+    //       //         child: CouponCard(
+    //       //           backgroundColor: MyColors.primaryColor,
+    //       //           curveAxis: Axis.vertical,
+    //       //           firstChild: GestureDetector(
+    //       //             onTap: () {
+    //       //               _showBottomSheet(
+    //       //                   context, "${prebooktable.title}");
+    //       //             },
+    //       //             child: Container(
+    //       //               padding: const EdgeInsets.all(5),
+    //       //               child: Column(
+    //       //                 mainAxisSize: MainAxisSize.min,
+    //       //                 crossAxisAlignment: CrossAxisAlignment.start,
+    //       //                 children: <Widget>[
+    //       //
+    //       //                   const SizedBox(height: 5),
+    //       //                   const Text(
+    //       //                     "Today's Offer",
+    //       //                     style: TextStyle(
+    //       //                       color: Colors.white,
+    //       //                       fontSize: 17,
+    //       //                       fontWeight: FontWeight.bold,
+    //       //                       overflow: TextOverflow.clip,
+    //       //                     ),
+    //       //                   ),
+    //       //                   const SizedBox(height: 5),
+    //       //                   Text(
+    //       //                     '${prebooktable.title}',
+    //       //                     style: const TextStyle(
+    //       //                       color: Colors.white,
+    //       //                       fontSize: 16,
+    //       //                       fontWeight: FontWeight.bold,
+    //       //                       overflow: TextOverflow.clip,
+    //       //                     ),
+    //       //                   ),
+    //       //                   // const Text(
+    //       //                   //   'Available for limited',
+    //       //                   //   style: TextStyle(
+    //       //                   //     color: Colors.white,
+    //       //                   //     fontSize: 13,
+    //       //                   //     fontWeight: FontWeight.bold,
+    //       //                   //     overflow: TextOverflow.clip,
+    //       //                   //   ),
+    //       //                   // ),
+    //       //                   // const SizedBox(height: 5),
+    //       //                   DottedLine(
+    //       //                     height: 2,
+    //       //                     color: Colors.white,
+    //       //                     width: double.infinity,
+    //       //                     dashWidth: 6.0,
+    //       //                     dashSpacing: 6.0,
+    //       //                   ),
+    //       //                   const SizedBox(height: 5),
+    //       //                   Text(
+    //       //                     'Available for limited',
+    //       //                     style: TextStyle(
+    //       //                       color: Colors.white,
+    //       //                       fontSize: 13,
+    //       //                       fontWeight: FontWeight.bold,
+    //       //                       overflow: TextOverflow.clip,
+    //       //                     ),
+    //       //                   ),
+    //       //                   // Row(
+    //       //                   //   mainAxisAlignment: MainAxisAlignment.center,
+    //       //                   //   children: <Widget>[
+    //       //                   //     Expanded(
+    //       //                   //       child: Text(
+    //       //                   //         '${prebooktable.available_seat} slots available',
+    //       //                   //         style: const TextStyle(
+    //       //                   //           color: Colors.white,
+    //       //                   //           fontSize: 12,
+    //       //                   //           fontWeight: FontWeight.bold,
+    //       //                   //           overflow: TextOverflow.clip,
+    //       //                   //         ),
+    //       //                   //       ),
+    //       //                   //     ),
+    //       //                   //   ],
+    //       //                   // ),
+    //       //                 ],
+    //       //               ),
+    //       //             ),
+    //       //           ),
+    //       //           secondChild: Container(
+    //       //             decoration: const BoxDecoration(
+    //       //               color: MyColors.blackBG,
+    //       //             ),
+    //       //             child: Center(
+    //       //               child: Card(
+    //       //                 elevation: 2,
+    //       //                 color: MyColors.blackBG,
+    //       //                 shape: RoundedRectangleBorder(
+    //       //                   borderRadius: BorderRadius.circular(8),
+    //       //                   side: const BorderSide(
+    //       //                     color: MyColors.primaryColor,
+    //       //                     width: 1.0,
+    //       //                   ),
+    //       //                 ),
+    //       //                 child: Padding(
+    //       //                   padding: const EdgeInsets.symmetric(
+    //       //                     vertical: 4,
+    //       //                     horizontal: 15,
+    //       //                   ),
+    //       //                   child: InkWell(
+    //       //                     onTap: () async{
+    //       //                       UserModel n = await SharedPref.getUser();
+    //       //                       print(n.name);
+    //       //                       if(n.id==0){
+    //       //                         Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
+    //       //
+    //       //                       }else{
+    //       // kycStatus=="Approve"?
+    //       //                       Navigator.push(
+    //       //                         context,
+    //       //                         MaterialPageRoute(
+    //       //                             builder: (context) =>
+    //       //                                 BookTableScreen("$start_time",
+    //       //                                     // "$end_time",
+    //       //                                     "$storeName", "$storeId","$categoryName")),
+    //       //                       ):showErrorMessage(context, message: "Store temporarily unavailable here.Kindly visit store for more details.");
+    //       //                     }},
+    //       //                     child: const Text(
+    //       //                      'Book\nNow',
+    //       //                       textAlign: TextAlign.center,
+    //       //                       style: TextStyle(
+    //       //                         color: Colors.white,
+    //       //                         fontSize: 14,
+    //       //                         fontWeight: FontWeight.bold,
+    //       //                       ),
+    //       //                     ),
+    //       //                   ),
+    //       //                 ),
+    //       //               ),
+    //       //             ),
+    //       //           ),
+    //       //         ),
+    //       //       ),
+    //       ),
+    // );
   }
 }
 
@@ -3648,7 +3299,8 @@ class RegularOfferListWidget extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return Container(
+        return
+          Container(
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
             // Wrap everything inside SingleChildScrollView to enable scrolling
@@ -3735,218 +3387,248 @@ class RegularOfferListWidget extends StatelessWidget {
   Widget _buildRegularOfferWidget(
       BuildContext context, RegularOfferModel regularoffer) {
     return InkWell(
-      onTap: () async {
-        UserModel n = await SharedPref.getUser();
-        print(n.name);
-        if (n.id == 0) {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => BottomLoginScreen()));
-        } else {
-          kycStatus == "Approve"
-              ? Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => BookTableScreen(
-                          "$start_time",
-                          // "$end_time",
-                          "$storeName",
-                          "$storeId",
-                          "$categoryName")),
-                )
-              : showErrorMessage(context,
-                  message:
-                      "Store temporarily unavailable here.Kindly visit store for more details.");
-        }
-      },
-      child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 15),
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              border: Border.all(color: MyColors.redBG)),
+        onTap: () async{
+          UserModel n = await SharedPref.getUser();
+          print(n.name);
+          if(n.id==0){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
+
+          }else {
+            kycStatus == "Approve" ? Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      PayBillScreen(
+                          regularoffer, storeName, "$addresss")),
+            ) : showErrorMessage(context,
+                message: "Store temporarily unavailable here.Kindly visit store for more details.");
+          }  },
+      child: CustomPaint(
+        painter: TicketBorderPainter(),
+        child: Container(
+          width: widths*0.9,
+          height: heights*0.13,
+          padding: const EdgeInsets.all(8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Today Offer",
-                style: TextStyle(
-                    color: MyColors.blackBG,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500),
+              Align(
+                alignment: Alignment.topRight,
+                child: Text(
+                  "Walk-in Offer",
+                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 10),
+                ),
               ),
               Text(
                 regularoffer.title,
-                style: TextStyle(color: MyColors.textColorTwo, fontSize: 14),
+                style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
               ),
-              SizedBox(
-                height: heights * 0.01,
+              const SizedBox(height: 5),
+              const Text(
+                "Valid all day",
+                style: TextStyle(color: Colors.black87, fontSize: 12),
               ),
-              DottedLine(
-                height: 2,
-                color: Colors.black,
-                width: double.infinity,
-                dashWidth: 6.0,
-                dashSpacing: 6.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "LIMITED TIME",
-                    style: TextStyle(
-                        color: MyColors.green,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    "Apply",
-                    style: TextStyle(
-                        color: MyColors.blackBG,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ],
+              Divider(color: MyColors.textColorTwo.withOpacity(0.1)),
+              Center(
+                child: Text(
+                  "Pay Bill",
+                  style: TextStyle(
+                      color: MyColors.redBG, fontWeight: FontWeight.w500),
+                ),
               )
             ],
-          )
-          //       Center(
-          //         child: CouponCard(
-          //           backgroundColor: MyColors.primaryColor,
-          //           curveAxis: Axis.vertical,
-          //           firstChild: GestureDetector(
-          //             onTap: () {
-          //               _showBottomSheet(
-          //                   context, "${prebooktable.title}");
-          //             },
-          //             child: Container(
-          //               padding: const EdgeInsets.all(5),
-          //               child: Column(
-          //                 mainAxisSize: MainAxisSize.min,
-          //                 crossAxisAlignment: CrossAxisAlignment.start,
-          //                 children: <Widget>[
-          //
-          //                   const SizedBox(height: 5),
-          //                   const Text(
-          //                     "Today's Offer",
-          //                     style: TextStyle(
-          //                       color: Colors.white,
-          //                       fontSize: 17,
-          //                       fontWeight: FontWeight.bold,
-          //                       overflow: TextOverflow.clip,
-          //                     ),
-          //                   ),
-          //                   const SizedBox(height: 5),
-          //                   Text(
-          //                     '${prebooktable.title}',
-          //                     style: const TextStyle(
-          //                       color: Colors.white,
-          //                       fontSize: 16,
-          //                       fontWeight: FontWeight.bold,
-          //                       overflow: TextOverflow.clip,
-          //                     ),
-          //                   ),
-          //                   // const Text(
-          //                   //   'Available for limited',
-          //                   //   style: TextStyle(
-          //                   //     color: Colors.white,
-          //                   //     fontSize: 13,
-          //                   //     fontWeight: FontWeight.bold,
-          //                   //     overflow: TextOverflow.clip,
-          //                   //   ),
-          //                   // ),
-          //                   // const SizedBox(height: 5),
-          //                   DottedLine(
-          //                     height: 2,
-          //                     color: Colors.white,
-          //                     width: double.infinity,
-          //                     dashWidth: 6.0,
-          //                     dashSpacing: 6.0,
-          //                   ),
-          //                   const SizedBox(height: 5),
-          //                   Text(
-          //                     'Available for limited',
-          //                     style: TextStyle(
-          //                       color: Colors.white,
-          //                       fontSize: 13,
-          //                       fontWeight: FontWeight.bold,
-          //                       overflow: TextOverflow.clip,
-          //                     ),
-          //                   ),
-          //                   // Row(
-          //                   //   mainAxisAlignment: MainAxisAlignment.center,
-          //                   //   children: <Widget>[
-          //                   //     Expanded(
-          //                   //       child: Text(
-          //                   //         '${prebooktable.available_seat} slots available',
-          //                   //         style: const TextStyle(
-          //                   //           color: Colors.white,
-          //                   //           fontSize: 12,
-          //                   //           fontWeight: FontWeight.bold,
-          //                   //           overflow: TextOverflow.clip,
-          //                   //         ),
-          //                   //       ),
-          //                   //     ),
-          //                   //   ],
-          //                   // ),
-          //                 ],
-          //               ),
-          //             ),
-          //           ),
-          //           secondChild: Container(
-          //             decoration: const BoxDecoration(
-          //               color: MyColors.blackBG,
-          //             ),
-          //             child: Center(
-          //               child: Card(
-          //                 elevation: 2,
-          //                 color: MyColors.blackBG,
-          //                 shape: RoundedRectangleBorder(
-          //                   borderRadius: BorderRadius.circular(8),
-          //                   side: const BorderSide(
-          //                     color: MyColors.primaryColor,
-          //                     width: 1.0,
-          //                   ),
-          //                 ),
-          //                 child: Padding(
-          //                   padding: const EdgeInsets.symmetric(
-          //                     vertical: 4,
-          //                     horizontal: 15,
-          //                   ),
-          //                   child: InkWell(
-          //                     onTap: () async{
-          //                       UserModel n = await SharedPref.getUser();
-          //                       print(n.name);
-          //                       if(n.id==0){
-          //                         Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
-          //
-          //                       }else{
-          // kycStatus=="Approve"?
-          //                       Navigator.push(
-          //                         context,
-          //                         MaterialPageRoute(
-          //                             builder: (context) =>
-          //                                 BookTableScreen("$start_time",
-          //                                     // "$end_time",
-          //                                     "$storeName", "$storeId","$categoryName")),
-          //                       ):showErrorMessage(context, message: "Store temporarily unavailable here.Kindly visit store for more details.");
-          //                     }},
-          //                     child: const Text(
-          //                      'Book\nNow',
-          //                       textAlign: TextAlign.center,
-          //                       style: TextStyle(
-          //                         color: Colors.white,
-          //                         fontSize: 14,
-          //                         fontWeight: FontWeight.bold,
-          //                       ),
-          //                     ),
-          //                   ),
-          //                 ),
-          //               ),
-          //             ),
-          //           ),
-          //         ),
-          //       ),
           ),
+        ),
+      )
+      // Container(
+      //     margin: const EdgeInsets.symmetric(horizontal: 15),
+      //     padding: const EdgeInsets.all(10),
+      //     decoration: BoxDecoration(
+      //         borderRadius: BorderRadius.circular(5),
+      //         border: Border.all(color: MyColors.redBG)),
+      //     child: Column(
+      //       crossAxisAlignment: CrossAxisAlignment.start,
+      //       children: [
+      //         Text(
+      //           "Today Offer",
+      //           style: TextStyle(
+      //               color: MyColors.blackBG,
+      //               fontSize: 16,
+      //               fontWeight: FontWeight.w500),
+      //         ),
+      //         Text(
+      //           regularoffer.title,
+      //           style: TextStyle(color: MyColors.textColorTwo, fontSize: 14),
+      //         ),
+      //         SizedBox(
+      //           height: heights * 0.01,
+      //         ),
+      //         DottedLine(
+      //           height: 2,
+      //           color: Colors.black,
+      //           width: double.infinity,
+      //           dashWidth: 6.0,
+      //           dashSpacing: 6.0,
+      //         ),
+      //         Row(
+      //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //           children: [
+      //             Text(
+      //               "LIMITED TIME",
+      //               style: TextStyle(
+      //                   color: MyColors.green,
+      //                   fontSize: 12,
+      //                   fontWeight: FontWeight.w600),
+      //             ),
+      //             Text(
+      //               "Apply",
+      //               style: TextStyle(
+      //                   color: MyColors.blackBG,
+      //                   fontSize: 12,
+      //                   fontWeight: FontWeight.w500),
+      //             ),
+      //           ],
+      //         )
+      //       ],
+      //     )
+      //     //       Center(
+      //     //         child: CouponCard(
+      //     //           backgroundColor: MyColors.primaryColor,
+      //     //           curveAxis: Axis.vertical,
+      //     //           firstChild: GestureDetector(
+      //     //             onTap: () {
+      //     //               _showBottomSheet(
+      //     //                   context, "${prebooktable.title}");
+      //     //             },
+      //     //             child: Container(
+      //     //               padding: const EdgeInsets.all(5),
+      //     //               child: Column(
+      //     //                 mainAxisSize: MainAxisSize.min,
+      //     //                 crossAxisAlignment: CrossAxisAlignment.start,
+      //     //                 children: <Widget>[
+      //     //
+      //     //                   const SizedBox(height: 5),
+      //     //                   const Text(
+      //     //                     "Today's Offer",
+      //     //                     style: TextStyle(
+      //     //                       color: Colors.white,
+      //     //                       fontSize: 17,
+      //     //                       fontWeight: FontWeight.bold,
+      //     //                       overflow: TextOverflow.clip,
+      //     //                     ),
+      //     //                   ),
+      //     //                   const SizedBox(height: 5),
+      //     //                   Text(
+      //     //                     '${prebooktable.title}',
+      //     //                     style: const TextStyle(
+      //     //                       color: Colors.white,
+      //     //                       fontSize: 16,
+      //     //                       fontWeight: FontWeight.bold,
+      //     //                       overflow: TextOverflow.clip,
+      //     //                     ),
+      //     //                   ),
+      //     //                   // const Text(
+      //     //                   //   'Available for limited',
+      //     //                   //   style: TextStyle(
+      //     //                   //     color: Colors.white,
+      //     //                   //     fontSize: 13,
+      //     //                   //     fontWeight: FontWeight.bold,
+      //     //                   //     overflow: TextOverflow.clip,
+      //     //                   //   ),
+      //     //                   // ),
+      //     //                   // const SizedBox(height: 5),
+      //     //                   DottedLine(
+      //     //                     height: 2,
+      //     //                     color: Colors.white,
+      //     //                     width: double.infinity,
+      //     //                     dashWidth: 6.0,
+      //     //                     dashSpacing: 6.0,
+      //     //                   ),
+      //     //                   const SizedBox(height: 5),
+      //     //                   Text(
+      //     //                     'Available for limited',
+      //     //                     style: TextStyle(
+      //     //                       color: Colors.white,
+      //     //                       fontSize: 13,
+      //     //                       fontWeight: FontWeight.bold,
+      //     //                       overflow: TextOverflow.clip,
+      //     //                     ),
+      //     //                   ),
+      //     //                   // Row(
+      //     //                   //   mainAxisAlignment: MainAxisAlignment.center,
+      //     //                   //   children: <Widget>[
+      //     //                   //     Expanded(
+      //     //                   //       child: Text(
+      //     //                   //         '${prebooktable.available_seat} slots available',
+      //     //                   //         style: const TextStyle(
+      //     //                   //           color: Colors.white,
+      //     //                   //           fontSize: 12,
+      //     //                   //           fontWeight: FontWeight.bold,
+      //     //                   //           overflow: TextOverflow.clip,
+      //     //                   //         ),
+      //     //                   //       ),
+      //     //                   //     ),
+      //     //                   //   ],
+      //     //                   // ),
+      //     //                 ],
+      //     //               ),
+      //     //             ),
+      //     //           ),
+      //     //           secondChild: Container(
+      //     //             decoration: const BoxDecoration(
+      //     //               color: MyColors.blackBG,
+      //     //             ),
+      //     //             child: Center(
+      //     //               child: Card(
+      //     //                 elevation: 2,
+      //     //                 color: MyColors.blackBG,
+      //     //                 shape: RoundedRectangleBorder(
+      //     //                   borderRadius: BorderRadius.circular(8),
+      //     //                   side: const BorderSide(
+      //     //                     color: MyColors.primaryColor,
+      //     //                     width: 1.0,
+      //     //                   ),
+      //     //                 ),
+      //     //                 child: Padding(
+      //     //                   padding: const EdgeInsets.symmetric(
+      //     //                     vertical: 4,
+      //     //                     horizontal: 15,
+      //     //                   ),
+      //     //                   child: InkWell(
+      //     //                     onTap: () async{
+      //     //                       UserModel n = await SharedPref.getUser();
+      //     //                       print(n.name);
+      //     //                       if(n.id==0){
+      //     //                         Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomLoginScreen()));
+      //     //
+      //     //                       }else{
+      //     // kycStatus=="Approve"?
+      //     //                       Navigator.push(
+      //     //                         context,
+      //     //                         MaterialPageRoute(
+      //     //                             builder: (context) =>
+      //     //                                 BookTableScreen("$start_time",
+      //     //                                     // "$end_time",
+      //     //                                     "$storeName", "$storeId","$categoryName")),
+      //     //                       ):showErrorMessage(context, message: "Store temporarily unavailable here.Kindly visit store for more details.");
+      //     //                     }},
+      //     //                     child: const Text(
+      //     //                      'Book\nNow',
+      //     //                       textAlign: TextAlign.center,
+      //     //                       style: TextStyle(
+      //     //                         color: Colors.white,
+      //     //                         fontSize: 14,
+      //     //                         fontWeight: FontWeight.bold,
+      //     //                       ),
+      //     //                     ),
+      //     //                   ),
+      //     //                 ),
+      //     //               ),
+      //     //             ),
+      //     //           ),
+      //     //         ),
+      //     //       ),
+      //     ),
     );
     //   Container(
     //   margin: const EdgeInsets.symmetric(horizontal: 15),
@@ -4330,7 +4012,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                 children: [
                   Row(
                     children: [
-                      Container(
+                      SizedBox(
                         width: widths * 0.4,
                         // color: Colors.red,
                         child: Text(
@@ -4358,6 +4040,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                   ),
                   SizedBox(height: 4),
                   Text(
+                    maxLines: 2,
                     widget.data?.address.toString()??"",
                     style:
                     TextStyle(color: MyColors.textColorTwo, fontSize: 12),

@@ -187,6 +187,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       aspectRatio: _controller.value.aspectRatio,
       child: VideoPlayer(_controller),
     )
-        : Center(child: CircularProgressIndicator());
+        : Center(child: CircularProgressIndicator(color: MyColors.redBG));
   }
 }

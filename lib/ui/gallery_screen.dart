@@ -5,11 +5,12 @@ import 'package:grabto/services/api_services.dart';
 import 'package:grabto/theme/theme.dart';
 import 'package:grabto/ui/full_screen_gallery.dart';
 import 'package:flutter/material.dart';
+import 'package:grabto/model/menu_type_model.dart';
 
 class GalleryScreen extends StatefulWidget {
-  int store_id = 0;
+  List <Data>? menuType;
 
-  GalleryScreen(this.store_id);
+  GalleryScreen(this.menuType);
 
   @override
   State<GalleryScreen> createState() => _GalleryScreenState();
@@ -17,15 +18,10 @@ class GalleryScreen extends StatefulWidget {
 
 class _GalleryScreenState extends State<GalleryScreen> {
   bool _isLoading1 = false;
-  List<GalleryModel> ambienceList = [];
-  bool _isLoading2 = false;
-  List<GalleryModel> foodList = [];
 
   @override
   void initState() {
     super.initState();
-    //fetchGalleryImagesFood("${widget.store_id}", "food");
-    fetchGalleryImagesAmbience("${widget.store_id}");
 
 
   }
@@ -38,20 +34,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
         backgroundColor: MyColors.backgroundBg,
         appBar: AppBar(
           backgroundColor: MyColors.backgroundBg,
-          title: Text('Gallery'),
-          // bottom: TabBar(
-          //   tabs: [
-          //     Tab(text: 'Ambience'),
-          //     Tab(text: 'Food'),
-          //   ],
-          //   labelStyle: TextStyle(
-          //       color: MyColors.primaryColor,
-          //       fontSize: 16,
-          //       fontWeight: FontWeight.w500),
-          //   unselectedLabelStyle: TextStyle(fontSize: 13),
-          //   indicatorColor: MyColors.primaryColor,
-          //   indicatorWeight: 0.1,
-          // ),
+          title: Text('Menu List'),
         ),
         body: _isLoading1
             ? Center(
@@ -60,10 +43,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 .primaryColor, // Set the loading indicator color
           ),
         ):
-            // : foodList.isEmpty
-            // ? Center(child: _buildNoImagesWidget())
-            // :
-        GalleryGrid(images: ambienceList),
+        GalleryGrid(images: widget.menuType),
 
         // TabBarView(
         //   children: [
@@ -93,90 +73,90 @@ class _GalleryScreenState extends State<GalleryScreen> {
     );
   }
 
-  Future<void> fetchGalleryImagesFood(String store_id, String food_type) async {
-    setState(() {
-      _isLoading2 = true;
-    });
-    try {
-      final body = {"store_id": "$store_id", "food_type": "$food_type"};
-      final response = await ApiServices.store_multiple_gallery(body);
-      //print("object: $response");
-      if (response != null) {
-        setState(() {
-          foodList = response;
-          //_isLoading2=false;
-        });
-      }
-      setState(() {
-        _isLoading2 = false;
-      });
-    } catch (e) {
-      print('fetchGalleryImagesFood: $e');
-    } finally {
-      _isLoading2 = false;
-    }
-  }
-
-  Future<void> fetchGalleryImagesAmbience(
-      String store_id) async {
-    setState(() {
-      _isLoading1 = true;
-    });
-    try {
-      final body1 = {"store_id": "$store_id", "food_type": "food"};
-      final responseFood = await ApiServices.store_multiple_gallery(body1);
-
-      final body2 = {"store_id": "$store_id", "food_type": "ambience"};
-      final responseAmbience = await ApiServices.store_multiple_gallery(body2);
-
-
-      if (responseFood != null) {
-        setState(() {
-          foodList = responseFood;
-        });
-      }
-      if (responseAmbience != null) {
-        setState(() {
-          ambienceList = responseAmbience;
-        });
-      }
-
-
-      setState(() {
-        ambienceList.addAll(foodList);
-        _isLoading2 = false;
-      });
-    } catch (e) {
-      print('fetchGalleryImagesAmbience: $e');
-    } finally {
-      _isLoading1 = false;
-    }
-  }
-
-  Widget _buildNoImagesWidget() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 200,
-          height: 180,
-          child: Image.asset('assets/vector/blank.png'), // No images available
-        ),
-        SizedBox(height: 16),
-        Text(
-          'No Images available',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w200,
-          ),
-        ),
-      ],
-    );
-  }
+  // Future<void> fetchGalleryImagesFood(String store_id, String food_type) async {
+  //   setState(() {
+  //     _isLoading2 = true;
+  //   });
+  //   try {
+  //     final body = {"store_id": "$store_id", "food_type": "$food_type"};
+  //     final response = await ApiServices.store_multiple_gallery(body);
+  //     //print("object: $response");
+  //     if (response != null) {
+  //       setState(() {
+  //         foodList = response;
+  //         //_isLoading2=false;
+  //       });
+  //     }
+  //     setState(() {
+  //       _isLoading2 = false;
+  //     });
+  //   } catch (e) {
+  //     print('fetchGalleryImagesFood: $e');
+  //   } finally {
+  //     _isLoading2 = false;
+  //   }
+  // }
+  //
+  // Future<void> fetchGalleryImagesAmbience(
+  //     String store_id) async {
+  //   setState(() {
+  //     _isLoading1 = true;
+  //   });
+  //   try {
+  //     final body1 = {"store_id": "$store_id", "food_type": "food"};
+  //     final responseFood = await ApiServices.store_multiple_gallery(body1);
+  //
+  //     final body2 = {"store_id": "$store_id", "food_type": "ambience"};
+  //     final responseAmbience = await ApiServices.store_multiple_gallery(body2);
+  //
+  //
+  //     if (responseFood != null) {
+  //       setState(() {
+  //         foodList = responseFood;
+  //       });
+  //     }
+  //     if (responseAmbience != null) {
+  //       setState(() {
+  //         ambienceList = responseAmbience;
+  //       });
+  //     }
+  //
+  //
+  //     setState(() {
+  //       ambienceList.addAll(foodList);
+  //       _isLoading2 = false;
+  //     });
+  //   } catch (e) {
+  //     print('fetchGalleryImagesAmbience: $e');
+  //   } finally {
+  //     _isLoading1 = false;
+  //   }
+  // }
+  //
+  // Widget _buildNoImagesWidget() {
+  //   return Column(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Container(
+  //         width: 200,
+  //         height: 180,
+  //         child: Image.asset('assets/vector/blank.png'), // No images available
+  //       ),
+  //       SizedBox(height: 16),
+  //       Text(
+  //         'No Images available',
+  //         style: TextStyle(
+  //           fontSize: 15,
+  //           fontWeight: FontWeight.w200,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 }
 
 class GalleryGrid extends StatefulWidget {
-  final List<GalleryModel> images;
+  final List<Data>? images;
 
   GalleryGrid({required this.images});
 
@@ -196,8 +176,9 @@ class _GalleryGridState extends State<GalleryGrid> {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(10),
+
       child: GridView.builder(
-        itemCount: widget.images.length,
+        itemCount: widget.images?.length??0,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           crossAxisSpacing: 8,
@@ -207,14 +188,14 @@ class _GalleryGridState extends State<GalleryGrid> {
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              List<String> imageUrls =
-                  widget.images.map((e) => e.image).toList();
+              List<String>imageUrls =
+                  widget.images?.map((e) => e.image).whereType<String>() .toList()??[];
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => FullScreenGallery(
                     images: imageUrls,
-                    initialIndex: index,
+                    initialIndex: index
                   ),
                 ),
               );
@@ -222,7 +203,7 @@ class _GalleryGridState extends State<GalleryGrid> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
              child:  CachedNetworkImage(
-                imageUrl:widget.images[index].image,
+                imageUrl:widget.images?[index].image??"",
                 fit: BoxFit.fill,
                 placeholder: (context, url) => Image.asset(
                   'assets/images/vertical_placeholder.jpg',

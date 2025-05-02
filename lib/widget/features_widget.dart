@@ -16,12 +16,12 @@ class _FeaturesWidgetState extends State<FeaturesWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return widget.featuresList.length!=0? Container(
       height: 50,
       // color: Colors.blue,
       child: ListView.builder(
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        // physics: NeverScrollableScrollPhysics(),
         // padding: EdgeInsets.all(8),
         scrollDirection: Axis.horizontal,
         itemCount:widget.featuresList.length,
@@ -35,7 +35,7 @@ class _FeaturesWidgetState extends State<FeaturesWidget> {
           );
         },
       ),
-    );
+    ):Container();
 
     // GridView.count(
     //   crossAxisCount: 2,

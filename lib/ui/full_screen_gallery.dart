@@ -34,7 +34,7 @@ class FullScreenGallery extends StatelessWidget {
           },
           scrollPhysics: const BouncingScrollPhysics(),
           loadingBuilder: (context, event) => Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(color: MyColors.redBG),
           ),
           backgroundDecoration: BoxDecoration(
             color: Colors.black,

@@ -21,6 +21,7 @@ import 'package:grabto/ui/bottom_sortlist_screen.dart';
 import 'package:grabto/ui/customer_care.dart';
 import 'package:grabto/ui/delete_screen.dart';
 import 'package:grabto/ui/how_it_works.dart';
+import 'package:grabto/ui/refer_and_earn.dart';
 import 'package:grabto/ui/restaurant_payment_screen.dart';
 import 'package:grabto/ui/term_and_condition.dart';
 import 'package:grabto/ui/transaction_screen.dart';
@@ -485,6 +486,20 @@ print("dsd ${banners.length}");
                 //Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return CustomerCare();
+
+                }));
+              },
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.campaign,
+                color: MyColors.drawerIconColor,
+              ),
+              title: const Text(' Refer and Earn '),
+              onTap: () {
+                //Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return    ReferAndEarnScreen();
                 }));
               },
             ),
@@ -624,7 +639,15 @@ print("dsd ${banners.length}");
                               bottomLeft: Radius.circular(10),
                               bottomRight: Radius.circular(10),
                             ),
-                        border:index==2?Border(top: BorderSide(color: MyColors.whiteBG)):null
+                            boxShadow:index==2? [
+                              BoxShadow(
+                                color: MyColors.redBG,
+                                spreadRadius: 2,
+                                offset: Offset(0, 3),
+                                blurRadius: 7,
+                              ),
+                            ]:null,
+                        border:index==2?Border(top: BorderSide(color: MyColors.whiteBG,width: 2)):null
                         ),
 
                         child:index==4?CircleAvatar(

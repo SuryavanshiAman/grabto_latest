@@ -337,7 +337,7 @@ class _BookTabState extends State<BookTab> with SingleTickerProviderStateMixin {
                               Container(
                                 color: Colors.grey.shade300,
                                 child: const Center(
-                                    child: CircularProgressIndicator()),
+                                    child: CircularProgressIndicator(color: MyColors.redBG)),
                               ),
                           errorWidget: (context, url, error) =>
                               const Icon(Icons.error),
@@ -510,7 +510,7 @@ class _TablePayBillHistoryState extends State<TablePayBillHistory> {
                                           Container(
                                             color: Colors.grey.shade300,
                                             child: const Center(
-                                                child: CircularProgressIndicator()),
+                                                child: CircularProgressIndicator(color: MyColors.redBG)),
                                           ),
                                       errorWidget: (context, url, error) =>
                                           const Icon(Icons.error),
@@ -1071,7 +1071,7 @@ class _PayBillTabState extends State<PayBillTab>
                               Container(
                                 color: Colors.grey.shade300,
                                 child: const Center(
-                                    child: CircularProgressIndicator()),
+                                    child: CircularProgressIndicator(color: MyColors.redBG)),
                               ),
                           errorWidget: (context, url, error) =>
                               const Icon(Icons.error),

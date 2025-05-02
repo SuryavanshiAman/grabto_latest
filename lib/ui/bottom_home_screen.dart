@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grabto/helper/shared_pref.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/model/categories_model.dart';
@@ -18,6 +19,7 @@ import 'package:grabto/ui/booked_table_screen.dart';
 import 'package:grabto/ui/coupon_fullview_screen.dart';
 import 'package:grabto/ui/delete_screen.dart';
 import 'package:grabto/ui/near_me_screen.dart';
+import 'package:grabto/ui/refer_and_earn.dart';
 import 'package:grabto/ui/search_screen.dart';
 import 'package:grabto/ui/select_address_screen.dart';
 import 'package:grabto/ui/subcategories_screen.dart';
@@ -255,10 +257,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
     setState(() {
       _selectedIndex = index;
     });
-    //Navigator.push(context, MaterialPageRoute(builder: (context){return HomeScreen();}));
     Navigator.pop(context);
-
-    //Navigator.push(context, MaterialPageRoute(builder: (context) => HomeBottamScreen()));
   }
 
   Future<void> _handleReturnFromSecondScreen() async {
@@ -305,7 +304,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
       }
     });
   }
-
+  // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final CarouselSliderController _carouselController =
       CarouselSliderController();
   int sliderIndex = 0;
@@ -320,6 +319,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
     final imageList = grab?[0].image ?? [];
     return categories.isNotEmpty
         ? Scaffold(
+      key: _scaffoldKey,
             backgroundColor: MyColors.backgroundBg,
             body: Container(
               color: MyColors.backgroundBg,
@@ -370,25 +370,39 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
                                     GestureDetector(
-                                        onTap: () {
-                                          if (_scaffoldKey
-                                              .currentState!.isDrawerOpen) {
-                                            _scaffoldKey.currentState!
-                                                .closeDrawer();
+                                      onTap: () {
+                                        final scaffoldState = _scaffoldKey.currentState;
+                                        if (scaffoldState != null) {
+                                          if (scaffoldState.isDrawerOpen) {
+                                            scaffoldState.closeDrawer();
                                           } else {
-                                            _scaffoldKey.currentState!
-                                                .openDrawer();
+                                            scaffoldState.openDrawer();
                                           }
-                                        },
-                                        child: const Icon(
-                                          Icons.menu,
-                                          color: MyColors.whiteBG,
-                                        )),
-                                    SizedBox(
-                                      width: widths * 0.03,
+                                        }
+                                      },
+                                      child: const Icon(
+                                        Icons.menu,
+                                        color: MyColors.whiteBG,
+                                      ),
                                     ),
+                                    // GestureDetector(
+                                    //     onTap: () {
+                                    //       if (_scaffoldKey
+                                    //           .currentState!.isDrawerOpen) {
+                                    //         _scaffoldKey.currentState!
+                                    //             .closeDrawer();
+                                    //       } else {
+                                    //         _scaffoldKey.currentState!
+                                    //             .openDrawer();
+                                    //       }
+                                    //     },
+                                    //     child: const Icon(
+                                    //       Icons.menu,
+                                    //       color: MyColors.whiteBG,
+                                    //     )),
                                     InkWell(
                                       onTap: () {
                                         Navigator.push(
@@ -399,26 +413,34 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                       type: 2,
                                                     )));
                                       },
-                                      child: Container(
-                                        width: widths * 0.8,
+                                      child: Container(width: widths * 0.7,
+
                                         child: Row(
                                           // crossAxisAlignment:
                                           //     CrossAxisAlignment.start,
                                           // mainAxisAlignment: MainAxisAlignment.start,
                                           children: [
-                                            Image.asset("assets/images/pin_drop.png",scale: 0.8,),
-                                            SizedBox(width: widths*0.02,),
+                                            SvgPicture.asset("assets/svg/pin_drop.svg"),
+                                            // Image.asset(
+                                            //   "assets/images/pin_drop.png",
+                                            //   scale: 0.8,
+                                            // ),
+                                            SizedBox(
+                                              width: widths * 0.02,
+                                            ),
                                             Column(
                                               crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Row(
                                                   children: [
                                                     Container(
-                                                      margin: EdgeInsets.only(top: 2),
+                                                        margin: EdgeInsets.only(
+                                                            top: 2),
                                                         // width: widths * 0.6,
                                                         child: Text(
-                                                          address.toString() != ""
+                                                          address.toString() !=
+                                                                  ""
                                                               ? address
                                                                   .toString()
                                                                   .split(',')[0]
@@ -428,9 +450,11 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                             fontSize: 16,
                                                             fontWeight:
                                                                 FontWeight.w600,
-                                                            overflow: TextOverflow
-                                                                .ellipsis,
-                                                            color: MyColors.whiteBG,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            color: MyColors
+                                                                .whiteBG,
                                                           ),
                                                         )),
                                                     Icon(
@@ -442,7 +466,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                   ],
                                                 ),
                                                 Container(
-                                                    width: widths * 0.68,
+                                                    width: widths * 0.59,
                                                     child: Text(
                                                       address != ""
                                                           ? address
@@ -450,19 +474,24 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                       maxLines: 1,
                                                       style: TextStyle(
                                                         fontSize: 12,
-                                                        fontWeight: FontWeight.w600,
-                                                        overflow:
-                                                        TextOverflow.ellipsis,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
                                                         color: MyColors.whiteBG,
                                                       ),
                                                     )),
                                               ],
                                             ),
-
                                           ],
                                         ),
                                       ),
                                     ),
+                                    CircleAvatar(
+                                      radius: 12,
+                                      backgroundColor: MyColors.whiteBG,
+                                      child: Icon(Icons.notifications,size: 16,),
+                                    )
                                   ],
                                 ),
                                 InkWell(
@@ -561,21 +590,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                     errorWidget: (context, url, error) =>
                                         Center(child: Icon(Icons.error)),
                                   ),
-                                  // Image.network(
-                                  //   json['image'],
-                                  //   errorBuilder: (context, error, stackTrace) {
-                                  //     return Center(
-                                  //       child: Image.asset(
-                                  //         'assets/images/placeholder.png',
-                                  //         // Path to your placeholder image asset
-                                  //         fit: BoxFit.cover,
-                                  //         width: double.infinity,
-                                  //         height: double.infinity,
-                                  //       ),
-                                  //     );
-                                  //   },
-                                  //   fit: BoxFit.cover,
-                                  // ),
                                 ),
                               );
                             }).toList(),
@@ -590,7 +604,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                               enableInfiniteScroll: true,
                               autoPlayAnimationDuration:
                                   Duration(milliseconds: 800),
-                              viewportFraction: 0.75,
+                              viewportFraction: 0.9,
                             ),
                           ),
                         ),
@@ -626,20 +640,26 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                   builder: (context) => NearMeScreen()));
                         },
                         child: Container(
-                          margin: EdgeInsets.only(top: 10,left: 14, right: 14,),
+                          margin: EdgeInsets.only(
+                            top: 10,
+                            left: 14,
+                            right: 14,
+                          ),
                           height: heights * 0.15,
                           width: widths,
                           padding: EdgeInsets.only(left: 10, right: 10),
                           decoration: BoxDecoration(
-                            image: DecorationImage(image:AssetImage("assets/images/near_me.png"),fit: BoxFit.fill),
-                              // gradient: LinearGradient(
-                              //     colors: [
-                              //   Color(0xffE8F5FD),
-                              //   Color(0xffD8DCF9),
-                              //   Color(0xffC5E7F3),
-                              // ],
-                              //     begin: Alignment.topLeft,
-                              //     end: Alignment.bottomRight)
+                            image: DecorationImage(
+                                image: AssetImage("assets/images/near_me.png"),
+                                fit: BoxFit.fill),
+                            // gradient: LinearGradient(
+                            //     colors: [
+                            //   Color(0xffE8F5FD),
+                            //   Color(0xffD8DCF9),
+                            //   Color(0xffC5E7F3),
+                            // ],
+                            //     begin: Alignment.topLeft,
+                            //     end: Alignment.bottomRight)
                           ),
                           // child: Row(
                           //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -689,112 +709,30 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                           ],
                         ),
                       ),
-                      // Container(
-                      //   height: heights * 0.162,
-                      //   margin: EdgeInsets.only(left: widths * 0.03),
-                      //   // color: Colors.red,
-                      //   child: ListView.builder(
-                      //     padding: EdgeInsets.zero,
-                      //     shrinkWrap: true,
-                      //     // physics: NeverScrollableScrollPhysics(),
-                      //     itemCount: subCategoriesList
-                      //         .length, // Use the length of the list
-                      //     scrollDirection: Axis.horizontal,
-                      //     itemBuilder: (context, index) {
-                      //       SubCategoriesModel subCategoriesModel =
-                      //           subCategoriesList[index];
-                      //       return SubCategoriesCardWidget(
-                      //         imgUrl: subCategoriesModel.image,
-                      //         subcategoryName:
-                      //             subCategoriesModel.subcategory_name,
-                      //         spotAvailable: "",
-                      //         redeemed: "",
-                      //         onTap: () {
-                      //           print(subCategoriesModel.category_id);
-                      //           print(subCategoriesModel.id);
-                      //           print("subCategoriesModel.id");
-                      //           navigateToAllCouponScreen(
-                      //             context,
-                      //             subCategoriesModel.subcategory_name,
-                      //             subCategoriesModel.category_id,
-                      //             subCategoriesModel.id,
-                      //           );
-                      //         },
-                      //       );
-                      //       // final store = restaurantsItems[index];
-                      //       // return buildRestaurantsWidget(
-                      //       //     context,
-                      //       //     store.id,
-                      //       //     store.banner,
-                      //       //     // Use the logo property from StoreModel
-                      //       //     store.storeName,
-                      //       //     // Use the store_name property from StoreModel
-                      //       //     store.address,
-                      //       //     // Use the address property from StoreModel
-                      //       //     store.distance,
-                      //       //     // Use the distance property from StoreModel
-                      //       //     store.offers);
-                      //     },
-                      //   ),
-                      //   // GridView.builder(
-                      //   //   padding: EdgeInsets.zero,
-                      //   //   shrinkWrap: true,
-                      //   //   physics: NeverScrollableScrollPhysics(),
-                      //   //   itemCount: subCategoriesList.length,
-                      //   //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      //   //     crossAxisCount: 3,
-                      //   //     crossAxisSpacing: 8,
-                      //   //     mainAxisSpacing: 8,
-                      //   //     mainAxisExtent: 100
-                      //   //   ),
-                      //   //   itemBuilder: (BuildContext context, int index) {
-                      //   //     SubCategoriesModel subCategoriesModel =
-                      //   //     subCategoriesList[index];
-                      //   //     return SubCategoriesCardWidget(
-                      //   //       imgUrl: subCategoriesModel.image,
-                      //   //       subcategoryName:
-                      //   //       subCategoriesModel.subcategory_name,
-                      //   //       spotAvailable: "",
-                      //   //       redeemed: "",
-                      //   //       onTap: () {
-                      //   //         print(subCategoriesModel.category_id);
-                      //   //         print(subCategoriesModel.id);
-                      //   //         print("subCategoriesModel.id");
-                      //   //         navigateToAllCouponScreen(
-                      //   //           context,
-                      //   //           subCategoriesModel.subcategory_name,
-                      //   //           subCategoriesModel.category_id,
-                      //   //           subCategoriesModel.id,
-                      //   //         );
-                      //   //       },
-                      //   //     );
-                      //   //   },
-                      //   // ),
-                      // ),
                       Container(
                         height: heights * 0.49,
-                        margin: EdgeInsets.only(top: heights * 0.02 ),
-                        padding: EdgeInsets.only(left: widths * 0.03,right:widths * 0.03 ),
+                        margin: EdgeInsets.only(top: heights * 0.02),
+                        padding: EdgeInsets.only(
+                            left: widths * 0.03, right: widths * 0.03),
                         // color: Colors.red,
-                        child:
-                        GridView.builder(
+                        child: GridView.builder(
                           padding: EdgeInsets.zero,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: subCategoriesList.length,
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 5,
-                            mainAxisSpacing: 5,
-                            mainAxisExtent: 180
-                          ),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 5,
+                                  mainAxisSpacing: 5,
+                                  mainAxisExtent: 180),
                           itemBuilder: (BuildContext context, int index) {
                             SubCategoriesModel subCategoriesModel =
-                            subCategoriesList[index];
+                                subCategoriesList[index];
                             return SubCategoriesCardWidget(
                               imgUrl: subCategoriesModel.image,
                               subcategoryName:
-                              subCategoriesModel.subcategory_name,
+                                  subCategoriesModel.subcategory_name,
                               spotAvailable: "",
                               redeemed: "",
                               onTap: () {
@@ -812,266 +750,307 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                           },
                         ),
                       ),
-                     grab!=""&&grab!=null? Container(
-                        height: heights * 0.55,
-                        margin: EdgeInsets.symmetric(vertical: 15),
-                        decoration: BoxDecoration(
-                            // color: MyColors.redBG,
-                            image: DecorationImage(
-                                image: NetworkImage(grab?[0].backgroundimage),
-                                fit: BoxFit.fill)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text(
-                              "Grabto Grab",
-                              style: TextStyle(
-                                  color: MyColors.whiteBG,
-                                  fontFamily: 'vast',
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return CouponFullViewScreen(
-                                      grab?[0].id.toString() ?? "");
-                                }));
-                              },
-                              child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 15,vertical: 8),
-                                decoration: BoxDecoration(
-                                  // color: MyColors.whiteBG,
-                                  color: Color(0xffffffff),
-                                  borderRadius: BorderRadius.circular(10),
-                                  // color: Colors.red
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.3),
-                                      spreadRadius: 2,
-                                      blurRadius: 5,
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Image with overlay
-                                    Stack(
-                                      children: [
-                                        CarouselSlider(
-                                          items: grab?[0].image?.map((img) {
-                                                return GestureDetector(
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    child: CachedNetworkImage(
-                                                      imageUrl:
-                                                          img.url.toString(),
-                                                      fit: BoxFit.fill,
-                                                      placeholder:
-                                                          (context, url) =>
-                                                              Image.asset(
-                                                        'assets/images/placeholder.png',
-                                                        fit: BoxFit.cover,
-                                                        width: double.infinity,
-                                                        height: double.infinity,
-                                                      ),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          const Center(
-                                                              child: Icon(
-                                                                  Icons.error)),
-                                                    ),
-                                                  ),
-                                                );
-                                              }).toList() ??
-                                              [],
-                                          carouselController:
-                                              _carouselController, // Use empty list if image is null
-                                          options: CarouselOptions(
-                                            height: heights * 0.22,
-                                            enlargeCenterPage: true,
-                                            autoPlay: true,
-                                            reverse: true,
-                                            disableCenter: true,
-                                            aspectRatio: 1 / 9,
-                                            autoPlayCurve: Curves.fastOutSlowIn,
-                                            enableInfiniteScroll: true,
-                                            autoPlayAnimationDuration:
-                                                const Duration(
-                                                    milliseconds: 800),
-                                            viewportFraction: 1,
-                                            onPageChanged: (index, reason) {
-                                              setState(() {
-                                                sliderIndex = index;
-                                              });
-                                            },
+                      grab != "" && grab != null
+                          ? Container(
+                              height: heights * 0.55,
+                              margin: EdgeInsets.symmetric(vertical: 15),
+                              decoration: BoxDecoration(
+                                  // color: MyColors.redBG,
+                                  image: DecorationImage(
+                                      image: NetworkImage(
+                                          grab?[0].backgroundimage),
+                                      fit: BoxFit.fill)),
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Text(
+                                    "Grabto Grab",
+                                    style: TextStyle(
+                                        color: MyColors.whiteBG,
+                                        fontFamily: 'vast',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return CouponFullViewScreen(
+                                            grab?[0].id.toString() ?? "");
+                                      }));
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: 15, vertical: 8),
+                                      decoration: BoxDecoration(
+                                        // color: MyColors.whiteBG,
+                                        color: Color(0xffffffff),
+                                        borderRadius: BorderRadius.circular(10),
+                                        // color: Colors.red
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.3),
+                                            spreadRadius: 2,
+                                            blurRadius: 5,
                                           ),
-                                        ),
-                                        Positioned(
-                                          top: 10,
-                                          left: 10,
-                                          child: Row(
+                                        ],
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Image with overlay
+                                          Stack(
                                             children: [
-                                              grab?[0].availableSeat != null
-                                                  ? Container(
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                              horizontal: 8,
-                                                              vertical: 2),
+                                              CarouselSlider(
+                                                items: grab?[0]
+                                                        .image
+                                                        ?.map((img) {
+                                                      return GestureDetector(
+                                                        child: ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          child:
+                                                              CachedNetworkImage(
+                                                            imageUrl: img.url
+                                                                .toString(),
+                                                            fit: BoxFit.fill,
+                                                            placeholder:
+                                                                (context,
+                                                                        url) =>
+                                                                    Image.asset(
+                                                              'assets/images/placeholder.png',
+                                                              fit: BoxFit.cover,
+                                                              width: double
+                                                                  .infinity,
+                                                              height: double
+                                                                  .infinity,
+                                                            ),
+                                                            errorWidget: (context,
+                                                                    url,
+                                                                    error) =>
+                                                                const Center(
+                                                                    child: Icon(
+                                                                        Icons
+                                                                            .error)),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }).toList() ??
+                                                    [],
+                                                carouselController:
+                                                    _carouselController, // Use empty list if image is null
+                                                options: CarouselOptions(
+                                                  height: heights * 0.22,
+                                                  enlargeCenterPage: true,
+                                                  autoPlay: true,
+                                                  reverse: true,
+                                                  disableCenter: true,
+                                                  aspectRatio: 1 / 9,
+                                                  autoPlayCurve:
+                                                      Curves.fastOutSlowIn,
+                                                  enableInfiniteScroll: true,
+                                                  autoPlayAnimationDuration:
+                                                      const Duration(
+                                                          milliseconds: 800),
+                                                  viewportFraction: 1,
+                                                  onPageChanged:
+                                                      (index, reason) {
+                                                    setState(() {
+                                                      sliderIndex = index;
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                              Positioned(
+                                                top: 10,
+                                                left: 10,
+                                                child: Row(
+                                                  children: [
+                                                    grab?[0].availableSeat !=
+                                                            null
+                                                        ? Container(
+                                                            padding: EdgeInsets
+                                                                .symmetric(
+                                                                    horizontal:
+                                                                        8,
+                                                                    vertical:
+                                                                        2),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: int.parse(grab?[
+                                                                              0]
+                                                                          .availableSeat) <=
+                                                                      5
+                                                                  ? MyColors
+                                                                      .redBG
+                                                                  : MyColors
+                                                                      .green,
+                                                              // color:MyColors.green ,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          5),
+                                                            ),
+                                                            child: Text(
+                                                              "${grab?[0].availableSeat.toString() ?? ""} seat left",
+                                                              style: TextStyle(
+                                                                  color: MyColors
+                                                                      .whiteBG,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize: 11),
+                                                            ),
+                                                          )
+                                                        : Container(),
+                                                    // Spacer(),
+                                                    SizedBox(
+                                                      width: widths * 0.43,
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          right: 15),
+                                                      padding: const EdgeInsets
+                                                          .fromLTRB(6, 4, 8, 4),
                                                       decoration: BoxDecoration(
-                                                        color: int.parse(grab?[
-                                                                        0]
-                                                                    .availableSeat) <=
-                                                                5
-                                                            ? MyColors.redBG
-                                                            : MyColors.green,
-                                                        // color:MyColors.green ,
+                                                        color: Colors.green,
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(5),
                                                       ),
                                                       child: Text(
-                                                        "${grab?[0].availableSeat.toString() ?? ""} seat left",
-                                                        style: TextStyle(
-                                                            color: MyColors
-                                                                .whiteBG,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            fontSize: 11),
+                                                        "${grab?[0].rating ?? "0"}/5",
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: 11,
+                                                        ),
                                                       ),
-                                                    )
-                                                  : Container(),
-                                              // Spacer(),
-                                              SizedBox(
-                                                width: widths * 0.43,
-                                              ),
-                                              Container(
-                                                margin:
-                                                    EdgeInsets.only(right: 15),
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        6, 4, 8, 4),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.green,
-                                                  borderRadius:
-                                                      BorderRadius.circular(5),
+                                                    ),
+
+                                                    CircleAvatar(
+                                                        radius: 12,
+                                                        backgroundColor:
+                                                            MyColors.whiteBG,
+                                                        child: InkWell(
+                                                          onTap: () {
+                                                            fetchStoresFullView(
+                                                                grab?[0]
+                                                                        .id
+                                                                        .toString() ??
+                                                                    "");
+                                                            wishlist(grab?[0]
+                                                                    .id
+                                                                    .toString() ??
+                                                                "");
+                                                          },
+                                                          child: Icon(
+                                                            wishlist_status ==
+                                                                    'true'
+                                                                ? Icons.favorite
+                                                                : Icons
+                                                                    .favorite_border,
+                                                            size: 16,
+                                                            color:
+                                                                wishlist_status ==
+                                                                        'true'
+                                                                    ? Colors.red
+                                                                    : Colors
+                                                                        .black,
+                                                          ),
+                                                        )),
+                                                    //   // InkWell(
+                                                    //   //   onTap: (){
+                                                    //   //     setState(() {
+                                                    //   //       selectedIndex=widget.index;
+                                                    //   //     });
+                                                    //   //   },
+                                                    //   //   child: Icon(
+                                                    //   //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
+                                                    //   //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
+                                                    //   //     size: 16,
+                                                    //   //   ),
+                                                    //   // )
+                                                    // )
+                                                    // Icon(Icons.favorite_border, color: Colors.white),
+                                                  ],
                                                 ),
-                                                child: Text(
-                                                  "${grab?[0].rating ?? "0"}/5",
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 11,
+                                              ),
+                                              Positioned(
+                                                bottom: 10,
+                                                left: 0,
+                                                right: 0,
+                                                child: Center(
+                                                  child:
+                                                      AnimatedSmoothIndicator(
+                                                    activeIndex: sliderIndex,
+                                                    count: imageList.length,
+                                                    effect:
+                                                        const ExpandingDotsEffect(
+                                                      dotHeight: 6,
+                                                      dotWidth: 6,
+                                                      spacing: 6,
+                                                      expansionFactor: 3,
+                                                      activeDotColor:
+                                                          MyColors.whiteBG,
+                                                      dotColor: Colors.white70,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-
-                                              CircleAvatar(
-                                                  radius: 12,
-                                                  backgroundColor:
-                                                      MyColors.whiteBG,
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      fetchStoresFullView(
-                                                          grab?[0]
-                                                                  .id
-                                                                  .toString() ??
-                                                              "");
-                                                      wishlist(grab?[0]
-                                                              .id
-                                                              .toString() ??
-                                                          "");
-                                                    },
-                                                    child: Icon(
-                                                      wishlist_status == 'true'
-                                                          ? Icons.favorite
-                                                          : Icons
-                                                              .favorite_border,
-                                                      size: 16,
-                                                      color: wishlist_status ==
-                                                              'true'
-                                                          ? Colors.red
-                                                          : Colors.black,
-                                                    ),
-                                                  )),
-                                              //   // InkWell(
-                                              //   //   onTap: (){
-                                              //   //     setState(() {
-                                              //   //       selectedIndex=widget.index;
-                                              //   //     });
-                                              //   //   },
-                                              //   //   child: Icon(
-                                              //   //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
-                                              //   //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
-                                              //   //     size: 16,
-                                              //   //   ),
-                                              //   // )
-                                              // )
-                                              // Icon(Icons.favorite_border, color: Colors.white),
-                                            ],
-                                          ),
-                                        ),
-                                        Positioned(
-                                          bottom: 10,
-                                          left: 0,
-                                          right: 0,
-                                          child: Center(
-                                            child: AnimatedSmoothIndicator(
-                                              activeIndex: sliderIndex,
-                                              count: imageList.length,
-                                              effect: const ExpandingDotsEffect(
-                                                dotHeight: 6,
-                                                dotWidth: 6,
-                                                spacing: 6,
-                                                expansionFactor: 3,
-                                                activeDotColor:
-                                                    MyColors.whiteBG,
-                                                dotColor: Colors.white70,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          bottom: 20,
-                                          left: 0,
-                                          right: 0,
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                // width: widths*0.3,
-
-                                                decoration: BoxDecoration(
-                                                    color: MyColors.blackBG
-                                                        .withOpacity(0.6),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                margin: EdgeInsets.all(8),
-                                                padding: EdgeInsets.fromLTRB(
-                                                    8, 2, 8, 2),
+                                              Positioned(
+                                                bottom: 20,
+                                                left: 0,
+                                                right: 0,
                                                 child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
                                                   children: [
-                                                    Image.asset(
-                                                        "assets/images/local_cafe.png"),
-                                                    const SizedBox(width: 5),
-                                                    Text(
-                                                      grab?[0]
-                                                              .subcategoryName
-                                                              .toString() ??
-                                                          "",
-                                                      style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        color: MyColors.whiteBG,
-                                                        fontSize: 10,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
+                                                    Container(
+                                                      // width: widths*0.3,
+
+                                                      decoration: BoxDecoration(
+                                                          color: MyColors
+                                                              .blackBG
+                                                              .withOpacity(0.6),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      15)),
+                                                      margin: EdgeInsets.all(8),
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              8, 2, 8, 2),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Image.asset(
+                                                              "assets/images/local_cafe.png"),
+                                                          const SizedBox(
+                                                              width: 5),
+                                                          Text(
+                                                            grab?[0]
+                                                                    .subcategoryName
+                                                                    .toString() ??
+                                                                "",
+                                                            style:
+                                                                const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              color: MyColors
+                                                                  .whiteBG,
+                                                              fontSize: 10,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
                                                   ],
@@ -1079,135 +1058,146 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                               ),
                                             ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
 
-                                    Padding(
-                                      padding: EdgeInsets.all(12),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Container(
-                                                width: widths * 0.58,
-                                                // color: Colors.red,
-                                                child: Text(
-                                                  grab?[0]
-                                                          .storeName
-                                                          .toString() ??
+                                          Padding(
+                                            padding: EdgeInsets.all(12),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      width: widths * 0.58,
+                                                      // color: Colors.red,
+                                                      child: Text(
+                                                        grab?[0]
+                                                                .storeName
+                                                                .toString() ??
+                                                            "",
+                                                        style: TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
+                                                      ),
+                                                    ),
+                                                    Spacer(),
+                                                    grab?[0].rating != ""
+                                                        ? Container(
+                                                            padding: EdgeInsets
+                                                                .symmetric(
+                                                                    horizontal:
+                                                                        3,
+                                                                    vertical:
+                                                                        1),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                                    border: Border.all(
+                                                                        color: Colors
+                                                                            .grey
+                                                                            .withOpacity(
+                                                                                0.3)),
+                                                                    // color: Color(0xff00bd62),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            3)),
+                                                            child: StarRating(
+                                                              color:
+                                                                  Colors.yellow,
+                                                              rating: double.parse(grab?[
+                                                                          0]
+                                                                      .rating
+                                                                      .toStringAsFixed(
+                                                                          1)
+                                                                      .toString() ??
+                                                                  "0.0"),
+                                                              size: 16,
+                                                            ),
+                                                          )
+                                                        : Container(),
+                                                  ],
+                                                ),
+                                                SizedBox(height: 4),
+                                                Text(
+                                                  grab?[0].address.toString() ??
                                                       "",
                                                   style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500),
+                                                      color:
+                                                          MyColors.textColorTwo,
+                                                      fontSize: 12),
                                                 ),
-                                              ),
-                                              Spacer(),
-                                              grab?[0].rating != ""
-                                                  ? Container(
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                              horizontal: 3,
-                                                              vertical: 1),
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(
-                                                              color: Colors.grey
-                                                                  .withOpacity(
-                                                                      0.3)),
-                                                          // color: Color(0xff00bd62),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(3)),
-                                                      child: StarRating(
-                                                        color: Colors.yellow,
-                                                        rating: double.parse(grab?[
-                                                                    0]
-                                                                .rating
-                                                                .toStringAsFixed(
-                                                                    1)
-                                                                .toString() ??
-                                                            "0.0"),
-                                                        size: 16,
-                                                      ),
-                                                    )
-                                                  : Container(),
-                                            ],
-                                          ),
-                                          SizedBox(height: 4),
-                                          Text(
-                                            grab?[0].address.toString() ?? "",
-                                            style: TextStyle(
-                                                color: MyColors.textColorTwo,
-                                                fontSize: 12),
-                                          ),
-                                          Divider(
-                                            color: MyColors.textColorTwo
-                                                .withOpacity(0.3),
-                                          ),
-                                          Container(
-                                            width: widths,
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 3, vertical: 5),
-                                            decoration: BoxDecoration(
-                                                color: Color(0xff00bd62),
-                                                borderRadius:
-                                                    BorderRadius.circular(3)),
-                                            child: Text(
-                                                grab?[0].offers != ""
-                                                    ? "% Flat ${grab?[0].discountPercentage.toString()}% off on pre-booking       +${grab?[0].offers.toString()} offers"
-                                                    : "% Flat ${grab?[0].discountPercentage.toString() ?? ""}% off on pre-booking",
-                                                style: TextStyle(
-                                                  color: MyColors.whiteBG,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 14,
-                                                )),
+                                                Divider(
+                                                  color: MyColors.textColorTwo
+                                                      .withOpacity(0.3),
+                                                ),
+                                                Container(
+                                                  width: widths,
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 3,
+                                                      vertical: 5),
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0xff00bd62),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              3)),
+                                                  child: Text(
+                                                      grab?[0].offers != ""
+                                                          ? "% Flat ${grab?[0].discountPercentage.toString()}% off on pre-booking       +${grab?[0].offers.toString()} offers"
+                                                          : "% Flat ${grab?[0].discountPercentage.toString() ?? ""}% off on pre-booking",
+                                                      style: TextStyle(
+                                                        color: MyColors.whiteBG,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 14,
+                                                      )),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                      return CouponFullViewScreen(
-                                          grab?[0].id.toString() ?? "");
-                                    }));
-                              },
-                              child: Container(
-                                  width: widths * 0.33,
-                                  margin: EdgeInsets.only(bottom: 10),
-                                  padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                                  decoration: BoxDecoration(
-                                    color: MyColors.redBG,
-                                    borderRadius: BorderRadius.circular(20),
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        "GRAB NOW ",
-                                        style: TextStyle(
-                                            color: MyColors.whiteBG,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14),
-                                      ),
-                                      Image.asset(
-                                        "assets/images/arrow_outward.png",
-                                        color: MyColors.whiteBG,
-                                      )
-                                    ],
-                                  )),
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return CouponFullViewScreen(
+                                            grab?[0].id.toString() ?? "");
+                                      }));
+                                    },
+                                    child: Container(
+                                        width: widths * 0.33,
+                                        margin: EdgeInsets.only(bottom: 10),
+                                        padding:
+                                            EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                        decoration: BoxDecoration(
+                                          color: MyColors.redBG,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "GRAB NOW ",
+                                              style: TextStyle(
+                                                  color: MyColors.whiteBG,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14),
+                                            ),
+                                            Image.asset(
+                                              "assets/images/arrow_outward.png",
+                                              color: MyColors.whiteBG,
+                                            )
+                                          ],
+                                        )),
+                                  )
+                                ],
+                              ),
                             )
-                          ],
-                        ),
-                      ):Container(),
-                      if (!localtiyList.isEmpty)
+                          : Container(),
+                      // if (!localtiyList.isEmpty)
                         Container(
                           margin: EdgeInsets.only(
                               top: 25, left: 15, right: 15, bottom: 15),
@@ -1222,8 +1212,9 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                             ],
                           ),
                         ),
-                      if (!localtiyList.isEmpty) LocationWidget(localtiyList),
-                      if (!trendingStoreList.isEmpty)
+                      // if (!localtiyList.isEmpty)
+                        LocationWidget(localtiyList),
+                      // if (!trendingStoreList.isEmpty)
                         Container(
                           margin: EdgeInsets.only(
                               top: 10, left: 15, right: 15, bottom: 15),
@@ -1244,50 +1235,13 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                 style: TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.w500),
                               ),
-                              // InkWell(
-                              //   onTap: () {
-                              //     Navigator.push(context,
-                              //         MaterialPageRoute(builder: (context) {
-                              //           return AllCouponScreen(
-                              //               "Trending Restaurants",
-                              //               "",
-                              //               "",
-                              //               "",
-                              //               "",
-                              //               "1",
-                              //               "",
-                              //               "",
-                              //               "$cityId",
-                              //               "");
-                              //         }));
-                              //   },
-                              //   child: Row(
-                              //     children: [
-                              //       Text(
-                              //         "View All",
-                              //         style: TextStyle(
-                              //             color: MyColors.txtDescColor,
-                              //             fontSize: 14,
-                              //             fontWeight: FontWeight.w300),
-                              //       ),
-                              //       SizedBox(
-                              //         width: 5,
-                              //       ),
-                              //       Icon(
-                              //         Icons.arrow_forward,
-                              //         size: 15,
-                              //         color: MyColors.primaryColor,
-                              //       )
-                              //     ],
-                              //   ),
-                              // ),
                             ],
                           ),
                         ),
-                      if (!trendingStoreList.isEmpty)
+                      // if (!trendingStoreList.isEmpty)
                         TrendingRestruantWidget(trendingStoreList),
-                      if (!recentStoreList.isEmpty)
-                        if (!recentStoreList.isEmpty)
+                      // if (!recentStoreList.isEmpty)
+                      //   if (!recentStoreList.isEmpty)
                           RecentJoinedWidget(recentStoreList, cityId),
                       Container(
                         margin: EdgeInsets.only(
@@ -1385,7 +1339,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                           },
                         ),
                       ),
-                      if (!topCollectionStoreList.isEmpty)
+                      // if (!topCollectionStoreList.isEmpty)
                         Container(
                           margin: EdgeInsets.only(
                               top: 25, left: 15, right: 15, bottom: 15),
@@ -1435,28 +1389,34 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                 long,
                                                 featureData,
                                                 subCategoriesList)
-                                            : index==1?showSortBottomSheet(context):
-                                    index == 2
-                                                ? data.filterApi(context, lat,
-                                                    long, "4", "", "", [], [])
-                                                : index == 3
+                                            : index == 1
+                                                ? showSortBottomSheet(context)
+                                                : index == 2
                                                     ? data.filterApi(
                                                         context,
                                                         lat,
                                                         long,
+                                                        "4",
                                                         "",
-                                                        "5",
-                                                        "",
-                                                        [],
-                                                        [],
-                                                      )
-                                                    : data.filterApi(
-                                                        context,
-                                                        lat,
-                                                        long,
-                                                        "",
-                                                        "",
-                                                        "10", [], [])
+                                                        "", [], [])
+                                                    : index == 3
+                                                        ? data.filterApi(
+                                                            context,
+                                                            lat,
+                                                            long,
+                                                            "",
+                                                            "5",
+                                                            "",
+                                                            [],
+                                                            [],
+                                                          )
+                                                        : data.filterApi(
+                                                            context,
+                                                            lat,
+                                                            long,
+                                                            "",
+                                                            "",
+                                                            "10", [], [])
                                         : null;
 
                                     // index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):index==1?filterApi(lat, long,"4","",""):index==2?filterApi(lat, long,"","5",""):filterApi(lat, long,"","","10");
@@ -1523,9 +1483,11 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                           ),
                         ),
                       ),
-                      data.filterList.data?.data != null &&
-                              data.filterList.data!.data!.isNotEmpty
-                          ? Container(
+                      if(data.filterList.data?.data == null)
+                        Center(child: CircularProgressIndicator(color: MyColors.redBG))
+
+                           else if (   data.filterList.data!.data!.isNotEmpty)
+                           Container(
                               child: ListView.builder(
                                 shrinkWrap: true,
                                 padding: EdgeInsets.zero,
@@ -1533,58 +1495,67 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                     data.filterList.data?.data?.length ?? 0,
                                 physics: NeverScrollableScrollPhysics(),
                                 itemBuilder: (context, index) {
-                                  double userLat =double.parse(lat); // apna nikala hua latitude
-                                  double userLng = double.parse(long); // apna nikala hua longitude
+                                  List<Data> sortedList = List.from(data.filterList.data?.data ?? []);
+                                  if (data.filterIndex == 1) {
+                                    double userLat = double.tryParse(lat) ?? 0;
+                                    double userLng = double.tryParse(long) ?? 0;
 
-// Distance calculate karne ke liye helper function
-                                  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-                                    const double p = 0.017453292519943295; // pi/180
-                                    final double a = 0.5 -
-                                        cos((lat2 - lat1) * p) / 2 +
-                                        cos(lat1 * p) * cos(lat2 * p) *
-                                            (1 - cos((lon2 - lon1) * p)) / 2;
-                                    return 12742 * asin(sqrt(a)); // 2 * R * asin...
+                                    double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+                                      const double p = 0.017453292519943295; // pi/180
+                                      final double a = 0.5 -
+                                          cos((lat2 - lat1) * p) / 2 +
+                                          cos(lat1 * p) * cos(lat2 * p) *
+                                              (1 - cos((lon2 - lon1) * p)) / 2;
+                                      return 12742 * asin(sqrt(a)); // Earth's diameter * arc calculation
+                                    }
+
+                                    sortedList.sort((a, b) {
+                                      double latA = double.tryParse(a.lat ?? "0") ?? 0;
+                                      double lngA = double.tryParse(a.long ?? "0") ?? 0;
+                                      double latB = double.tryParse(b.lat ?? "0") ?? 0;
+                                      double lngB = double.tryParse(b.long ?? "0") ?? 0;
+
+                                      double distA = calculateDistance(userLat, userLng, latA, lngA);
+                                      double distB = calculateDistance(userLat, userLng, latB, lngB);
+                                      return distA.compareTo(distB); // Nearest first
+                                    });
+                                  } else if (data.filterIndex == 2) {
+                                    sortedList.sort((a, b) {
+                                      double ratingA = double.tryParse(a.avgRating.toString()) ?? 0;
+                                      double ratingB = double.tryParse(b.avgRating.toString()) ?? 0;
+                                      return ratingB.compareTo(ratingA); // High to Low
+                                    });
+                                  } else if (data.filterIndex == 3) {
+                                    sortedList.sort((a, b) {
+                                      double ratingA = double.tryParse(a.avgRating.toString()) ?? 0;
+                                      double ratingB = double.tryParse(b.avgRating.toString()) ?? 0;
+                                      return ratingA.compareTo(ratingB); // Low to High
+                                    });
                                   }
-                                  List<Data> highToLow = data.filterList.data?.data ?? [];
-                                  highToLow.sort((a, b) {
-                                    double ratingA = double.tryParse(a.avgRating ?? "0") ?? 0;
-                                    double ratingB = double.tryParse(b.avgRating ?? "0") ?? 0;
-                                    return ratingB.compareTo(ratingA); // descending
-                                  });
-                                  List<Data> lowToHigh = data.filterList.data?.data ?? [];
-                                  lowToHigh.sort((a, b) {
-                                    double ratingA = double.tryParse(a.avgRating ?? "0") ?? 0;
-                                    double ratingB = double.tryParse(b.avgRating ?? "0") ?? 0;
-                                    return ratingA.compareTo(ratingB); // descending
-                                  });
-                                  List<Data> distanceSorted = data.filterList.data?.data ?? [];
-                                  distanceSorted.sort((a, b) {
-                                    double latA = double.tryParse(a.lat ?? "0") ?? 0;
-                                    double lngA = double.tryParse(a.long ?? "0") ?? 0;
-                                    double latB = double.tryParse(b.lat ?? "0") ?? 0;
-                                    double lngB = double.tryParse(b.long ?? "0") ?? 0;
 
-                                    double distA = calculateDistance(userLat, userLng, latA, lngA);
-                                    double distB = calculateDistance(userLat, userLng, latB, lngB);
-                                    return distA.compareTo(distB); // nearest first
-                                  });
                                   return data.filterList.data?.data?.length == 0
                                       ? Text("Nodata")
                                       : RestaurantCard(
                                           index: index,
                                           name: selectedName,
-                                          filter:filterIndex==0? data.filterList.data!.data![index]:filterIndex==1?distanceSorted[index]:filterIndex==3?lowToHigh[index]:highToLow[index]);
+                                          filter: sortedList[index]
+                                  );
                                 },
                               ),
                             )
-                          : Center(
-                              child: Text(
-                              "No Restaurants Found",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black.withOpacity(0.7),
-                                  fontWeight: FontWeight.w600),
-                            )),
+                          else Column(
+                            children: [
+                              Image.asset("assets/images/no-restaurant-image.png",scale: 3,),
+                              Center(
+                                  child: Text(
+                                  "No Restaurants Found",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black.withOpacity(0.7),
+                                      fontWeight: FontWeight.w600),
+                                )),
+                            ],
+                          ),
                     ],
                   ),
                 ),
@@ -1877,6 +1848,19 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                   ),
                   ListTile(
                     leading: const Icon(
+                      Icons.campaign,
+                      color: MyColors.drawerIconColor,
+                    ),
+                    title: const Text(' Refer and Earn '),
+                    onTap: () {
+                      //Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return    ReferAndEarnScreen();
+                      }));
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(
                       Icons.settings,
                       color: MyColors.drawerIconColor,
                     ),
@@ -1985,7 +1969,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
             ),
           );
   }
-  int filterIndex=0;
+
+  int filterIndex = 0;
   void showSortBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -2013,13 +1998,17 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                   contentPadding: EdgeInsets.zero,
                   value: options[index],
                   groupValue: selectedOption,
-                  title: Text(options[index],style: TextStyle(color:MyColors.blackBG),),
+                  title: Text(
+                    options[index],
+                    style: TextStyle(color: MyColors.blackBG),
+                  ),
                   onChanged: (value) {
                     setState(() {
                       selectedOption = value!;
-                      filterIndex=index;
+                      Provider.of<FilterViewModel>(context, listen: false).setFilterIndex(index);
                       print("Selected: $selectedOption");
-                      Provider.of<FilterViewModel>(context,listen: false).filterApi(context, lat, long, "", "", "", [], []);
+                      Provider.of<FilterViewModel>(context, listen: false)
+                          .filterApi(context, lat, long, "", "", "", [], []);
                     });
                   },
                   activeColor: MyColors.redBG,
@@ -2608,7 +2597,6 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
 
   Future<void> fetchShowSlider(
     String city_id,
-
   ) async {
     print(city_id);
     print("☕☕☕☕☕");
@@ -2871,6 +2859,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
     }
   }
 }
+
 class CustomDropdown extends StatefulWidget {
   final String selectedOption;
   final Function(String) onSelect;
@@ -2921,7 +2910,9 @@ class _CustomDropdownState extends State<CustomDropdown> {
             child: Row(
               children: [
                 Icon(
-                  selected == e ? Icons.radio_button_checked : Icons.radio_button_off,
+                  selected == e
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_off,
                   color: selected == e ? Colors.orange : Colors.grey,
                   size: 20,
                 ),
@@ -3047,6 +3038,7 @@ class TrendingRestruantWidget extends StatelessWidget {
           final store = restaurantsItems[index];
           return buildRestaurantsWidget(
               context,
+              index,
               store.id,
               store.banner,
               // Use the logo property from StoreModel
@@ -3064,7 +3056,7 @@ class TrendingRestruantWidget extends StatelessWidget {
     );
   }
 
-  Widget buildRestaurantsWidget(BuildContext context, int id, String imgUrl,
+  Widget buildRestaurantsWidget(BuildContext context,int index, int id, String imgUrl,
       String restaurantName, String location, String distance, String offers) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 1, vertical: 0),
@@ -3105,38 +3097,33 @@ class TrendingRestruantWidget extends StatelessWidget {
                       Center(child: Icon(Icons.error)),
                 ),
               ),
-              // Container(
-              //   padding: EdgeInsets.fromLTRB(12, 5, 25, 5),
-              //   decoration: BoxDecoration(
-              //       shape: BoxShape.rectangle,
-              //       color: MyColors.redBG,
-              //       borderRadius: BorderRadius.only(
-              //           topRight: Radius.circular(20),
-              //           bottomRight: Radius.circular(20))),
-              //   child: Row(
-              //     mainAxisSize: MainAxisSize.min,
-              //     children: [
-              //       // Container(
-              //       //     width: 20,height: 20,
-              //       //     child: Image.asset("assets/images/offer_2.png")),
-              //       Text(
-              //         "Offer :- $offers",
-              //         style: TextStyle(
-              //           fontWeight: FontWeight.w700,
-              //           color: Colors.white,
-              //           fontSize: 15,
-              //           overflow: TextOverflow.ellipsis,
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-
               SizedBox(height: 10),
+              Align(
+                alignment: Alignment.topRight,
+                child: Container(
+                  decoration: BoxDecoration(
 
+                    image: DecorationImage(image: AssetImage("assets/images/book_mark.png"),fit: BoxFit.fill)
+                  ),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(17, 5, 17, 17),
+                      child: Text((index+1).toString(),textAlign: TextAlign.center,style: TextStyle(color: MyColors.whiteBG),),
+                    )),
+              ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    radius: 14,
+                    backgroundImage: AssetImage("assets/images/grabto_logo_without_text.png"),
+                  ),
+                ),
+              ),
               Positioned(
                 bottom: 0,
-                child: Container(
+                child:
+                Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -3181,7 +3168,6 @@ class TrendingRestruantWidget extends StatelessWidget {
                 ),
               ),
               // SizedBox(height: 10),
-
             ],
           ),
         ),
@@ -3397,180 +3383,7 @@ class RecentJoinedWidget extends StatelessWidget {
     );
   }
 
-  /* Widget buildStoreWidget(BuildContext context, int id, String imgUrl,
-      String storeName, String location, String distance, String offers) {
-    return Container(
-      margin: EdgeInsets.only(left: 10, right: 5),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return CouponFullViewScreen("$id");
-          }));
-        },
-        child: Card(
-          borderOnForeground: true,
-          //color: Colors.white,
-          elevation: 5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          child: Container(
-            color: Colors.black87,
-            //padding: EdgeInsets.all(8),
-            width: 220,
-            child: Column(
-              children: [
-                Container(
-                  height: 139,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(imgUrl),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.fromLTRB(12, 5, 25, 5),
-                        decoration: BoxDecoration(
-                            shape: BoxShape.rectangle,
-                            color: MyColors.blueBG,
-                            borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(20),
-                                bottomRight: Radius.circular(20))),
-                        child: Expanded(
-                          // Use Expanded to allow text to wrap if needed
-                          child: Text(
-                            "Offer :- $offers",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              fontSize: 18,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 15),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              // Use Expanded to allow text to wrap if needed
-                              child: Text(
-                                storeName,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: MyColors.whiteBG,
-                                  fontSize: 19,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
 
-                      // Container(
-                      //   margin: EdgeInsets.only(left: 15, top: 8, bottom: 15),
-                      //   child: Row(
-                      //     children: [
-                      //       Expanded( // Use Expanded to allow text to wrap if needed
-                      //         child: Text(
-                      //           location,
-                      //           style: TextStyle(
-                      //             fontWeight: FontWeight.w200,
-                      //             color: MyColors.whiteBG,
-                      //             fontSize: 12,
-                      //             overflow: TextOverflow.ellipsis,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                    ],
-                  ),
-                  // child: Column(
-                  //   children: [
-                  //     Container(
-                  //       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                  //       child: Row(
-                  //         children: [
-                  //           Expanded(
-                  //             child: Text(
-                  //               storeName,
-                  //               style: TextStyle(
-                  //                 fontWeight: FontWeight.bold,
-                  //                 color: Colors.white, // Modify color as needed
-                  //                 fontSize: 15.5,
-                  //                 overflow: TextOverflow.ellipsis,
-                  //               ),
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     ),
-                  //
-                  //     Container(
-                  //       margin: EdgeInsets.symmetric(horizontal: 8),
-                  //       child: Row(
-                  //         children: [
-                  //           Expanded(
-                  //             child: Text(
-                  //               "Offer :- $offers",
-                  //               style: TextStyle(
-                  //                 fontWeight: FontWeight.bold,
-                  //                 color: MyColors.primaryColor, // Modify color as needed
-                  //                 fontSize: 15,
-                  //                 overflow: TextOverflow.ellipsis,
-                  //               ),
-                  //             ),
-                  //           ),
-                  //           if (distance.isNotEmpty) ...[
-                  //             Flexible(
-                  //               child: Container(
-                  //                 margin: EdgeInsets.symmetric(horizontal: 5),
-                  //                 width: 1,
-                  //                 height: 10,
-                  //                 color: Colors.grey, // Modify color as needed
-                  //               ),
-                  //             ),
-                  //             Text(
-                  //               "$distance km",
-                  //               style: TextStyle(
-                  //                 color: Colors.red,
-                  //                 // Set color to transparent when distance is 0
-                  //                 fontSize: 12,
-                  //                 overflow: TextOverflow.ellipsis,
-                  //               ),
-                  //             ),
-                  //           ],
-                  //         ],
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }*/
-  ///
   Widget buildStoreWidget(
       BuildContext context,
       int id,
@@ -3591,7 +3404,7 @@ class RecentJoinedWidget extends StatelessWidget {
         children: [
           Container(
             width: MediaQuery.of(context).size.width * 0.53,
-            margin: EdgeInsets.fromLTRB(8,8,5,8),
+            margin: EdgeInsets.fromLTRB(8, 8, 5, 8),
             // Adjust the height according to your requirement
             decoration: BoxDecoration(
               color: Colors.black,
@@ -3664,7 +3477,11 @@ class RecentJoinedWidget extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black.withOpacity(0.6), Colors.black],
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.6),
+                      Colors.black
+                    ],
                   ),
                   borderRadius: BorderRadius.only(
                       // bottomRight: Radius.circular(15),
@@ -3876,6 +3693,15 @@ class _RestaurantCardState extends State<RestaurantCard> {
       CarouselSliderController();
   int _currentIndex = 0;
   int selectedIndex = -1;
+  final List<String> avatars = [
+    'assets/images/grabto_logo_with_text.png',
+    'assets/images/grabto_logo.png',
+    'assets/images/grabto_logo_with_text.png',
+    'assets/images/grabto_logo_with_text.png',
+    'assets/images/grabto_logo_with_text.png',
+    'assets/images/grabto_logo_with_text.png',
+  ];
+  final int maxVisibleAvatars = 5;
   @override
   Widget build(BuildContext context) {
     final imageList = widget.filter.image ?? [];
@@ -3887,7 +3713,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
               }));
             },
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
+              margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
               decoration: BoxDecoration(
                 // color: MyColors.whiteBG,
                 color: Color(0xffffffff),
@@ -4086,7 +3912,6 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           children: [
                             Container(
                               width: widths * 0.58,
-                              // color: Colors.red,
                               child: Text(
                                 widget.filter.storeName.toString(),
                                 style: TextStyle(
@@ -4115,8 +3940,8 @@ class _RestaurantCardState extends State<RestaurantCard> {
                         SizedBox(height: 4),
                         Text(
                           widget.filter.address.toString(),
-                          style:
-                              TextStyle(color:MyColors.textColorTwo, fontSize: 12),
+                          style: TextStyle(
+                              color: MyColors.textColorTwo, fontSize: 12),
                         ),
                         Divider(
                           color: MyColors.textColorTwo.withOpacity(0.3),
@@ -4133,6 +3958,119 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                 color: MyColors.textColorTwo.withOpacity(0.3),
                               )
                             : Container(),
+                        // Padding(
+                        //   padding: const EdgeInsets.only(left: 58.0),
+                        //   child: Row(
+                        //     children: <Widget>[
+                        //       Stack(
+                        //         children:
+                        //         avatars.asMap().entries.map((entry) {
+                        //           int idx = entry.key;
+                        //           String avatar = entry.value;
+                        //           final remaning = avatars.length-maxVisibleAvatars;
+                        //           return Transform.translate(
+                        //             offset: Offset(idx * -12.0, 0),
+                        //             child: Container(
+                        //               width: widths * 0.06,
+                        //               height: heights * 0.05,
+                        //               decoration: BoxDecoration(
+                        //                 shape: BoxShape.circle,
+                        //                 image: DecorationImage(
+                        //                     image: AssetImage(avatar)),
+                        //                 border: Border.all(
+                        //                     color: MyColors.whiteBG, width: 1),
+                        //               ),
+                        //             ),
+                        //           );
+                        //         }).toList(),
+                        //       ),
+                        //
+                        //     ],
+                        //   ),
+                        // ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 58.0),
+                              child: Row(
+                                children: <Widget>[
+                                  Stack(
+                                    children: [
+                                      // Show up to maxVisibleAvatars - 1 avatars
+                                      ...avatars.asMap().entries.map((entry) {
+                                        int idx = entry.key;
+                                        String avatar = entry.value;
+                            
+                                        if (idx < maxVisibleAvatars - 1) {
+                                          return Transform.translate(
+                                            offset: Offset(idx * -20.0, 0),
+                                            child: Container(
+                                              width: widths * 0.06,
+                                              height: heights * 0.05,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                image: DecorationImage(
+                                                  image: AssetImage(avatar),
+                                                  fit: BoxFit.cover,
+                                                ),
+                                                border: Border.all(color: MyColors.whiteBG, width: 1),
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          return SizedBox.shrink();
+                                        }
+                                      }).toList(),
+                                      if (avatars.length > maxVisibleAvatars)
+                                        Transform.translate(
+                                          offset: Offset((maxVisibleAvatars -5) * -12.0, 0),
+                                          child: Container(
+                                            width: widths * 0.06,
+                                            height: heights * 0.05,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.grey[400],
+                                              border: Border.all(color: MyColors.whiteBG, width: 1),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                '+${avatars.length - (maxVisibleAvatars - 1)}',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                            
+                                      // // Optional: show the last visible avatars before `+remaining`
+                                      // if (avatars.length <= maxVisibleAvatars)
+                                      //   Transform.translate(
+                                      //     offset: Offset((avatars.length - 1) * -12.0, 0),
+                                      //     child: Container(
+                                      //       width: widths * 0.06,
+                                      //       height: heights * 0.05,
+                                      //       decoration: BoxDecoration(
+                                      //         shape: BoxShape.circle,
+                                      //         image: DecorationImage(
+                                      //           image: AssetImage(avatars.last),
+                                      //           fit: BoxFit.cover,
+                                      //         ),
+                                      //         border: Border.all(color: MyColors.whiteBG, width: 1),
+                                      //       ),
+                                      //     ),
+                                      //   ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text("View >",style:TextStyle(color: MyColors.redBG,fontWeight: FontWeight.w500),)
+                          ],
+                        ),
                         Container(
                           width: widths,
                           padding:

@@ -1,14 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:grabto/main.dart';
-import 'package:grabto/model/menu_model.dart';
 import 'package:grabto/theme/theme.dart';
 import 'package:grabto/ui/full_screen_gallery.dart';
 import 'package:flutter/material.dart';
+import 'package:grabto/ui/gallery_screen.dart';
+import 'package:grabto/view_model/menu_type_view_model.dart';
+import 'package:provider/provider.dart';
+
+import '../model/menu_data_model.dart';
 
 class MenuWidget extends StatelessWidget {
-  final List<MenuModel> menuList;
+  final MenuDataModel? menuData;
+  final int storeId;
 
-  MenuWidget(this.menuList);
+  MenuWidget(this.menuData,this.storeId);
 
   @override
   Widget build(BuildContext context) {
@@ -17,62 +22,77 @@ class MenuWidget extends StatelessWidget {
       height: 210,
       color: Color(0xff1e1f16),
       child: ListView.builder(
+        itemCount: menuData?.data?.length??0,
+        scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
-          final menu = menuList[index];
+          final menu = menuData?.data?[index];
           return GestureDetector(
             onTap: () {
-              _showImageFullScreen(context, index);
+              index==0?Provider.of<MenuTypeViewModel>(context,listen: false).menuTypeApi(context, storeId,"1"):
+              Provider.of<MenuTypeViewModel>(context,listen: false).menuTypeApi(context, storeId,"2");
             },
-            child: Container(
-              width: widths*0.45,
-              margin: EdgeInsets.only(left: 10),
-              child: buildMenuWidget(context,
-                  menu.image), // Access 'image' property from MenuModel
-            ),
+            child: buildMenuWidget(context,menu),
           );
         },
-        itemCount: menuList.length,
-        scrollDirection: Axis.horizontal,
+
       ),
     );
   }
 
-  Widget buildMenuWidget(BuildContext context, String menuUrl) {
+  Widget buildMenuWidget(BuildContext context,Data? menuUrl) {
     final width = MediaQuery.of(context).size.width * 0.33;
     final height = width * 25; // Adjust as needed
-    return Container(
-      width: width,
-      height: height,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        // Rounded corners with radius 10
-        child: CachedNetworkImage(
-          imageUrl: menuUrl,
-          fit: BoxFit.fill,
-          placeholder: (context, url) => Image.asset(
-            'assets/images/vertical_placeholder.jpg',
-            // Path to your placeholder image asset
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+
+        Container(
+          width: width,
+          height: height,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            // Rounded corners with radius 10
+            child: CachedNetworkImage(
+              imageUrl: menuUrl?.image??"",
+              fit: BoxFit.fill,
+              placeholder: (context, url) => Image.asset(
+                'assets/images/vertical_placeholder.jpg',
+                // Path to your placeholder image asset
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+              errorWidget: (context, url, error) =>
+                  Center(child: Icon(Icons.error)),
+            ),
           ),
-          errorWidget: (context, url, error) =>
-              Center(child: Icon(Icons.error)),
         ),
-      ),
+        Container( width: width,
+          height: height,
+          color: Colors.black26,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 30.0),
+          child: Text(menuUrl?.menuType??"",style: TextStyle(color: MyColors.whiteBG,fontWeight: FontWeight.w500),),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: Text("${menuUrl?.status??" "} pages",style: TextStyle(color: MyColors.whiteBG,fontWeight: FontWeight.w500)),
+        ),
+      ],
     );
   }
 
-  void _showImageFullScreen(BuildContext context, int index) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FullScreenGallery(
-          images: menuList.map((menu) => menu.image).toList(),
-          // Access 'image' property from MenuModel
-          initialIndex: index,
-        ),
-      ),
-    );
-  }
+  // void _showImageFullScreen(BuildContext context, int index) {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => FullScreenGallery(
+  //         images: menuData?.map((menu) => menu.image).toList(),
+  //         // Access 'image' property from MenuModel
+  //         initialIndex: index,
+  //       ),
+  //     ),
+  //   );
+  // }
 }

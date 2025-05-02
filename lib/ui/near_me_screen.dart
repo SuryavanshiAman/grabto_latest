@@ -344,7 +344,7 @@ class _NearMeScreenState extends State<NearMeScreen> {
           ),
           SliverToBoxAdapter(
             child:
-            data.filterList.data?.data!=null&&data.filterList.data!.data!.isNotEmpty?Container(
+            data.filterList.data?.data==null?Center(child: CircularProgressIndicator(color: MyColors.redBG,)):data.filterList.data!.data!.isNotEmpty?Container(
               color: Color(0xffffffff),
               child: ListView.builder(
                 shrinkWrap: true,
@@ -352,15 +352,22 @@ class _NearMeScreenState extends State<NearMeScreen> {
                 itemCount:  data.filterList.data?.data?.length??0,
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  return
-                    data.filterList.data?.data?.length==0?Container(): RestaurantCard(index:index,name: selectedName,filter:data.filterList.data!.data![index]);
+                  return RestaurantCard(index:index,name: selectedName,filter:data.filterList.data!.data![index]);
                 },
               ),
-            ):Center(child: Text("No Restaurants Found",style: TextStyle(
-                fontSize: 14,
-                color: Colors.black.withOpacity(0.7),
-                fontWeight: FontWeight.w600
-            ),)),
+            ):Column(
+              children: [
+                Image.asset("assets/images/no-restaurant-image.png",scale: 3,),
+                Center(
+                    child: Text(
+                      "No Restaurants Found",
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black.withOpacity(0.7),
+                          fontWeight: FontWeight.w600),
+                    )),
+              ],
+            ),
           )
         ],
       ),

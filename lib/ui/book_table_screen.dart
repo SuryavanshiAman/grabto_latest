@@ -336,7 +336,7 @@ int isLunchTimeSlotsVisibleIndex=-1;
                           ),
                         ),
                         SizedBox(height: 16),
-                        bookModel.isNotEmpty&&bookModel.toString()!=""? SingleChildScrollView(
+                bookModel.toString()=="null"?Center(child: CircularProgressIndicator(color: MyColors.redBG,)):   bookModel.isNotEmpty? SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: List.generate(bookModel[0].days?.length??0, (index) {
@@ -427,7 +427,7 @@ int isLunchTimeSlotsVisibleIndex=-1;
                               );
                             }),
                           ),
-                        ):Center(child: Text("No Data")),
+                        ):Center(child: CircularProgressIndicator(color: MyColors.redBG,)),
                         Padding(
                           padding: const EdgeInsets.only(
                               left: 16, right: 16, top: 16, bottom: 16),
@@ -438,7 +438,7 @@ int isLunchTimeSlotsVisibleIndex=-1;
                           ),
                         ),
 
-                        bookModel.isNotEmpty&&bookModel.toString()!=""?  ListView.builder(
+                       bookModel.isNotEmpty?  ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                             // itemCount: bookModel[0].weekday![0].meals?.length??0,
@@ -446,7 +446,6 @@ int isLunchTimeSlotsVisibleIndex=-1;
                             itemBuilder: (ctx,int mealIndex){
                             final mealData =  bookModel[0].weekday![0].meals![mealIndex];
                             bool isExpanded = expandedIndex == mealIndex;
-                            print("SSSSSS:${bookModel[0].weekday?[0].meals?.length??0}");
                           return Container(
                             margin: EdgeInsets.only(
                                 left: 16, right: 16, top: 0, bottom: 16),
@@ -547,12 +546,10 @@ int isLunchTimeSlotsVisibleIndex=-1;
                                     ],
                                   ),
                                 ),
-                                // if (selectedIndex==mealIndex || isLunchTimeSlotsVisible&& isLunchTimeSlotsVisibleIndex==mealIndex)
                                 if (isExpanded )
                                   Padding(
                                     padding: const EdgeInsets.only(top:18.0),
                                     child: SizedBox(
-                                      // height: heights*0.3,
                                       child: GridView.builder(
                                         physics: NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
@@ -575,9 +572,7 @@ int isLunchTimeSlotsVisibleIndex=-1;
                                               setState(() {
                                                 availableSeat=data.t02Noofseats??0;
                                                 prebookoffer(widget.store_id.toString(),data.to2Id.toString(),DateFormat('yyyy-MM-dd').format(_selectedDate));
-
                                               });
-                                              print("WWW");
                                               selectTimeSlot(data.t01Time.toString()??"", widget.category_name == "Salon" ? 'Day' : mealData.t03FoodType.toString()??"");}
                                           );
                                         },
@@ -657,7 +652,7 @@ int isLunchTimeSlotsVisibleIndex=-1;
                               ],
                             ),
                           );
-                        }):Center(child: Text("No Data")),
+                        }):Center(child: CircularProgressIndicator(color: MyColors.redBG,)),
                       ]),
                 ),
               ),
