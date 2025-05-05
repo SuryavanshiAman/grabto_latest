@@ -1,9 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
-import 'package:grabto/ui/full_screen_gallery.dart';
 import 'package:flutter/material.dart';
-import 'package:grabto/ui/gallery_screen.dart';
 import 'package:grabto/view_model/menu_type_view_model.dart';
 import 'package:provider/provider.dart';
 

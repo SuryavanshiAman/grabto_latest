@@ -79,6 +79,8 @@ class UserModel {
   final dynamic reason; // Added
   final dynamic created_at;
   final dynamic updated_at;
+  final dynamic wallet;
+  final dynamic referralLink;
   final List<BannerModel> banners;
 
   UserModel({
@@ -101,6 +103,8 @@ class UserModel {
     required this.reason,
     required this.created_at,
     required this.updated_at,
+    required this.wallet,
+    required this.referralLink,
     required this.banners,
   });
 
@@ -125,6 +129,8 @@ class UserModel {
       reason: map['reason'] ?? '',
       created_at: map['created_at'] ?? '',
       updated_at: map['updated_at'] ?? '',
+      wallet: map['wallet'] ?? '',
+      referralLink: map['refrral_link'] ?? '',
       banners: map['banner'] != null
           ? List<BannerModel>.from(
           (map['banner'] as List).map((e) => BannerModel.fromMap(e)))
@@ -153,6 +159,8 @@ class UserModel {
       'reason': reason,
       'created_at': created_at,
       'updated_at': updated_at,
+      'wallet': wallet,
+      'refrral_link': referralLink,
       'banner': banners.map((e) => e.toMap()).toList(),
     };
   }

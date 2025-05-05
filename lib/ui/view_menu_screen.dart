@@ -7,16 +7,16 @@ import 'package:grabto/ui/full_screen_gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:grabto/model/menu_type_model.dart';
 
-class GalleryScreen extends StatefulWidget {
+class ViewMenuScreen extends StatefulWidget {
   List <Data>? menuType;
 
-  GalleryScreen(this.menuType);
+  ViewMenuScreen(this.menuType);
 
   @override
-  State<GalleryScreen> createState() => _GalleryScreenState();
+  State<ViewMenuScreen> createState() => _ViewMenuScreenState();
 }
 
-class _GalleryScreenState extends State<GalleryScreen> {
+class _ViewMenuScreenState extends State<ViewMenuScreen> {
   bool _isLoading1 = false;
 
   @override
@@ -43,7 +43,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 .primaryColor, // Set the loading indicator color
           ),
         ):
-        GalleryGrid(images: widget.menuType),
+        MenuGrid(images: widget.menuType),
 
         // TabBarView(
         //   children: [
@@ -56,7 +56,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
         //           )
         //         : ambienceList.isEmpty
         //             ? _buildNoImagesWidget()
-        //             : GalleryGrid(images: ambienceList),
+        //             : MenuGrid(images: ambienceList),
         //     _isLoading2
         //         ? Center(
         //             child: CircularProgressIndicator(
@@ -66,7 +66,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
         //           )
         //         : foodList.isEmpty
         //             ? _buildNoImagesWidget()
-        //             : GalleryGrid(images: foodList),
+        //             : MenuGrid(images: foodList),
         //   ],
         // ),
       ),
@@ -155,16 +155,16 @@ class _GalleryScreenState extends State<GalleryScreen> {
   // }
 }
 
-class GalleryGrid extends StatefulWidget {
+class MenuGrid extends StatefulWidget {
   final List<Data>? images;
 
-  GalleryGrid({required this.images});
+  MenuGrid({required this.images});
 
   @override
-  State<GalleryGrid> createState() => _GalleryGridState();
+  State<MenuGrid> createState() => _MenuGridState();
 }
 
-class _GalleryGridState extends State<GalleryGrid> {
+class _MenuGridState extends State<MenuGrid> {
   // Initially set to true to show the loading indicator
 
   @override

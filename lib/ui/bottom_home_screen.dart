@@ -26,6 +26,7 @@ import 'package:grabto/ui/subcategories_screen.dart';
 import 'package:grabto/ui/term_and_condition.dart';
 import 'package:grabto/ui/top_categories_screen.dart';
 import 'package:grabto/ui/table_paybill_screen.dart';
+import 'package:grabto/ui/total_visit_screen.dart';
 import 'package:grabto/ui/transaction_screen.dart';
 import 'package:grabto/utils/dashed_line.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
@@ -33,6 +34,7 @@ import 'package:grabto/utils/time_slot.dart';
 import 'package:grabto/view_model/different_location_view_model.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
 import 'package:grabto/view_model/grabto_grab_view_model.dart';
+import 'package:grabto/view_model/near_me_image_view_model.dart';
 import 'package:grabto/widget/rating.dart';
 import 'package:grabto/widget/title_description_widget.dart';
 import 'package:flutter/material.dart';
@@ -114,6 +116,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
         .differentLocationApi(context);
     Provider.of<GrabtoGrabViewModel>(context, listen: false)
         .grabtoGrabApi(context);
+    Provider.of<NearMeImageViewModel>(context, listen: false)
+        .nearMeImageApi(context);
     // fetchSubCategories()
   }
 
@@ -315,6 +319,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
     final differentLocation = Provider.of<DifferentLocationViewModel>(context);
     final data = Provider.of<FilterViewModel>(context);
     final grab = Provider.of<GrabtoGrabViewModel>(context).grabList.data?.data;
+    final nearImage = Provider.of<NearMeImageViewModel>(context).imageList.data;
     print(location.area);
     final imageList = grab?[0].image ?? [];
     return categories.isNotEmpty
@@ -650,37 +655,9 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                           padding: EdgeInsets.only(left: 10, right: 10),
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                                image: AssetImage("assets/images/near_me.png"),
+                                image: NetworkImage(nearImage?.data?[0].image??""),
                                 fit: BoxFit.fill),
-                            // gradient: LinearGradient(
-                            //     colors: [
-                            //   Color(0xffE8F5FD),
-                            //   Color(0xffD8DCF9),
-                            //   Color(0xffC5E7F3),
-                            // ],
-                            //     begin: Alignment.topLeft,
-                            //     end: Alignment.bottomRight)
                           ),
-                          // child: Row(
-                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //   children: [
-                          //     Text(
-                          //       "Restaurants \nNear Me",
-                          //       style: TextStyle(
-                          //           fontSize: 18, fontWeight: FontWeight.w600),
-                          //     ),
-                          //     Container(
-                          //       margin: EdgeInsets.all(10),
-                          //       height: heights * 0.1,
-                          //       width: widths * 0.2,
-                          //       decoration: BoxDecoration(
-                          //           image: DecorationImage(
-                          //               image: AssetImage(
-                          //                   "assets/images/near_me.png"),
-                          //               fit: BoxFit.fill)),
-                          //     ),
-                          //   ],
-                          // ),
                         ),
                       ),
 
@@ -4068,7 +4045,11 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                 ],
                               ),
                             ),
-                            Text("View >",style:TextStyle(color: MyColors.redBG,fontWeight: FontWeight.w500),)
+                            InkWell(
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>MapProfileUI()));
+                                },
+                                child: Text("View >",style:TextStyle(color: MyColors.redBG,fontWeight: FontWeight.w500),))
                           ],
                         ),
                         Container(

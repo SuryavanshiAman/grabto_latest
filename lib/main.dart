@@ -11,9 +11,11 @@ import 'package:flutter/material.dart';
 import 'package:grabto/view_model/different_location_view_model.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
 import 'package:grabto/view_model/flicks_view_model.dart';
+import 'package:grabto/view_model/get_wallet_view_model.dart';
 import 'package:grabto/view_model/grabto_grab_view_model.dart';
 import 'package:grabto/view_model/menu_data_view_model.dart';
 import 'package:grabto/view_model/menu_type_view_model.dart';
+import 'package:grabto/view_model/near_me_image_view_model.dart';
 import 'package:grabto/view_model/recommended_view_model.dart';
 import 'package:grabto/view_model/similar_restro_view_model.dart';
 import 'package:grabto/view_model/vibe_view_model.dart';
@@ -217,6 +219,8 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => FlicksViewModel()),
         ChangeNotifierProvider(create: (_) => MenuDataViewModel()),
         ChangeNotifierProvider(create: (_) => MenuTypeViewModel()),
+        ChangeNotifierProvider(create: (_) => GetWalletViewModel()),
+        ChangeNotifierProvider(create: (_) => NearMeImageViewModel()),
       ],
       child: MaterialApp(
         title: 'Grabto',

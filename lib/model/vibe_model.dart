@@ -1,15 +1,15 @@
 class VibeModel {
   String? res;
-  List<Data>? data;
+  List<VibeData>? data;
 
   VibeModel({this.res, this.data});
 
   VibeModel.fromJson(Map<String, dynamic> json) {
     res = json['res'];
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <VibeData>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(new VibeData.fromJson(v));
       });
     }
   }
@@ -24,7 +24,7 @@ class VibeModel {
   }
 }
 
-class Data {
+class VibeData {
   dynamic id;
   dynamic storeId;
   dynamic foodType;
@@ -33,7 +33,7 @@ class Data {
   dynamic createdAt;
   dynamic updatedAt;
 
-  Data(
+  VibeData(
       {this.id,
         this.storeId,
         this.foodType,
@@ -42,7 +42,7 @@ class Data {
         this.createdAt,
         this.updatedAt});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  VibeData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     storeId = json['store_id'];
     foodType = json['food_type'];

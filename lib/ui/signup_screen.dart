@@ -34,6 +34,7 @@ class _SignupScreenState extends State<SignupScreen> {
   TextEditingController mobileController = TextEditingController();
   TextEditingController cityController = TextEditingController();
   TextEditingController dobCont = TextEditingController();
+  TextEditingController referralCont = TextEditingController();
   DateTime selectedDate = DateTime.now();
   DateTime? _selectedDate;
   List<CityModel> cityList = [];
@@ -152,7 +153,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child: Container(
-                        height: 470,
+                        height: 500,
                         width: MediaQuery.of(context).size.width,
                         decoration: const BoxDecoration(
                           color: MyColors.roundBg,
@@ -162,7 +163,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                         child: Container(
                           margin: const EdgeInsets.symmetric(
-                              horizontal: 25, vertical: 20),
+                              horizontal: 25, ),
                           child: Column(
                             children: [
                               const SizedBox(
@@ -287,50 +288,49 @@ class _SignupScreenState extends State<SignupScreen> {
                                           const SizedBox(
                                             height: 10,
                                           ),
-                                          // Container(
-                                          //   height: 55,
-                                          //   child: TextField(
-                                          //     controller: cityController,
-                                          //     enabled: true,
-                                          //     cursorColor: Colors.white,
-                                          //     keyboardType: TextInputType.text,
-                                          //     //maxLength: 10,
-                                          //     minLines: 1,
-                                          //     style: TextStyle(
-                                          //         color: MyColors.whiteBG),
-                                          //     decoration: InputDecoration(
-                                          //       hintText: 'City',
-                                          //       hintStyle: TextStyle(
-                                          //           color: Color(0xFFDDDDDD)),
-                                          //       prefixIcon: Icon(
-                                          //           Icons.mobile_friendly,
-                                          //           color: MyColors.whiteBG),
-                                          //       enabledBorder:
-                                          //           OutlineInputBorder(
-                                          //         gapPadding: 0,
-                                          //         borderSide: BorderSide(
-                                          //             color: MyColors
-                                          //                 .primaryColor),
-                                          //         borderRadius:
-                                          //             BorderRadius.circular(
-                                          //                 50.0),
-                                          //       ),
-                                          //       focusedBorder:
-                                          //           OutlineInputBorder(
-                                          //         borderSide: BorderSide(
-                                          //             color: MyColors.whiteBG),
-                                          //         borderRadius:
-                                          //             BorderRadius.circular(
-                                          //                 50.0),
-                                          //       ),
-                                          //     ),
-                                          //   ),
-                                          // ),
-                                          // DobWidget(
-                                          //   controller: dobCont,
-                                          //   initialDate: selectedDate,
-                                          //   onDateSelected: _handleDateSelected,
-                                          // ),
+                                          Container(
+                                            height: 50,
+                                            child: TextField(
+                                              controller: referralCont,
+                                              enabled: true,
+                                              cursorColor: Colors.white,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              //maxLength: 10,
+                                              minLines: 1,
+                                              style: const TextStyle(
+                                                  color: MyColors.whiteBG),
+                                              decoration: InputDecoration(
+                                                hintText: 'Referral code ',
+                                                hintStyle: const TextStyle(
+                                                    color: Color(0xFFDDDDDD)),
+                                                prefixIcon: const Icon(
+                                                    Icons.redeem_sharp,
+                                                    color: MyColors.whiteBG),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  gapPadding: 0,
+                                                  borderSide: const BorderSide(
+                                                      color: MyColors
+                                                          .primaryColor),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          50.0),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: const BorderSide(
+                                                      color: MyColors.whiteBG),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          50.0),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
                                           Container(
                                             margin: EdgeInsets.only(top: 10),
                                             padding: EdgeInsets.only(left: 8),
@@ -356,46 +356,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                               ],
                                             ),
                                           ),
-                                          // Container(
-                                          //   height: 55,
-                                          //   child: TextField(
-                                          //     controller: mobileController,
-                                          //     enabled: true,
-                                          //     cursorColor: Colors.white,
-                                          //     keyboardType:
-                                          //     TextInputType.number,
-                                          //     //maxLength: 10,
-                                          //     minLines: 1,
-                                          //     style: const TextStyle(
-                                          //         color: MyColors.whiteBG),
-                                          //     decoration: InputDecoration(
-                                          //       hintText: 'Date Of Birth',
-                                          //       hintStyle: const TextStyle(
-                                          //           color: Color(0xFFDDDDDD)),
-                                          //       prefixIcon: const Icon(
-                                          //           Icons.cal,
-                                          //           color: MyColors.whiteBG),
-                                          //       enabledBorder:
-                                          //       OutlineInputBorder(
-                                          //         gapPadding: 0,
-                                          //         borderSide: const BorderSide(
-                                          //             color: MyColors
-                                          //                 .primaryColor),
-                                          //         borderRadius:
-                                          //         BorderRadius.circular(
-                                          //             50.0),
-                                          //       ),
-                                          //       focusedBorder:
-                                          //       OutlineInputBorder(
-                                          //         borderSide: const BorderSide(
-                                          //             color: MyColors.whiteBG),
-                                          //         borderRadius:
-                                          //         BorderRadius.circular(
-                                          //             50.0),
-                                          //       ),
-                                          //     ),
-                                          //   ),
-                                          // ),
                                           const SizedBox(
                                             height: 17,
                                           ),
@@ -452,55 +412,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                           const SizedBox(
                                             height: 17,
                                           ),
-                                          // Container(
-                                          //   height: 55,
-                                          //   child: TextField(
-                                          //     controller: _dobController,
-                                          //     //readOnly: true, // Make TextField readonly
-                                          //     // onTap: () {
-                                          //     //   _selectDate(context); // Open date picker when tapping on TextField
-                                          //     //
-                                          //     // },
-                                          //     cursorColor: Colors.white,
-                                          //     keyboardType:
-                                          //         TextInputType.datetime,
-                                          //     minLines: 1,
-                                          //     inputFormatters: [
-                                          //       DateInputFormatter()
-                                          //     ],
-                                          //     style: TextStyle(
-                                          //         color: Colors.white),
-                                          //     decoration: InputDecoration(
-                                          //       hintText: 'DOB',
-                                          //       hintStyle: TextStyle(
-                                          //           color: Color(0xFFDDDDDD)),
-                                          //       prefixIcon: Icon(
-                                          //           Icons.calendar_today,
-                                          //           color: Colors.white),
-                                          //       enabledBorder:
-                                          //           OutlineInputBorder(
-                                          //         gapPadding: 0,
-                                          //         borderSide: BorderSide(
-                                          //             color: MyColors
-                                          //                 .primaryColor),
-                                          //         borderRadius:
-                                          //             BorderRadius.circular(
-                                          //                 50.0),
-                                          //       ),
-                                          //       focusedBorder:
-                                          //           OutlineInputBorder(
-                                          //         borderSide: BorderSide(
-                                          //             color: MyColors.whiteBG),
-                                          //         borderRadius:
-                                          //             BorderRadius.circular(
-                                          //                 50.0),
-                                          //       ),
-                                          //     ),
-                                          //   ),
-                                          // ),
-                                          // SizedBox(
-                                          //   height: 17,
-                                          // ),
                                           ElevatedButton(
                                             onPressed: () async {
                                               if (_selectedDate==null) {
@@ -510,36 +421,33 @@ class _SignupScreenState extends State<SignupScreen> {
                                               final name = nameController.text;
                                               final mobile = mobileController.text;
                                               final city = "$cityId";
+                                              print(city);
                                               final dob =  DateFormat('dd-MM-yyy').format(DateTime.parse(_selectedDate.toString()??""));
-                                              // final dob = dobCont.text;
-
-                                              String token =
-                                                  await SharedPref.getToken();
+                                              String token = await SharedPref.getToken();
                                               print("llll:${_selectedDate}");
-                                              // user_signup(
-                                              //     name, mobile, city,dob);
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) => OtpScreen(
-                                                        name:name,
-                                                        mobile: mobile,
-                                                        dob:dob,
-                                                        city:city,
-                                                        type:"2"
-                                                      )));
+                                              user_signup(name, mobile,referralCont.text ,city,dob);
+                                              // Navigator.push(
+                                              //     context,
+                                              //     MaterialPageRoute(
+                                              //         builder: (context) => OtpScreen(
+                                              //           name:name,
+                                              //           mobile: mobile,
+                                              //           dob:dob,
+                                              //           city:city,
+                                              //           type:"2"
+                                              //         )));
                                             },
-                                            child: const Text(
-                                              "Sign Up",
-                                              style: TextStyle(
-                                                  fontSize: 17,
-                                                  color: Colors.white),
-                                            ),
                                             style: ButtonStyle(
                                               backgroundColor:
                                                   MaterialStateProperty.all<
                                                           Color>(
                                                       MyColors.btnBgColor),
+                                            ),
+                                            child: const Text(
+                                              "Sign Up",
+                                              style: TextStyle(
+                                                  fontSize: 17,
+                                                  color: Colors.white),
                                             ),
                                           ),
                                         ],
@@ -578,7 +486,7 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Future<void> user_signup(
-      String name, String mobile, String city, String dob) async {
+      String name, String mobile,String refer, String city, String dob) async {
     print(dob);
     print("dob");
     if (name.isEmpty) {
@@ -590,9 +498,6 @@ class _SignupScreenState extends State<SignupScreen> {
     } else if (mobile.length != 10) {
       showErrorMessage(context,
           message: 'Please fill only 10 digit mobile number');
-      return;
-    } else if (dob==null) {
-      showErrorMessage(context, message: 'Please fill Date of birth');
       return;
     } else if (city == "0") {
       showErrorMessage(context, message: 'Please fill city');
@@ -608,6 +513,7 @@ class _SignupScreenState extends State<SignupScreen> {
         "mobile": mobile,
         "current_location": city,
         "dob": dob,
+        "referral":refer
       };
       final response = await ApiServices.user_signup(context, body);
 
@@ -622,12 +528,27 @@ class _SignupScreenState extends State<SignupScreen> {
           final user = UserModel.fromMap(data);
 
           if (user != null) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => OtpScreen(
-                      mobile: mobile,
-                    )));
+            await SharedPref.userLogin({
+              SharedPref.KEY_ID: user.id,
+              SharedPref.REFFREE: user.reffree,
+              SharedPref.KEY_CURRENT_MONTH: user.current_month,
+              SharedPref.KEY_PREMIUM: user.premium,
+              SharedPref.KEY_STATUS: user.status,
+              SharedPref.KEY_NAME: user.name,
+              SharedPref.KEY_EMAIL: user.email,
+              SharedPref.KEY_MOBILE: user.mobile,
+              SharedPref.KEY_DOB: user.dob,
+              SharedPref.KEY_OTP: user.otp,
+              SharedPref.KEY_IMAGE: user.image,
+              SharedPref.KEY_HOME_LOCATION: user.home_location,
+              SharedPref.KEY_CURRENT_LOCATION: user.current_location,
+              SharedPref.KEY_LAT: user.lat,
+              SharedPref.KEY_LONG: user.long,
+              SharedPref.KEY_CREATED_AT: user.created_at,
+              SharedPref.KEY_UPDATED_AT: user.updated_at,
+              SharedPref.WALLET: user.wallet,
+            });
+            _getCurrentLocation();
           } else {
             // Handle null user
             showErrorMessage(context, message: 'User data is invalid');

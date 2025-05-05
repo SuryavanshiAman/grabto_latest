@@ -18,12 +18,13 @@ import 'package:grabto/model/store_model.dart';
 import 'package:grabto/model/terms_condition_model.dart';
 import 'package:grabto/model/time_model.dart';
 import 'package:grabto/model/user_model.dart';
+import 'package:grabto/model/vibe_model.dart';
 import 'package:grabto/services/api.dart';
 import 'package:grabto/services/api_services.dart';
 import 'package:grabto/theme/theme.dart';
 import 'package:grabto/ui/all_review_screen.dart';
 import 'package:grabto/ui/book_table_screen.dart';
-import 'package:grabto/ui/gallery_screen.dart';
+import 'package:grabto/ui/galary_screen.dart';
 import 'package:grabto/ui/pay_bill_screen.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
@@ -33,8 +34,6 @@ import 'package:grabto/view_model/recommended_view_model.dart';
 import 'package:grabto/view_model/similar_restro_view_model.dart';
 import 'package:grabto/view_model/vibe_view_model.dart';
 import 'package:grabto/widget/add_rating_widget.dart';
-import 'package:grabto/widget/coupon_card.dart';
-import 'package:grabto/widget/doted_line.dart';
 import 'package:grabto/widget/features_widget.dart';
 import 'package:grabto/widget/menu_card_widget.dart';
 import 'package:grabto/widget/opneing_hours.dart';
@@ -1291,6 +1290,19 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold),
                                   ),
+                                  Spacer(),
+                                  InkWell(
+                                    onTap: (){
+                                      navigateToGallerScreen(storeId,vibe.data);
+                                    },
+                                    child: Text(
+                                      "View all",
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: MyColors.redBG,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -1812,14 +1824,14 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
     );
   }
 
-  // Future<void> navigateToGallerScreen(int store_id) async {
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => GalleryScreen(store_id),
-  //     ),
-  //   );
-  // }
+  Future<void> navigateToGallerScreen(int store_id,VibeModel? videData) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GalleryScreen(store_id,videData),
+      ),
+    );
+  }
 
   Future<void> fetchStoresTermCondition(String store_id) async {
     try {

@@ -28,6 +28,8 @@ class SharedPref {
   static const String REASON = "reason";
   static const String KEY_CREATED_AT = "created_at";
   static const String KEY_UPDATED_AT = "updated_at";
+  static const String WALLET = "wallet";
+  static const String REFERRALLINK = "refrral_link";
   static const String KEY_TOKEN = "token";
   static const String KEY_BANNER = 'banner';
   static const String KEY_GATEWAY_STATUS = "gateway_status";
@@ -55,6 +57,8 @@ class SharedPref {
     await prefs.setString(REASON, userData[REASON] ?? '');
     await prefs.setString(KEY_CREATED_AT, userData[KEY_CREATED_AT] ?? '');
     await prefs.setString(KEY_UPDATED_AT, userData[KEY_UPDATED_AT] ?? '');
+    await prefs.setString(WALLET, userData[WALLET] ?? '');
+    await prefs.setString(REFERRALLINK, userData[REFERRALLINK] ?? '');
     String bannerJson = jsonEncode(userData[KEY_BANNER]);
     await prefs.setString(KEY_BANNER, bannerJson);
   }
@@ -150,6 +154,8 @@ class SharedPref {
       reason: prefs.getString(REASON) ?? '',
       created_at: prefs.getString(KEY_CREATED_AT) ?? '',
       updated_at: prefs.getString(KEY_UPDATED_AT) ?? '',
+      wallet: prefs.getString(WALLET) ?? '',
+      referralLink: prefs.getString(REFERRALLINK) ?? '',
       banners: banners,
 
 

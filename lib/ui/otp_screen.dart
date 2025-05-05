@@ -100,6 +100,7 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
@@ -120,116 +121,156 @@ class _OtpScreenState extends State<OtpScreen> {
         elevation: 0,
         backgroundColor: Colors.white,
       ),
-      body: Stack(
-        children: [
-          ListView(
-            shrinkWrap: true,
-            // mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Container(
-                  margin: EdgeInsets.symmetric(horizontal: 30),
-                  height: 250,
-                  constraints: const BoxConstraints(maxHeight: 260),
-                  child: Image.asset('assets/vector/otp_img.png')),
-              Center(
-                child: Text('Enter verification code',
-                    style: TextStyle(
-                        color: MyColors.txtTitleColor,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500)),
-              ),
-              Text(
-                  'Enter the 4 digit number that \n we sent to ${widget.mobile}',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: MyColors.txtDescColor,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500)),
-              SizedBox(
-                height: 10,
-              ),
-              Pinput(
-                controller: otpCon,
-                length: 4,
-                defaultPinTheme: PinTheme(
-                  width: widths * 0.15,
-                  height: heights * 0.07,
-                  textStyle: TextStyle(fontSize: 20, color: MyColors.textColor),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(
-                      color: Colors.grey,
-                      width: 2,
-                    ),
-                  ),
-                ),
-                focusedPinTheme: PinTheme(
-                  width: widths * 0.15,
-                  height: heights * 0.07,
-                  textStyle:
-                  const TextStyle(fontSize: 20, color: MyColors.textColor),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(
-                      color: MyColors.primaryColor,
-                      width: 2,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 30,
-              ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child:Stack(
+                  children: [
+                    Column(
+                      // shrinkWrap: true,
+                      // mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        // Container(
+                        //     margin: EdgeInsets.symmetric(horizontal: 30),
+                        //     height: 250,
+                        //     constraints: const BoxConstraints(maxHeight: 260),
+                        //     child: Image.asset('assets/vector/otp_img.png')),
+                        SizedBox(height: heights*0.1,),
+                        Center(
+                          child: Text('Verify Code',
+                              style: TextStyle(
+                                  color: MyColors.txtTitleColor,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500)),
+                        ),
+                        Text(
+                            'Please enter code we just sent to',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: MyColors.txtDescColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500)),
+                        Text(
+                            "+ ${widget.mobile}",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: MyColors.blackBG,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500)),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Pinput(
+                          controller: otpCon,
+                          length: 4,
+                          defaultPinTheme: PinTheme(
+                            width: widths * 0.15,
+                            height: heights * 0.07,
+                            textStyle: TextStyle(fontSize: 20, color: MyColors.textColor),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: MyColors.textColorTwo.withAlpha(10)
+                              // border: Border.all(
+                              //   color: Colors.grey,
+                              //   width: 2,
+                              // ),
+                            ),
+                          ),
+                          focusedPinTheme: PinTheme(
+                            width: widths * 0.15,
+                            height: heights * 0.07,
+                            textStyle:
+                            const TextStyle(fontSize: 20, color: MyColors.textColor),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(
+                                color: MyColors.primaryColor,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Text(
+                            "Didn't recieve OTP yet? ",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: MyColors.txtDescColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500)),
+                        Center(
+                          child: Text(
+                            "Resend Code",
+                            style: TextStyle( fontWeight: FontWeight.bold,decoration: TextDecoration.underline,),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Container(
+                          width: widths,
+                          // margin: const EdgeInsets.symmetric(
+                          //   horizontal: 10,
+                          // ),
+                          child: ElevatedButton(
+                            onPressed: () {
 
-              Container(
-                width: MediaQuery.of(context).size.width,
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                ),
-                child: ElevatedButton(
-                  onPressed: () {
+                              verify_otp(widget.mobile, otpCon.text);
+                              // user_login(widget.mobile);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: MyColors.redBG,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              resendOtp==false?  "Verify":"Resend OTP",
+                              style:
+                              TextStyle(fontSize: 15, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        Spacer(),
+                        Center(
+                          child: Image.asset(
+                            'assets/images/login_img.png',
+                            height: heights * 0.35,
+                            width: widths * 0.95,
+                            fit: BoxFit.fill,
+                          ),
+                        ),
 
-                     verify_otp(widget.mobile, otpCon.text);
-                    // user_login(widget.mobile);
-                  },
-                  child: Text(
-                    resendOtp==false?  "Verify":"Resend OTP",
-                    style:
-                        TextStyle(fontSize: 15, color: Colors.white),
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        MyColors.btnBgColor),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Center(
-                child: Text(
-                  "Resend OTP in $_seconds seconds",
-                  style: TextStyle( fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-          // Show a loading indicator if _isLoading is true
-          if (isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5), // Adjust opacity as needed
-              child: Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    MyColors.primaryColor,
-                  ),
-                  // Change the color
-                  strokeWidth: 4,
+                      ],
+                    ),
+                    // Show a loading indicator if _isLoading is true
+                    if (isLoading)
+                      Container(
+                        color: Colors.black.withOpacity(0.5), // Adjust opacity as needed
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              MyColors.primaryColor,
+                            ),
+                            // Change the color
+                            strokeWidth: 4,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
-        ],
-      ),
+          );
+        },
+      )
+
     );
   }
 
@@ -465,6 +506,7 @@ showSuccessMessage(context, message: response['msg']);
           if (user != null) {
             await SharedPref.userLogin({
               SharedPref.KEY_ID: user.id,
+              SharedPref.REFFREE: user.reffree,
               SharedPref.KEY_CURRENT_MONTH: user.current_month,
               SharedPref.KEY_PREMIUM: user.premium,
               SharedPref.KEY_STATUS: user.status,
@@ -478,6 +520,7 @@ showSuccessMessage(context, message: response['msg']);
               SharedPref.KEY_CURRENT_LOCATION: user.current_location,
               SharedPref.KEY_LAT: user.lat,
               SharedPref.KEY_LONG: user.long,
+              SharedPref.WALLET: user.wallet,
               SharedPref.KEY_CREATED_AT: user.created_at,
               SharedPref.KEY_UPDATED_AT: user.updated_at,
             });

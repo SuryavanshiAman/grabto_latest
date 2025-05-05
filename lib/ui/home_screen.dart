@@ -38,6 +38,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../helper/location_provider.dart';
+import 'account_setting.dart';
 import 'bottom_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -220,62 +221,19 @@ print("dsd ${banners.length}");
         leadingWidth: 20,
         centerTitle: true,
         title:_selectedIndex==1? Text("Explore"):_selectedIndex==2?Text("Pay Bill"):_selectedIndex==3? Text("Flicks"): Text("Profile"),
-        // title: Column(
-        //   crossAxisAlignment: CrossAxisAlignment.start,
-        //   children: [
-        //     //
-        //     InkWell(
-        //       onTap: (){
-        //         Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
-        //
-        //       },
-        //       child: Row(
-        //         children: [
-        //           Icon(LucideIcons.navigation,size: 16,color: MyColors.redBG,),
-        //           SizedBox(width: 2,),
-        //           Container(
-        //             width: widths*0.41,
-        //               child: Text(address.address,style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),)),
-        //           Icon(Icons.keyboard_arrow_down_outlined,size: 16,color: MyColors.redBG,),
-        //
-        //         ],
-        //       ),
-        //     ),
-        //     Text(address.area,maxLines: 1,style: TextStyle(fontSize: 11,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),),
-        //   ],
-        // ),
-        // actions: [
-        //   Text(
-        //     "${current_location}",
-        //     style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-        //   ),
-        //   const SizedBox(width: 10),
-        //   Container(
-        //     width: 45,
-        //     height: 45,
-        //     margin: const EdgeInsets.only(right: 15),
-        //     child: Card(
-        //       elevation: 2,
-        //       color: Colors.white,
-        //       shadowColor: MyColors.primaryColorLight,
-        //       shape: RoundedRectangleBorder(
-        //         borderRadius: BorderRadius.circular(40.0),
-        //       ),
-        //       child: IconButton(
-        //         icon: const Icon(
-        //           Icons.pin_drop,
-        //           size: 24,
-        //           color: MyColors.primaryColor,
-        //         ),
-        //         onPressed: () {
-        //           // Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressScreen()));
-        //           // AddressScreen();
-        //           _showCityDialog();
-        //         },
-        //       ),
-        //     ),
-        //   ),
-        // ],
+      actions:_selectedIndex==4? [
+        InkWell(
+          onTap: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountSettingsScreen()));
+          },
+          child: CircleAvatar(
+            radius: 12,
+            backgroundColor: MyColors.whiteBG,
+            child: Icon(Icons.settings_outlined,size: 16,),
+          ),
+        ),
+        SizedBox(width: widths*0.02,)
+      ]:null,
       ):null,
       body:banners !=[] && banners.isNotEmpty && banners.length>=1 ?Stack(children: [
         Container(
@@ -986,6 +944,7 @@ print("dsd ${banners.length}");
           if (user != null) {
             await SharedPref.userLogin({
               SharedPref.KEY_ID: user.id,
+              SharedPref.REFFREE: user.reffree,
               SharedPref.KEY_CURRENT_MONTH: user.current_month,
               SharedPref.KEY_PREMIUM: user.premium,
               SharedPref.KEY_STATUS: user.status,
@@ -1000,6 +959,8 @@ print("dsd ${banners.length}");
               SharedPref.ADDRESS: user.address,
               SharedPref.KEY_LAT: user.lat,
               SharedPref.KEY_LONG: user.long,
+              SharedPref.WALLET: user.wallet,
+              SharedPref.REFERRALLINK: user.referralLink,
               SharedPref.KEY_CREATED_AT: user.created_at,
               SharedPref.KEY_UPDATED_AT: user.updated_at,
               // SharedPref.KEY_BANNER: jsonEncode(user.banners),

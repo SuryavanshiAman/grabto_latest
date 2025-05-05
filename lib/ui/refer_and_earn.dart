@@ -1,432 +1,411 @@
-// import 'package:custom_clippers/custom_clippers.dart';
-// import 'package:dotted_border/dotted_border.dart';
-// import 'package:flutter/material.dart';
-//
-// import '../theme/theme.dart';
-//
-// class ReferAndEarn extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: MyColors.backgroundBg,
-//       appBar: AppBar(
-//         backgroundColor: MyColors.backgroundBg,
-//         leading: InkWell(
-//             onTap: () {
-//               Navigator.pop(context);
-//             },
-//             child: Icon(Icons.arrow_back_ios)),
-//         centerTitle: true,
-//         title: Text(
-//           "Refer & Earn",
-//           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//         ),
-//       ),
-//       body: Container(
-//         color: MyColors.backgroundBg,
-//         child: SingleChildScrollView(
-//           child: Column(
-//             children: [
-//               SizedBox(
-//                 height: 50,
-//               ),
-//               Center(
-//                 child: Container(
-//                     constraints: const BoxConstraints(maxHeight: 240),
-//                     margin: const EdgeInsets.symmetric(horizontal: 8),
-//                     child: Image.asset('assets/vector/vect_refer.png')),
-//               ),
-//               SizedBox(
-//                 height: 20,
-//               ),
-//               Text(
-//                 "Refer Your Friends",
-//                 style: TextStyle(
-//                     fontSize: 25,
-//                     fontWeight: FontWeight.bold,
-//                     color: MyColors.txtTitleColor),
-//               ),
-//               Text(
-//                 "Invite your friends and earn money",
-//                 style: TextStyle(
-//                     fontSize: 15,
-//                     fontWeight: FontWeight.normal,
-//                     color: MyColors.txtDescColor),
-//               ),
-//               SizedBox(
-//                 height: 40,
-//               ),
-//
-//               ClipPath(
-//                 clipper: MultiplePointsClipper(Sides.bottom, heightOfPoint: 10),
-//
-//                 child: Container(
-//                   height: 200,
-//                   margin: EdgeInsets.symmetric(horizontal: 20),
-//                   padding: EdgeInsets.all(20),
-//                   color: Colors.red,
-//                   alignment: Alignment.center,
-//                   child: Column(
-//                     children: [
-//                       DottedBorder(
-//                         borderType: BorderType.RRect,
-//                         radius: Radius.circular(12),
-//                         strokeWidth: 1,
-//                         dashPattern: [6, 3],
-//                         // Adjust the dash pattern as needed
-//                         color: MyColors.whiteBG,
-//                         child: Container(
-//                           width: 180,
-//                           height: 50,
-//                           // Your container content goes here
-//                           child: Center(
-//                             child: Text('DIGIC20',style: TextStyle(fontSize: 22,color: MyColors.whiteBG),),
-//                           ),
-//                         ),
-//                       ),
-//                       SizedBox(
-//                         height: 40,
-//                       ),
-//                       Container(
-//                         width: 200,height: 40,
-//                         child: ElevatedButton(
-//                           onPressed: () {
-//
-//                           },
-//                           child: Text(
-//                             "Share Your Code",
-//                             style: TextStyle(fontSize: 16, color: MyColors.whiteBG),
-//                           ),
-//                           style: ButtonStyle(
-//                             backgroundColor: MaterialStateProperty.all<Color>(
-//                                 MyColors.primaryColor),
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//               SizedBox(
-//                 height: 200,
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:grabto/helper/user_provider.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
+import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
-class ReferAndEarnScreen extends StatelessWidget {
-  final String referralCode = "RISH1556";
+class ReferAndEarnScreen extends StatefulWidget {
+  const ReferAndEarnScreen({super.key});
 
   @override
+  State<ReferAndEarnScreen> createState() => _ReferAndEarnScreenState();
+}
+
+class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
+  final String referralCode = "RISH1556";
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<UserProvider>(context,listen: false).fetchUserDetails();
+  }
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColors.whiteBG,
-      appBar: AppBar(
-        backgroundColor: MyColors.whiteBG,
-        title: Text("Refer and Earn",style:
-          TextStyle(fontSize: 18),),
-        leading: BackButton(),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return  Consumer<UserProvider>(
+      builder: (context, userProvider, child) {
+        final user = userProvider.user;
+        return Scaffold(
+          backgroundColor: MyColors.whiteBG,
+          appBar: AppBar(
+            backgroundColor: MyColors.whiteBG,
+            title: Text("Refer and Earn",style:
+            TextStyle(fontSize: 18),),
+            leading: BackButton(),
+          ),
+          body: SingleChildScrollView(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
-            /// Wallet Card
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                // color: Colors.red,
-                image: DecorationImage(image:AssetImage("assets/images/Card.png"),fit: BoxFit.fill),
-                borderRadius: BorderRadius.circular(16),
+                /// Wallet Card
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    // color: Colors.red,
+                    image: DecorationImage(image:AssetImage("assets/images/Card.png"),fit: BoxFit.fill),
+                    borderRadius: BorderRadius.circular(16),
 
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          CircleAvatar(
-                            radius: 8,
-                            backgroundImage: AssetImage("assets/images/grabto_logo_without_text.png"),
-                            ),
-                          SizedBox(width: widths*0.01,),
-                          Text("GRABTO WALLET",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  color: Colors.black)),
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 8,
+                                backgroundImage: AssetImage("assets/images/grabto_logo_without_text.png"),
+                              ),
+                              SizedBox(width: widths*0.01,),
+                              Text("GRABTO WALLET",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: Colors.black)),
+                            ],
+                          ),
+                          Text(user?.reffree.toString()??"",
+                              style: TextStyle(fontWeight: FontWeight.w500)),
                         ],
                       ),
-                      Text(referralCode,
+                      SizedBox(height: 16),
+
+                      Center(
+                        child: Text("Balance: ₹${user?.wallet??""}",
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black)),
+                      ),
+                      SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 80.0),
+                        child:   Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "Member Since:",
+                                style: TextStyle(
+                                    color: Colors.black54, fontSize: 12, fontWeight: FontWeight.bold),
+                              ),
+                              TextSpan(
+                                text: " 09/07/2024",
+                                style: TextStyle(fontSize: 13, color: Colors.black),
+                              ),
+                            ],
+                          ),
+                        ),
+                        //   Text("Member Since: 09/07/2024",
+                        //       style: TextStyle(color: Colors.black54)),
+                      ),
+                      SizedBox(height: 16),
+                      Text(user?.name??"",
                           style: TextStyle(fontWeight: FontWeight.w500)),
                     ],
                   ),
-                  SizedBox(height: 16),
+                ),
 
-                  Center(
-                    child: Text("Balance: ₹5000",
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black)),
-                  ),
-                  SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 80.0),
-                    child:   Text.rich(
+                SizedBox(height: 24),
+
+                /// Earn Text
+                Text.rich(
+                  TextSpan(
+                    children: [
                       TextSpan(
-                        children: [
-                          TextSpan(
-                            text: "Member Since:",
-                            style: TextStyle(
-                                color: Colors.black54, fontSize: 12, fontWeight: FontWeight.bold),
-                          ),
-                          TextSpan(
-                            text: " 09/07/2024",
-                            style: TextStyle(fontSize: 13, color: Colors.black),
-                          ),
-                        ],
+                        text: "Earn ₹200",
+                        style: TextStyle(
+                            color: MyColors.redBG, fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: "\nfor every friend you refer",
+                        style: TextStyle(fontSize: 18, color: Colors.black,fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text("Earn ₹1000 for the first 5 referrals",
+                    style: TextStyle(color:MyColors.textColorTwo,fontSize: 12)),
+
+                SizedBox(height: 12),
+
+                /// Invite Button
+                InkWell(
+                  onTap: (){
+                    Share.share(user?.referralLink??"");
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    width: widths*0.5,
+                    decoration: BoxDecoration(
+                        color: Color(0xfffff6f3),
+                        borderRadius: BorderRadius.circular(5)
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text("Invite via Referral link",style: TextStyle(color: MyColors.redBG,fontWeight: FontWeight.w500,fontSize: 12),),
+                        Icon( Icons.file_upload_outlined,color: MyColors.redBG,size: 18,)
+                      ],
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 20),
+
+                /// Offer Boxes
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(12),
+                        margin: EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text("You Get",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold, fontSize: 14)),
+                                SizedBox(width: widths*0.01,),
+                                Icon( Icons.card_giftcard,color: MyColors.redBG,size: 18,)
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            Text("25% off upto ₹200 on your next order.",
+                                style: TextStyle(fontSize: 12,color: MyColors.textColorTwo)),
+                          ],
+                        ),
                       ),
                     ),
-                  //   Text("Member Since: 09/07/2024",
-                  //       style: TextStyle(color: Colors.black54)),
-                  ),
-                  SizedBox(height: 16),
-                  Text("MR. RISHABH SAHU",
-                      style: TextStyle(fontWeight: FontWeight.w500)),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 24),
-
-            /// Earn Text
-            Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: "Earn ₹200",
-                    style: TextStyle(
-                        color: MyColors.redBG, fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  TextSpan(
-                    text: "\nfor every friend you refer",
-                    style: TextStyle(fontSize: 18, color: Colors.black,fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 8),
-            Text("Earn ₹1000 for the first 5 referrals",
-                style: TextStyle(color:MyColors.textColorTwo,fontSize: 12)),
-
-            SizedBox(height: 12),
-
-            /// Invite Button
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              width: widths*0.5,
-              decoration: BoxDecoration(
-                color: Color(0xfffff6f3),
-                borderRadius: BorderRadius.circular(5)
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text("Invite via Referral link",style: TextStyle(color: MyColors.redBG,fontWeight: FontWeight.w500,fontSize: 12),),
-                 Icon( Icons.file_upload_outlined,color: MyColors.redBG,size: 18,)
-                ],
-              ),
-            ),
-
-            SizedBox(height: 20),
-
-            /// Offer Boxes
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.all(12),
-                    margin: EdgeInsets.only(right: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(12),
+                        margin: EdgeInsets.only(left: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("You Get",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 14)),
-                            SizedBox(width: widths*0.01,),
-                            Icon( Icons.card_giftcard,color: MyColors.redBG,size: 18,)
+                            Row(
+                              children: [
+                                Text("They Get",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold, fontSize: 14)),
+                                SizedBox(width: widths*0.01,),
+                                Icon( Icons.card_giftcard,color: MyColors.redBG,size: 18,)
+                              ],
+                            ),
+                            // Text("They Get 🎁",
+                            //     style: TextStyle(
+                            //         fontWeight: FontWeight.bold, fontSize: 14)),
+                            SizedBox(height: 8),
+                            Text("25% off upto ₹50 on their first order.",
+                                style: TextStyle(fontSize: 12,color: MyColors.textColorTwo
+                                )),
                           ],
                         ),
-                        SizedBox(height: 8),
-                        Text("25% off upto ₹200 on your next order.",
-                            style: TextStyle(fontSize: 12,color: MyColors.textColorTwo)),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-                Expanded(
+
+                SizedBox(height: 24),
+
+                /// Referral Code Box
+                Row(
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      height: heights * 0.02,
+                      width: 2,
+                      color: MyColors.redBG,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "Referral Code",
+                      style: TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+                // Text("Referral Code",
+                //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                SizedBox(height: 12),
+                Center(
                   child: Container(
-                    padding: EdgeInsets.all(12),
-                    margin: EdgeInsets.only(left: 8),
+                    width:widths*0.4,
+                    padding: EdgeInsets.symmetric(vertical: 10,),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.grey.shade300),
+                      color: Color(0xFFFFF7E6),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Center(
+                      child: Text(
+                          user?.reffree.toString()??"",
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 2),
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 16),
+
+                /// Share and Copy Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
                       children: [
-                        Row(
-                          children: [
-                            Text("They Get",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 14)),
-                            SizedBox(width: widths*0.01,),
-                            Icon( Icons.card_giftcard,color: MyColors.redBG,size: 18,)
-                          ],
+                        IconButton(
+                          icon: Icon(Icons.share_outlined, color: Colors.red),
+                          onPressed: () {},
                         ),
-                        // Text("They Get 🎁",
-                        //     style: TextStyle(
-                        //         fontWeight: FontWeight.bold, fontSize: 14)),
-                        SizedBox(height: 8),
-                        Text("25% off upto ₹50 on their first order.",
-                            style: TextStyle(fontSize: 12,color: MyColors.textColorTwo
-                            )),
+                        Text("Share", style: TextStyle(color: Colors.black)),
                       ],
                     ),
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: 24),
-
-            /// Referral Code Box
-            Container(
-                                    margin: EdgeInsets.only(
-                                      top: 10,
-                                      left: 15,
-                                      right: 15,
-                                    ),
-                                    child: Row(
-                                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          height: heights * 0.02,
-                                          width: 2,
-                                          color: MyColors.redBG,
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          "Referral Code",
-                                          style: TextStyle(
-                                              fontSize: 14, fontWeight: FontWeight.w500),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-            // Text("Referral Code",
-            //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            SizedBox(height: 12),
-            Center(
-              child: Container(
-                width:widths*0.4,
-                padding: EdgeInsets.symmetric(vertical: 10,),
-                decoration: BoxDecoration(
-                  color: Color(0xFFFFF7E6),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: Text(
-                    referralCode,
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 2),
-                  ),
-                ),
-              ),
-            ),
-
-            SizedBox(height: 16),
-
-            /// Share and Copy Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.share_outlined, color: Colors.red),
-                      onPressed: () {},
+                    SizedBox(width: 40),
+                    Column(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.copy, color: Colors.red),
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: referralCode));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Referral code copied")),
+                            );
+                          },
+                        ),
+                        Text("Copy", style: TextStyle(color: Colors.black)),
+                      ],
                     ),
-                    Text("Share", style: TextStyle(color: Colors.black)),
                   ],
                 ),
-                SizedBox(width: 40),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.copy, color: Colors.red),
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: referralCode));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Referral code copied")),
-                        );
-                      },
-                    ),
-                    Text("Copy", style: TextStyle(color: Colors.black)),
-                  ],
+                SizedBox(height: 12),
+                Container(
+                  // margin: EdgeInsets.only(
+                  //   top: 10,
+                  //   left: 15,
+                  //   right: 15,
+                  // ),
+                  child: Row(
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        height: heights * 0.02,
+                        width: 2,
+                        color: MyColors.redBG,
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        "How referral works?",
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
                 ),
+                SizedBox(height: 12),
+                Column(
+                  children: List.generate(steps.length, (index) {
+                    final step = steps[index];
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          children: [
+                            // Icon with circle
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: MyColors.textColorTwo.withAlpha(10)),
+                              ),
+                              child: Icon(step.icon, color: MyColors.redBG),
+                            ),
+                            if (index != steps.length - 1)
+                              Container(
+                                width: 2,
+                                height: 40,
+                                color:MyColors.textColorTwo.withAlpha(10),
+                              ),
+                          ],
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(
+                              step.text,
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        )
+                      ],
+                    );
+                  }),
+                ),
+                SizedBox(height: 56),
               ],
             ),
-
-
-          ],
-        ),
-      ),
-      bottomSheet: Container(
-        height: heights*0.08,
-        width: widths,
-        color: Colors.black,
-        child: Center(
-          child: Container(
-            alignment: Alignment.center,
-            width: widths*0.8,
-            height: heights*0.05,
-            padding: EdgeInsets.symmetric(horizontal: 24,vertical: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-                  color: MyColors.redBG
-            ),
-            child: Text("Invite from contacts",style: TextStyle(color: MyColors.whiteBG),),
           ),
-        ),
-      ) ,
+          bottomSheet: Container(
+            height: heights*0.08,
+            width: widths,
+            color: Colors.black,
+            child: Center(
+              child: Container(
+                alignment: Alignment.center,
+                width: widths*0.8,
+                height: heights*0.05,
+                padding: EdgeInsets.symmetric(horizontal: 24,vertical: 8),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: MyColors.redBG
+                ),
+                child: Text("Invite from contacts",style: TextStyle(color: MyColors.whiteBG),),
+              ),
+            ),
+          ) ,
+        );
+      },
     );
+
   }
+
+  final List<_StepInfo> steps = [
+    _StepInfo(icon: Icons.link, text: 'Share referral code or link with friends.'),
+    _StepInfo(icon: Icons.inventory_2_outlined, text: 'When they place their first order, you both earn awards.'),
+    _StepInfo(icon: Icons.wallet_giftcard_outlined, text: 'Redeem your coupons at checkout to claim your awards'),
+  ];
+}
+
+class _StepInfo {
+  final IconData icon;
+  final String text;
+
+  _StepInfo({required this.icon, required this.text});
 }

@@ -3,6 +3,8 @@ import 'package:grabto/ui/success_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:grabto/model/regular_offer_model.dart';
 import 'package:grabto/services/api_services.dart';
+import 'package:grabto/view_model/get_wallet_view_model.dart';
+import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:grabto/helper/razorpay_service.dart';
 import 'package:grabto/helper/shared_pref.dart';
@@ -38,6 +40,7 @@ class _PayBillScreenState extends State<PayBillScreen> {
   bool _isGifShown = false;
   bool isLoading = false;
   int userId = 0;
+  String wallet = "";
   String _appName = '';
   String userEmail = '';
   String userMobile = '';
@@ -98,12 +101,12 @@ class _PayBillScreenState extends State<PayBillScreen> {
     _textFieldFocusNode.dispose(); // Dispose the FocusNode
     super.dispose();
   }
-
+  bool isChecked = false;
   @override
   Widget build(BuildContext context) {
     // Get keyboard height
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-
+final getWallet=Provider.of<GetWalletViewModel>(context);
     return Scaffold(
       backgroundColor: MyColors.backgroundBg,
       appBar: AppBar(
@@ -627,6 +630,7 @@ class _PayBillScreenState extends State<PayBillScreen> {
                                 ),
                               ],
                             ),
+
                             const SizedBox(height: 8),
                             Row(
                               children: [
@@ -654,7 +658,7 @@ class _PayBillScreenState extends State<PayBillScreen> {
                                 ),
                                 // Right-aligned text
                                 Text(
-                                  '\u{20B9}$payamount',
+                                  isChecked==true?getWallet.finalAmount.toString():   '\u{20B9}$payamount',
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
@@ -666,6 +670,22 @@ class _PayBillScreenState extends State<PayBillScreen> {
                           ],
                         ),
                       ),
+                    if(billamount!=null)
+                      Row(
+                      children: [
+                        Checkbox(
+                          value: isChecked,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              isChecked = value!;
+                              isChecked==true?getWallet.getWalletApi(context, userId.toString(), payamount.toString()):null;
+                            });
+
+                          },
+                        ),
+                        Text("Pay via Wallet",style: TextStyle(fontWeight: FontWeight.w600),)
+                      ],
+                    ),
                     const SizedBox(
                       height: 30,
                     ),
@@ -730,7 +750,7 @@ class _PayBillScreenState extends State<PayBillScreen> {
                         String convenience_Fee = "$convenienceFee";
                         String after_Convenience_Fee = "$afterConvenienceFee";
 
-                        String pay_amount = "$payamount";
+                        String pay_amount =isChecked==true?getWallet.finalAmount.toString(): "$payamount";
 
                         print(
                             "payUserBill user_id:$user_id, store_id:$store_id, regularoffer_id: $regularoffer_id, bill_amount: $bill_amount, discount_Percentage: $discount_Percentage, discount_Amount: $discount_Amount, after_Discount_Amount: $after_Discount_Amount, convenience_Fee_Parcentacge: $convenience_Fee_Parcentacge, convenience_Fee: $convenience_Fee, after_Convenience_Fee: $after_Convenience_Fee, pay_amount: $pay_amount");
@@ -763,7 +783,7 @@ class _PayBillScreenState extends State<PayBillScreen> {
                     child: isLoading
                         ? const CircularProgressIndicator(color: MyColors.primaryColor)
                         : Text(
-                      billamount==null?"Next" :"Proceed to pay \u{20B9}$payamount",
+                      billamount==null?"Next" :isChecked==true?"Proceed to pay \u{20B9}${getWallet.finalAmount.toString()}":"Proceed to pay \u{20B9}$payamount",
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -795,6 +815,7 @@ class _PayBillScreenState extends State<PayBillScreen> {
       userId = n.id;
       userEmail = n.email;
       userMobile = n.mobile;
+      wallet = n.wallet;
     });
   }
 

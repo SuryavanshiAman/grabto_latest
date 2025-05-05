@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:grabto/model/menu_type_model.dart';
+import 'package:grabto/ui/view_menu_screen.dart';
 import '../helper/response/api_response.dart';
 import '../repo/menu_type_repo.dart';
-import '../ui/gallery_screen.dart';
 
 class MenuTypeViewModel with ChangeNotifier {
   final _menuTypeRepo =MenuTypeRepo();
@@ -46,7 +46,7 @@ class MenuTypeViewModel with ChangeNotifier {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => GalleryScreen(menuType),
+        builder: (context) => ViewMenuScreen(menuType),
       ),
     );
   }
