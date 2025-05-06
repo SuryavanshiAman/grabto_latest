@@ -43,6 +43,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                 /// Wallet Card
                 Container(
                   width: double.infinity,
+                  height: heights*0.27,
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     // color: Colors.red,
@@ -74,14 +75,17 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                               style: TextStyle(fontWeight: FontWeight.w500)),
                         ],
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: 30),
 
-                      Center(
-                        child: Text("Balance: ₹${user?.wallet??""}",
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black)),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Center(
+                          child: Text("Balance: ₹${user?.wallet??""}",
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black)),
+                        ),
                       ),
                       SizedBox(height: 8),
                       Padding(
@@ -92,11 +96,11 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                               TextSpan(
                                 text: "Member Since:",
                                 style: TextStyle(
-                                    color: Colors.black54, fontSize: 12, fontWeight: FontWeight.bold),
+                                    color: Colors.black54, fontSize: 12, fontWeight: FontWeight.w500),
                               ),
                               TextSpan(
                                 text: " 09/07/2024",
-                                style: TextStyle(fontSize: 13, color: Colors.black),
+                                style: TextStyle(fontSize: 14, color: Colors.black),
                               ),
                             ],
                           ),
@@ -104,9 +108,14 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                         //   Text("Member Since: 09/07/2024",
                         //       style: TextStyle(color: Colors.black54)),
                       ),
-                      SizedBox(height: 16),
-                      Text(user?.name??"",
-                          style: TextStyle(fontWeight: FontWeight.w500)),
+                      Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text(user?.name??"",
+                            style: TextStyle(fontWeight: FontWeight.w500)),
+                      ),
+                      SizedBox(height: 10),
+
                     ],
                   ),
                 ),
@@ -120,18 +129,18 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                       TextSpan(
                         text: "Earn ₹200",
                         style: TextStyle(
-                            color: MyColors.redBG, fontSize: 20, fontWeight: FontWeight.bold),
+                            color: MyColors.redBG, fontSize: 20, fontWeight: FontWeight.w800),
                       ),
                       TextSpan(
                         text: "\nfor every friend you refer",
-                        style: TextStyle(fontSize: 18, color: Colors.black,fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 19, color: Colors.black,fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
                 ),
                 SizedBox(height: 8),
                 Text("Earn ₹1000 for the first 5 referrals",
-                    style: TextStyle(color:MyColors.textColorTwo,fontSize: 12)),
+                    style: TextStyle(color:MyColors.textColorTwo,fontSize: 10)),
 
                 SizedBox(height: 12),
 
@@ -141,7 +150,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                     Share.share(user?.referralLink??"");
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 8),
+                    padding: EdgeInsets.symmetric(vertical: 4),
                     width: widths*0.5,
                     decoration: BoxDecoration(
                         color: Color(0xfffff6f3),
@@ -150,8 +159,8 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text("Invite via Referral link",style: TextStyle(color: MyColors.redBG,fontWeight: FontWeight.w500,fontSize: 12),),
-                        Icon( Icons.file_upload_outlined,color: MyColors.redBG,size: 18,)
+                        Text("Invite via Referral link",style: TextStyle(color: MyColors.redBG,fontWeight: FontWeight.w500,fontSize: 10),),
+                        Icon( Icons.file_upload_outlined,color: MyColors.redBG,size: 16,)
                       ],
                     ),
                   ),
@@ -164,12 +173,21 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                   children: [
                     Expanded(
                       child: Container(
-                        padding: EdgeInsets.all(12),
+                        padding: EdgeInsets.all(10),
                         margin: EdgeInsets.only(right: 8),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade200),
+                          borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.blue.withAlpha(60),
+                                  blurRadius: 7,
+                                  spreadRadius: 0.1,
+                                  // spreadRadius: ,
+                                  offset: Offset(0,3)
+                              )
+                            ]
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,26 +196,35 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                               children: [
                                 Text("You Get",
                                     style: TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 14)),
+                                        fontWeight: FontWeight.bold, fontSize: 12)),
                                 SizedBox(width: widths*0.01,),
-                                Icon( Icons.card_giftcard,color: MyColors.redBG,size: 18,)
+                                Icon( Icons.card_giftcard,color: MyColors.redBG,size: 16,)
                               ],
                             ),
                             SizedBox(height: 8),
                             Text("25% off upto ₹200 on your next order.",
-                                style: TextStyle(fontSize: 12,color: MyColors.textColorTwo)),
+                                style: TextStyle(fontSize: 10,color: MyColors.textColorTwo)),
                           ],
                         ),
                       ),
                     ),
                     Expanded(
                       child: Container(
-                        padding: EdgeInsets.all(12),
+                        padding: EdgeInsets.all(10),
                         margin: EdgeInsets.only(left: 8),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade200),
+                          borderRadius: BorderRadius.circular(5),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0xFFFFF7E6),
+                              blurRadius: 7,
+                              spreadRadius: 0.1,
+                              // spreadRadius: ,
+                              offset: Offset(0,3)
+                            )
+                          ]
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,9 +233,9 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                               children: [
                                 Text("They Get",
                                     style: TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 14)),
+                                        fontWeight: FontWeight.bold, fontSize: 12)),
                                 SizedBox(width: widths*0.01,),
-                                Icon( Icons.card_giftcard,color: MyColors.redBG,size: 18,)
+                                Icon( Icons.card_giftcard,color: MyColors.redBG,size: 16,)
                               ],
                             ),
                             // Text("They Get 🎁",
@@ -216,7 +243,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                             //         fontWeight: FontWeight.bold, fontSize: 14)),
                             SizedBox(height: 8),
                             Text("25% off upto ₹50 on their first order.",
-                                style: TextStyle(fontSize: 12,color: MyColors.textColorTwo
+                                style: TextStyle(fontSize: 10,color: MyColors.textColorTwo
                                 )),
                           ],
                         ),
@@ -252,10 +279,10 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                 Center(
                   child: Container(
                     width:widths*0.4,
-                    padding: EdgeInsets.symmetric(vertical: 10,),
+                    padding: EdgeInsets.symmetric(vertical:5,),
                     decoration: BoxDecoration(
                       color: Color(0xFFFFF7E6),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(5),
                     ),
                     child: Center(
                       child: Text(
@@ -277,31 +304,46 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                   children: [
                     Column(
                       children: [
-                        IconButton(
-                          icon: Icon(Icons.share_outlined, color: Colors.red),
-                          onPressed: () {},
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 2,horizontal: 2),
+                          decoration: BoxDecoration(
+                            color: Color(0xfffff6f3),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: IconButton(
+                            visualDensity: VisualDensity(vertical: -4,horizontal: -4),
+                            icon: Icon(Icons.share_outlined, color: Colors.red),
+                            onPressed: () {},
+                          ),
                         ),
-                        Text("Share", style: TextStyle(color: Colors.black)),
+                        Text("Share", style: TextStyle(color: Colors.black,fontSize: 12)),
                       ],
                     ),
                     SizedBox(width: 40),
                     Column(
                       children: [
-                        IconButton(
-                          icon: Icon(Icons.copy, color: Colors.red),
-                          onPressed: () {
-                            Clipboard.setData(ClipboardData(text: referralCode));
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Referral code copied")),
-                            );
-                          },
+                        Container(padding: EdgeInsets.symmetric(vertical: 2,horizontal: 2),
+                          decoration: BoxDecoration(
+                            color:  Color(0xfffff6f3),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: IconButton(
+                            visualDensity: VisualDensity(vertical: -4,horizontal: -4),
+                            icon: Icon(Icons.copy, color: Colors.red),
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(text: referralCode));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Referral code copied")),
+                              );
+                            },
+                          ),
                         ),
-                        Text("Copy", style: TextStyle(color: Colors.black)),
+                        Text("Copy", style: TextStyle(color: Colors.black,fontSize: 12)),
                       ],
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
+                SizedBox(height: heights*0.04),
                 Container(
                   // margin: EdgeInsets.only(
                   //   top: 10,
@@ -327,7 +369,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 12),
+                SizedBox(height: heights*0.03),
                 Column(
                   children: List.generate(steps.length, (index) {
                     final step = steps[index];
@@ -342,15 +384,15 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 shape: BoxShape.circle,
-                                border: Border.all(color: MyColors.textColorTwo.withAlpha(10)),
+                                border: Border.all(color: MyColors.textColorTwo.withAlpha(30)),
                               ),
                               child: Icon(step.icon, color: MyColors.redBG),
                             ),
                             if (index != steps.length - 1)
                               Container(
                                 width: 2,
-                                height: 40,
-                                color:MyColors.textColorTwo.withAlpha(10),
+                                height: 30,
+                                color:MyColors.textColorTwo.withAlpha(30),
                               ),
                           ],
                         ),
@@ -360,7 +402,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                             padding: const EdgeInsets.only(top: 8),
                             child: Text(
                               step.text,
-                              style: TextStyle(fontSize: 14),
+                              style: TextStyle(fontSize: 12),
                             ),
                           ),
                         )

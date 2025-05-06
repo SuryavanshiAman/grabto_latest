@@ -560,7 +560,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                               Text(
                                                 "About the Restaurant",
                                                 style: TextStyle(
-                                                    fontSize: 16,
+                                                    fontSize: 14,
                                                     fontWeight:
                                                         FontWeight.w500),
                                               ),
@@ -833,7 +833,8 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                                       child: Text(
                                                         tabItems[index],
                                                         style: TextStyle(
-                                                          fontSize: 12,
+                                                          fontSize: 10,
+                                                          fontWeight: FontWeight.w500,
                                                           color: Colors.black,
                                                         ),
                                                       ),
@@ -1108,8 +1109,8 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                   Text(
                                     "Pre-Book offer",
                                     style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500),
                                   ),
                                 ],
                               ),
@@ -1142,8 +1143,8 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                   Text(
                                     "Walk-in offers",
                                     style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500),
                                   ),
                                 ],
                               ),
@@ -3046,19 +3047,19 @@ class PrebookOfferListWidget extends StatelessWidget {
               ),
               Text(
               prebooktable.title,
-                style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
               ),
               const SizedBox(height: 5),
               const Text(
                 "Get flat 40% off on bookings above ₹2000",
-                style: TextStyle(color: Colors.black87, fontSize: 12),
+                style: TextStyle(color: MyColors.textColorTwo, fontSize: 10),
               ),
-             Divider(color: MyColors.textColorTwo.withOpacity(0.1)),
+             Divider(color: MyColors.textColorTwo.withOpacity(0.1),height:heights*0.015 ,),
               Center(
                 child: Text(
                   "Book Now",
                   style: TextStyle(
-                      color: MyColors.redBG, fontWeight: FontWeight.w500),
+                      color: MyColors.redBG,fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               )
             ],
@@ -3440,7 +3441,7 @@ class RegularOfferListWidget extends StatelessWidget {
                 "Valid all day",
                 style: TextStyle(color: Colors.black87, fontSize: 12),
               ),
-              Divider(color: MyColors.textColorTwo.withOpacity(0.1)),
+              Divider(color: MyColors.textColorTwo.withOpacity(0.1),height:heights*0.015 ,),
               Center(
                 child: Text(
                   "Pay Bill",

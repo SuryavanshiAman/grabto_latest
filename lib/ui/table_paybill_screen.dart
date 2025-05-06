@@ -6,6 +6,7 @@ import 'package:grabto/widget/offer_term_condtion.dart';
 import 'package:flutter/material.dart';
 import 'package:grabto/model/pre_book_table_history.dart';
 import 'package:grabto/services/api_services.dart';
+import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:grabto/helper/razorpay_service.dart';
 import 'package:grabto/helper/shared_pref.dart';
@@ -16,6 +17,8 @@ import 'package:grabto/ui/success_screen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:lottie/lottie.dart';
+
+import '../view_model/get_wallet_view_model.dart';
 
 
 class TablePaybillScreen extends StatefulWidget {
@@ -47,6 +50,7 @@ int userId = 0;
 String _appName = '';
   String userEmail = '';
   String userMobile = '';
+  String wallet = "";
   @override
   void initState() {
     super.initState();
@@ -129,12 +133,12 @@ String _appName = '';
     _textFieldFocusNode.dispose(); // Dispose the FocusNode
     super.dispose();
   }
-
+  bool isChecked = false;
   @override
   Widget build(BuildContext context) {
     // Get keyboard height
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-
+    final getWallet=Provider.of<GetWalletViewModel>(context);
     return Scaffold(
       backgroundColor: MyColors.backgroundBg,
       appBar: AppBar(
@@ -762,6 +766,29 @@ String _appName = '';
                           ),
                         ],
                       ),
+                      isChecked==true?Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Left-aligned text
+                          const Text(
+                            'Deducted wallet amount',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: MyColors.txtDescColor,
+                            ),
+                          ),
+                          Text(
+                            '\u{20B9}${getWallet
+                                .getWallet.data?.deductAmount??"0.0"}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ):Container(),
                       SizedBox(height: 8),
                       Row(
                         children: [
@@ -789,7 +816,8 @@ String _appName = '';
                           ),
                           // Right-aligned text
                           Text(
-                            '\u{20B9}${payamount!.roundToDouble()}',
+                            isChecked==true?"\u{20B9}${getWallet.finalAmount.toString()}":   '\u{20B9}$payamount',
+                            // '\u{20B9}${payamount!.roundToDouble()}',
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
@@ -802,11 +830,34 @@ String _appName = '';
                   ),
                 ),
                 SizedBox(
-                  height: 30,
+                  height: 10,
                 ),
-                // OfferTermsWidget(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Available wallet balance ",style: TextStyle(fontWeight: FontWeight.w600,),),
+                    Text(wallet!=""?'\u{20B9}$wallet':"0.0",style: TextStyle(fontWeight: FontWeight.w600),)
+                  ],
+                ),
+                if(billamount!=null&&wallet!=""&&wallet!="0.0")
+                  Row(
+                    children: [
+                      Checkbox(
+                        visualDensity: VisualDensity(vertical: -4,horizontal: -4),
+                        value: isChecked,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isChecked = value!;
+                            isChecked==true?getWallet.getWalletApi(context, userId.toString(), payamount.toString()):null;
+                          });
+
+                        },
+                      ),
+                      Text("Pay via Wallet",style: TextStyle(fontWeight: FontWeight.w600),)
+                    ],
+                  ),
                 SizedBox(
-                  height: 30,
+                  height: 50,
                 ),
               ],
             ),
@@ -864,8 +915,8 @@ String _appName = '';
                               String convineince_fee_percentage = "$convenienceFeeParcentacge";
                               String convineince_fee = "$convenienceFee";
                               String after_convineince_fee = "$afterConvenienceFee";
-                              
-                              String pay_amount = "$payamount";
+
+                              String pay_amount =isChecked==true?getWallet.finalAmount.toString(): "$payamount";
 
                               print(
                                   "tablePayBill user_id:$user_id, store_id:$store_id, regularoffer_id: $offerbook_history_id, bill_amount: $bill_amount, discount_Percentage: $discount_percentage, discount_Amount: $discount_amount, after_Discount_Amount: $after_discount_amount, convenience_Fee_Parcentacge: $convineince_fee_percentage, convenience_Fee: $convineince_fee, after_Convenience_Fee: $after_convineince_fee, pay_amount: $pay_amount");
@@ -881,7 +932,11 @@ print("😊😊😊😊");
                                   convineince_fee_percentage,
                                   convineince_fee,
                                   after_convineince_fee,
-                                  pay_amount);
+                                  pay_amount,
+                                  isChecked,
+                                getWallet.getWallet.data?.deductAmount.toString()??""
+
+                              );
 
                               setState(() {
                                 isLoading = false;
@@ -898,7 +953,7 @@ print("😊😊😊😊");
                     child: isLoading
                           ? CircularProgressIndicator(color: MyColors.primaryColor)
                           : Text(
-                    billamount==null?"Next" :"Proceed to pay \u{20B9}$payamount",
+                      billamount==null?"Next" :isChecked==true?"Proceed to pay \u{20B9}${getWallet.finalAmount.toString()}":"Proceed to pay \u{20B9}$payamount",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -929,6 +984,7 @@ print("😊😊😊😊");
       userId = n.id;
       userEmail = n.email;
       userMobile = n.mobile;
+      wallet=n.wallet;
     });
   }
 
@@ -989,13 +1045,13 @@ print("😊😊😊😊");
       String convineince_fee_percentage,
       String convineince_fee,
       String after_convineince_fee,
-      String pay_amount) async {
+      String pay_amount,
+     bool isChecked,
+     String deductWallet) async {
     setState(() {
       isLoading = true;
     });
-    print("🎉🎉🎉🎉");
     try {
-      print("💕💕💕💕");
       final body = {
         "user_id": "$user_id",
         "store_id": "$store_id",
@@ -1008,6 +1064,8 @@ print("😊😊😊😊");
         "convineince_fee": "$convineince_fee",
         "after_convineince_fee": "$after_convineince_fee",
         "pay_amount": "$pay_amount",
+      "wallet_type":isChecked.toString(),
+      "wallet_dec_amt":deductWallet.toString(),
       };
       final response = await ApiServices.TablePayBill(body);
       print('TablePayBill data: 2');
@@ -1043,23 +1101,19 @@ print("😊😊😊😊");
               successCallback: (PaymentSuccessResponse response) {
                 String bundle =
                     '{"razorpay_payment_id":"${response.paymentId}","razorpay_order_id":"${response.orderId}","razorpay_signature":"${response.signature}"}';
-                print('TablePayBill PaymentSuccessful::bundle $bundle');
-                print("😓😓😓");
+
                 UpdateTablePayBill(user_id, "${response.orderId}", bundle,"$pay_amount");
               },
               errorCallback: (PaymentFailureResponse response) {
                 String bundle =
                     '{"Error":"${response.error}","code":"${response.code.toString()}","message":"${response.message}"}';
                 print("✌️✌️✌️");
-                print(
-                    'TablePayBill Payment Error: ${response.code.toString()} - ${response.message}');
+
                 UpdateTablePayBill(user_id, "$order_id", bundle,"$pay_amount");
               },
               externalWalletCallback: (ExternalWalletResponse response) {
                 // Handle external wallet payments here
                 String bundle = '{"walletName":"${response.walletName}"}';
-                print("🤣🤣🤣");
-                print('TablePayBill External Wallet: ${response.walletName}');
                 UpdateTablePayBill(user_id, "$order_id", bundle,"$pay_amount");
               },
             );

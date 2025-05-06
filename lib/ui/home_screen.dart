@@ -219,6 +219,23 @@ print("dsd ${banners.length}");
       appBar:_selectedIndex!=0? AppBar(
         backgroundColor: MyColors.backgroundBg,
         leadingWidth: 20,
+        leading: GestureDetector(
+          onTap: () {
+            // final scaffoldState = _scaffoldKey.currentState;
+            // if (scaffoldState != null) {
+            //   if (scaffoldState.isDrawerOpen) {
+            //     scaffoldState.closeDrawer();
+            //   } else {
+            //     scaffoldState.openDrawer();
+            //   }
+            // }
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountSettingsScreen()));
+          },
+          child: const Icon(
+            Icons.menu,
+            color: MyColors.blackBG,
+          ),
+        ),
         centerTitle: true,
         title:_selectedIndex==1? Text("Explore"):_selectedIndex==2?Text("Pay Bill"):_selectedIndex==3? Text("Flicks"): Text("Profile"),
       actions:_selectedIndex==4? [
@@ -271,295 +288,295 @@ print("dsd ${banners.length}");
         //     ),
         //   ),
       ]):Center(child: CircularProgressIndicator(color: MyColors.redBG,)),
-      drawer: Drawer(
-        backgroundColor: Colors.white,
-        child: ListView(
-          padding: const EdgeInsets.all(0),
-          children: [
-            Container(
-                decoration: BoxDecoration(
-                  //color: MyColors.primaryColor.withOpacity(0.0),
-                  image: DecorationImage(
-                    image: const AssetImage("assets/images/drawer_bg_img.jpg"),
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(
-                      MyColors.primaryColor.withOpacity(0.1),
-                      BlendMode.darken,
-                    ),
-                  ),
-                ), //BoxDecoration
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 20, right: 20, top: 50, bottom: 20),
-                      child: Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Card(
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(40),
-                              ),
-                              // Set the clip behavior of the card
-                              clipBehavior: Clip.antiAliasWithSaveLayer,
-                              // Define the child widgets of the card
-                              child: Container(
-                                width: 70,
-                                height: 70,
-                                child: ClipOval(
-                                  child: CachedNetworkImage(
-                                    imageUrl: userimage.isNotEmpty
-                                        ? userimage
-                                        : image,
-                                    fit: BoxFit.fill,
-                                    placeholder: (context, url) => Image.asset(
-                                      'assets/images/placeholder.png',
-                                      // Path to your placeholder image asset
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                    ),
-                                    errorWidget: (context, url, error) =>
-                                        const Center(child: Icon(Icons.error)),
-                                  ),
-                                  // child: Image.network(
-                                  //   userimage.isNotEmpty ? userimage : image,
-                                  //   loadingBuilder: (BuildContext context,
-                                  //       Widget child,
-                                  //       ImageChunkEvent? loadingProgress) {
-                                  //     if (loadingProgress == null) {
-                                  //       return child;
-                                  //     } else {
-                                  //       return Center(
-                                  //         child: CircularProgressIndicator(
-                                  //           value: loadingProgress
-                                  //                       .expectedTotalBytes !=
-                                  //                   null
-                                  //               ? loadingProgress
-                                  //                       .cumulativeBytesLoaded /
-                                  //                   (loadingProgress
-                                  //                           .expectedTotalBytes ??
-                                  //                       1)
-                                  //               : null,
-                                  //         ),
-                                  //       );
-                                  //     }
-                                  //   },
-                                  //   errorBuilder: (BuildContext context,
-                                  //       Object error, StackTrace? stackTrace) {
-                                  //     return Icon(Icons
-                                  //         .person); // Placeholder icon for error case
-                                  //   },
-                                  // ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                              height: 10,
-                            ),
-                            Visibility(
-                              visible:
-                                  userName.isNotEmpty || userEmail.isNotEmpty,
-                              child: RichText(
-                                text: TextSpan(
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                  ),
-                                  children: [
-                                    if (userName.isNotEmpty)
-                                      TextSpan(
-                                        text: '$userName\n',
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    if (userName.isNotEmpty &&
-                                        userMobile.isNotEmpty)
-                                      const WidgetSpan(
-                                        child: SizedBox(
-                                            height:
-                                                25), // Adjust the height as needed
-                                      ),
-                                    if (userMobile.isNotEmpty)
-                                      TextSpan(
-                                        text: '$userMobile',
-                                        style: TextStyle(
-                                          fontSize: 17,
-                                          color: Colors.black.withOpacity(0.7),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    // Center(
-                    //   child: SvgPicture.string(
-                    //     "assets/images/drawer_img.xml",
-                    //     width: 500,
-                    //     height: 500,
-                    //   ),
-                    // ),
-                  ],
-                )),
-
-            ListTile(
-              leading: const Icon(
-                Icons.home,
-                color: MyColors.drawerIconColor,
-              ),
-              title: const Text(' Home '),
-              onTap: () {
-                _onItemTappedd(0);
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.account_balance_wallet,
-                color: MyColors.drawerIconColor,
-              ),
-              title: const Text(' Transaction '),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return TransactionScreen();
-                }));
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.support_agent,
-                color: MyColors.drawerIconColor,
-              ),
-              title: const Text(' Customer Care '),
-              onTap: () {
-                //Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return CustomerCare();
-
-                }));
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.campaign,
-                color: MyColors.drawerIconColor,
-              ),
-              title: const Text(' Refer and Earn '),
-              onTap: () {
-                //Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return    ReferAndEarnScreen();
-                }));
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.settings,
-                color: MyColors.drawerIconColor,
-              ),
-              title: const Text(' How to use app '),
-              onTap: () {
-                //Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return HowItWorksScreen();
-                }));
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.share_rounded,
-                color: MyColors.drawerIconColor,
-              ),
-              title: const Text(' Share '),
-              onTap: () {
-                _scaffoldKey.currentState?.closeDrawer();
-                shareNetworkImage("$image",
-                    "\nCheck out this store on Discount Deals! \n\n *Download Now* \n\n $playstoreLink");
-                //Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.info_outline,
-                color: MyColors.drawerIconColor,
-              ),
-              title: const Text(' About Us '),
-              onTap: () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AboutUsScreen()),
-                );
-
-                // Call the function after returning
-                _handleReturnFromSecondScreen();
-
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.book,
-                color: MyColors.drawerIconColor,
-              ),
-              title: const Text(' Terms & Condition '),
-              onTap: () {
-                //Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return TermsAndCondition();
-                }));
-              },
-            ),
-            Visibility(
-              visible: user_id != 0,
-              child: ListTile(
-                leading: const Icon(
-                  Icons.delete_sweep_rounded,
-                  color: MyColors.drawerIconColor,
-                ),
-                title: const Text(' Account Delete '),
-                onTap: () {
-                  //Navigator.pop(context);
-
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return DeleteScreen();
-                  }));
-
-                  //logoutUser();
-                },
-              ),
-            ),
-            ListTile(
-              leading: user_id == 0
-                  ? const Icon(
-                      Icons.login_outlined,
-                      color: MyColors.drawerIconColor,
-                    )
-                  : const Icon(
-                      Icons.logout_outlined,
-                      color: MyColors.drawerIconColor,
-                    ),
-              title: user_id == 0 ? const Text(' Login ') : const Text(' Logout '),
-              onTap: () {
-                //Navigator.pop(context);
-                if (user_id == 0) {
-                  NavigationUtil.navigateToLogin(context);
-                } else {
-                  logoutUser();
-                }
-              },
-            ),
-          ],
-        ),
-      ),
+      // drawer: Drawer(
+      //   backgroundColor: Colors.white,
+      //   child: ListView(
+      //     padding: const EdgeInsets.all(0),
+      //     children: [
+      //       Container(
+      //           decoration: BoxDecoration(
+      //             //color: MyColors.primaryColor.withOpacity(0.0),
+      //             image: DecorationImage(
+      //               image: const AssetImage("assets/images/drawer_bg_img.jpg"),
+      //               fit: BoxFit.cover,
+      //               colorFilter: ColorFilter.mode(
+      //                 MyColors.primaryColor.withOpacity(0.1),
+      //                 BlendMode.darken,
+      //               ),
+      //             ),
+      //           ), //BoxDecoration
+      //           child: Stack(
+      //             children: [
+      //               Padding(
+      //                 padding: const EdgeInsets.only(
+      //                     left: 20, right: 20, top: 50, bottom: 20),
+      //                 child: Container(
+      //                   child: Column(
+      //                     crossAxisAlignment: CrossAxisAlignment.center,
+      //                     children: [
+      //                       Card(
+      //                         elevation: 2,
+      //                         shape: RoundedRectangleBorder(
+      //                           borderRadius: BorderRadius.circular(40),
+      //                         ),
+      //                         // Set the clip behavior of the card
+      //                         clipBehavior: Clip.antiAliasWithSaveLayer,
+      //                         // Define the child widgets of the card
+      //                         child: Container(
+      //                           width: 70,
+      //                           height: 70,
+      //                           child: ClipOval(
+      //                             child: CachedNetworkImage(
+      //                               imageUrl: userimage.isNotEmpty
+      //                                   ? userimage
+      //                                   : image,
+      //                               fit: BoxFit.fill,
+      //                               placeholder: (context, url) => Image.asset(
+      //                                 'assets/images/placeholder.png',
+      //                                 // Path to your placeholder image asset
+      //                                 fit: BoxFit.cover,
+      //                                 width: double.infinity,
+      //                                 height: double.infinity,
+      //                               ),
+      //                               errorWidget: (context, url, error) =>
+      //                                   const Center(child: Icon(Icons.error)),
+      //                             ),
+      //                             // child: Image.network(
+      //                             //   userimage.isNotEmpty ? userimage : image,
+      //                             //   loadingBuilder: (BuildContext context,
+      //                             //       Widget child,
+      //                             //       ImageChunkEvent? loadingProgress) {
+      //                             //     if (loadingProgress == null) {
+      //                             //       return child;
+      //                             //     } else {
+      //                             //       return Center(
+      //                             //         child: CircularProgressIndicator(
+      //                             //           value: loadingProgress
+      //                             //                       .expectedTotalBytes !=
+      //                             //                   null
+      //                             //               ? loadingProgress
+      //                             //                       .cumulativeBytesLoaded /
+      //                             //                   (loadingProgress
+      //                             //                           .expectedTotalBytes ??
+      //                             //                       1)
+      //                             //               : null,
+      //                             //         ),
+      //                             //       );
+      //                             //     }
+      //                             //   },
+      //                             //   errorBuilder: (BuildContext context,
+      //                             //       Object error, StackTrace? stackTrace) {
+      //                             //     return Icon(Icons
+      //                             //         .person); // Placeholder icon for error case
+      //                             //   },
+      //                             // ),
+      //                           ),
+      //                         ),
+      //                       ),
+      //                       const SizedBox(
+      //                         width: 10,
+      //                         height: 10,
+      //                       ),
+      //                       Visibility(
+      //                         visible:
+      //                             userName.isNotEmpty || userEmail.isNotEmpty,
+      //                         child: RichText(
+      //                           text: TextSpan(
+      //                             style: const TextStyle(
+      //                               color: Colors.black,
+      //                               fontSize: 20,
+      //                             ),
+      //                             children: [
+      //                               if (userName.isNotEmpty)
+      //                                 TextSpan(
+      //                                   text: '$userName\n',
+      //                                   style: const TextStyle(
+      //                                     fontSize: 20,
+      //                                     color: Colors.black,
+      //                                     fontWeight: FontWeight.bold,
+      //                                   ),
+      //                                 ),
+      //                               if (userName.isNotEmpty &&
+      //                                   userMobile.isNotEmpty)
+      //                                 const WidgetSpan(
+      //                                   child: SizedBox(
+      //                                       height:
+      //                                           25), // Adjust the height as needed
+      //                                 ),
+      //                               if (userMobile.isNotEmpty)
+      //                                 TextSpan(
+      //                                   text: '$userMobile',
+      //                                   style: TextStyle(
+      //                                     fontSize: 17,
+      //                                     color: Colors.black.withOpacity(0.7),
+      //                                   ),
+      //                                 ),
+      //                             ],
+      //                           ),
+      //                         ),
+      //                       )
+      //                     ],
+      //                   ),
+      //                 ),
+      //               ),
+      //               // Center(
+      //               //   child: SvgPicture.string(
+      //               //     "assets/images/drawer_img.xml",
+      //               //     width: 500,
+      //               //     height: 500,
+      //               //   ),
+      //               // ),
+      //             ],
+      //           )),
+      //
+      //       ListTile(
+      //         leading: const Icon(
+      //           Icons.home,
+      //           color: MyColors.drawerIconColor,
+      //         ),
+      //         title: const Text(' Home '),
+      //         onTap: () {
+      //           _onItemTappedd(0);
+      //         },
+      //       ),
+      //       ListTile(
+      //         leading: const Icon(
+      //           Icons.account_balance_wallet,
+      //           color: MyColors.drawerIconColor,
+      //         ),
+      //         title: const Text(' Transaction '),
+      //         onTap: () {
+      //           Navigator.push(context, MaterialPageRoute(builder: (context) {
+      //             return TransactionScreen();
+      //           }));
+      //         },
+      //       ),
+      //       ListTile(
+      //         leading: const Icon(
+      //           Icons.support_agent,
+      //           color: MyColors.drawerIconColor,
+      //         ),
+      //         title: const Text(' Customer Care '),
+      //         onTap: () {
+      //           //Navigator.pop(context);
+      //           Navigator.push(context, MaterialPageRoute(builder: (context) {
+      //             return CustomerCare();
+      //
+      //           }));
+      //         },
+      //       ),
+      //       ListTile(
+      //         leading: const Icon(
+      //           Icons.campaign,
+      //           color: MyColors.drawerIconColor,
+      //         ),
+      //         title: const Text(' Refer and Earn '),
+      //         onTap: () {
+      //           //Navigator.pop(context);
+      //           Navigator.push(context, MaterialPageRoute(builder: (context) {
+      //             return    ReferAndEarnScreen();
+      //           }));
+      //         },
+      //       ),
+      //       ListTile(
+      //         leading: const Icon(
+      //           Icons.settings,
+      //           color: MyColors.drawerIconColor,
+      //         ),
+      //         title: const Text(' How to use app '),
+      //         onTap: () {
+      //           //Navigator.pop(context);
+      //           Navigator.push(context, MaterialPageRoute(builder: (context) {
+      //             return HowItWorksScreen();
+      //           }));
+      //         },
+      //       ),
+      //       ListTile(
+      //         leading: const Icon(
+      //           Icons.share_rounded,
+      //           color: MyColors.drawerIconColor,
+      //         ),
+      //         title: const Text(' Share '),
+      //         onTap: () {
+      //           _scaffoldKey.currentState?.closeDrawer();
+      //           shareNetworkImage("$image",
+      //               "\nCheck out this store on Discount Deals! \n\n *Download Now* \n\n $playstoreLink");
+      //           //Navigator.pop(context);
+      //         },
+      //       ),
+      //       ListTile(
+      //         leading: const Icon(
+      //           Icons.info_outline,
+      //           color: MyColors.drawerIconColor,
+      //         ),
+      //         title: const Text(' About Us '),
+      //         onTap: () async {
+      //           final result = await Navigator.push(
+      //             context,
+      //             MaterialPageRoute(
+      //                 builder: (context) => AboutUsScreen()),
+      //           );
+      //
+      //           // Call the function after returning
+      //           _handleReturnFromSecondScreen();
+      //
+      //         },
+      //       ),
+      //       ListTile(
+      //         leading: const Icon(
+      //           Icons.book,
+      //           color: MyColors.drawerIconColor,
+      //         ),
+      //         title: const Text(' Terms & Condition '),
+      //         onTap: () {
+      //           //Navigator.pop(context);
+      //           Navigator.push(context, MaterialPageRoute(builder: (context) {
+      //             return TermsAndCondition();
+      //           }));
+      //         },
+      //       ),
+      //       Visibility(
+      //         visible: user_id != 0,
+      //         child: ListTile(
+      //           leading: const Icon(
+      //             Icons.delete_sweep_rounded,
+      //             color: MyColors.drawerIconColor,
+      //           ),
+      //           title: const Text(' Account Delete '),
+      //           onTap: () {
+      //             //Navigator.pop(context);
+      //
+      //             Navigator.push(context, MaterialPageRoute(builder: (context) {
+      //               return DeleteScreen();
+      //             }));
+      //
+      //             //logoutUser();
+      //           },
+      //         ),
+      //       ),
+      //       ListTile(
+      //         leading: user_id == 0
+      //             ? const Icon(
+      //                 Icons.login_outlined,
+      //                 color: MyColors.drawerIconColor,
+      //               )
+      //             : const Icon(
+      //                 Icons.logout_outlined,
+      //                 color: MyColors.drawerIconColor,
+      //               ),
+      //         title: user_id == 0 ? const Text(' Login ') : const Text(' Logout '),
+      //         onTap: () {
+      //           //Navigator.pop(context);
+      //           if (user_id == 0) {
+      //             NavigationUtil.navigateToLogin(context);
+      //           } else {
+      //             logoutUser();
+      //           }
+      //         },
+      //       ),
+      //     ],
+      //   ),
+      // ),
       //
       bottomNavigationBar:
       PopScope(

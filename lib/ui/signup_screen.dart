@@ -22,8 +22,9 @@ import '../widget/filter_date-formate.dart';
 
 class SignupScreen extends StatefulWidget {
   final String mobile;
+  final String ?referralCode;
 
-  const SignupScreen({super.key, required this.mobile});
+  const SignupScreen({super.key, required this.mobile,  this.referralCode});
 
   @override
   State<SignupScreen> createState() => _SignupScreenState();
@@ -91,6 +92,7 @@ class _SignupScreenState extends State<SignupScreen> {
     // TODO: implement initState
     super.initState();
     mobileController.text = widget.mobile;
+    referralCont.text=widget.referralCode??"";
     fetchCity();
   }
 

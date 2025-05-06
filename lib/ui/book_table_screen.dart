@@ -757,9 +757,6 @@ int isLunchTimeSlotsVisibleIndex=-1;
                         String visitingtime = selectedTimeSlot ?? '';
                         String timetype2 = timetype ?? '';
 
-                        print(
-                          "Proceed clicked - timetype: $timetype2,  Guest: $guest, Date: $visitingdate, Time: $visitingtime, Offer ID: ${selectedPreBookOffer!.id}",
-                        );
                         if (_selectedGuestNumber > availableSeat) {
                           showErrorMessage(context,
                               message: 'There is not a sufficient seats');

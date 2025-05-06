@@ -52,6 +52,7 @@ import '../model/features_model.dart';
 import '../services/api.dart';
 import '../widget/sub_categories_card_widget.dart';
 import 'about_us_screen.dart';
+import 'account_setting.dart';
 import 'customer_care.dart';
 import 'filter_boottom_sheet.dart';
 import 'how_it_works.dart';
@@ -379,14 +380,15 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                   children: [
                                     GestureDetector(
                                       onTap: () {
-                                        final scaffoldState = _scaffoldKey.currentState;
-                                        if (scaffoldState != null) {
-                                          if (scaffoldState.isDrawerOpen) {
-                                            scaffoldState.closeDrawer();
-                                          } else {
-                                            scaffoldState.openDrawer();
-                                          }
-                                        }
+                                        // final scaffoldState = _scaffoldKey.currentState;
+                                        // if (scaffoldState != null) {
+                                        //   if (scaffoldState.isDrawerOpen) {
+                                        //     scaffoldState.closeDrawer();
+                                        //   } else {
+                                        //     scaffoldState.openDrawer();
+                                        //   }
+                                        // }
+                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountSettingsScreen()));
                                       },
                                       child: const Icon(
                                         Icons.menu,

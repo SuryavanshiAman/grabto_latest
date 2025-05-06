@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
+import 'package:grabto/ui/refer_and_earn.dart';
+import 'package:grabto/ui/term_and_condition.dart';
+import 'package:grabto/ui/transaction_screen.dart';
 import 'package:provider/provider.dart';
 
+import '../helper/shared_pref.dart';
 import '../helper/user_provider.dart';
+import 'about_us_screen.dart';
+import 'customer_care.dart';
+import 'how_it_works.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
   @override
@@ -142,26 +149,46 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   visualDensity: VisualDensity(vertical: -4),
                   leading: Icon(Icons.receipt_long,size: 18),
                   title: Text('Transactions',style: TextStyle(fontSize: 13),),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                          return TransactionScreen();
+                        }));
+                  },
                 ),
                 ListTile(
                   visualDensity: VisualDensity(vertical: -4),
                   leading: Icon(Icons.campaign,size: 18),
                   title: Text('Refer and Earn',style: TextStyle(fontSize: 13)),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return    ReferAndEarnScreen();
+                    }));
+                  },
                 ),
                 ListTile(
                   visualDensity: VisualDensity(vertical: -4),
                   leading: Icon(Icons.info_outline,size: 18),
                   title: Text('About Grabto',style: TextStyle(fontSize: 13)),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AboutUsScreen()),
+                    );
+                  },
                 ),
                 Divider( height: 20,color: MyColors.textColorTwo.withAlpha(20),),
                 ListTile(
                   visualDensity: VisualDensity(vertical: -4),
                   leading: Icon(Icons.support_agent,size: 18),
                   title: Text('Support',style: TextStyle(fontSize: 13)),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                          return CustomerCare();
+                        }));
+                  },
                 ),
                 ListTile(
                   visualDensity: VisualDensity(vertical: -4),
@@ -173,13 +200,23 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   visualDensity: VisualDensity(vertical: -4),
                   leading: Icon(Icons.privacy_tip_outlined,size: 18),
                   title: Text('Terms & Privacy',style: TextStyle(fontSize: 13)),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                          return TermsAndCondition();
+                        }));
+                  },
                 ),
                 ListTile(
                   visualDensity: VisualDensity(vertical: -4),
                   leading: Icon(Icons.help_outline,size: 18),
                   title: Text('How to use App?',style: TextStyle(fontSize: 13)),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                          return HowItWorksScreen();
+                        }));
+                  },
                 ),
                 Divider( height: 20,color: MyColors.textColorTwo.withAlpha(20),),
 
@@ -187,7 +224,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   visualDensity: VisualDensity(vertical: -4),
                   leading: Icon(Icons.logout, color: Colors.red,size: 18),
                   title: Text('Sign Out', style: TextStyle(color: Colors.red,fontSize: 13)),
-                  onTap: () {},
+                  onTap: () {
+                    logoutUser();
+                  },
                 ),
               ],
             ),
@@ -196,5 +235,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       },
     )
       ;
+  }
+  void logoutUser() {
+    SharedPref.logout(context);
   }
 }

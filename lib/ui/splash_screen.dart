@@ -6,6 +6,7 @@ import 'package:grabto/services/api_services.dart';
 import 'package:grabto/theme/theme.dart';
 import 'package:grabto/ui/home_screen.dart';
 import 'package:grabto/ui/intro_screen.dart';
+import 'package:grabto/ui/signup_screen.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:grabto/widget/my_progress_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter/animation.dart';
+// import 'package:uni_links/uni_links.dart';
 
 class YourTickerProvider implements TickerProvider {
   @override
@@ -33,14 +35,12 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   late AnimationController _controller;
   late Animation<double> _animation;
-
   @override
   void initState() {
     super.initState();
 
     SharedPref.updateToken("${widget.token}");
     getwayStatus();
-
     Timer(Duration(seconds: 3), () {
       navigateToScreen(context);
     });
@@ -57,7 +57,6 @@ class _SplashScreenState extends State<SplashScreen> {
       ),
     );
   }
-
   @override
   void dispose() {
     _controller.dispose();

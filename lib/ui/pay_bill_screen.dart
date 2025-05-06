@@ -583,7 +583,6 @@ final getWallet=Provider.of<GetWalletViewModel>(context);
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -607,7 +606,6 @@ final getWallet=Provider.of<GetWalletViewModel>(context);
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -630,6 +628,29 @@ final getWallet=Provider.of<GetWalletViewModel>(context);
                                 ),
                               ],
                             ),
+                            isChecked==true?Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // Left-aligned text
+                                const Text(
+                                  'Deducted wallet amount',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: MyColors.txtDescColor,
+                                  ),
+                                ),
+                                Text(
+                                  '\u{20B9}${getWallet
+                                  .getWallet.data?.deductAmount??"0.0"}',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                              ],
+                            ):Container(),
 
                             const SizedBox(height: 8),
                             Row(
@@ -658,7 +679,7 @@ final getWallet=Provider.of<GetWalletViewModel>(context);
                                 ),
                                 // Right-aligned text
                                 Text(
-                                  isChecked==true?getWallet.finalAmount.toString():   '\u{20B9}$payamount',
+                                  isChecked==true?"\u{20B9}${getWallet.finalAmount.toString()}":   '\u{20B9}$payamount',
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
@@ -670,7 +691,17 @@ final getWallet=Provider.of<GetWalletViewModel>(context);
                           ],
                         ),
                       ),
-                    if(billamount!=null)
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Available wallet balance ",style: TextStyle(fontWeight: FontWeight.w600,),),
+                        Text(wallet!=""?'\u{20B9}$wallet':"0.0",style: TextStyle(fontWeight: FontWeight.w600),)
+                      ],
+                    ),
+                    if(billamount!=null&&wallet!=""&&wallet!="0.0")
                       Row(
                       children: [
                         Checkbox(
@@ -751,10 +782,6 @@ final getWallet=Provider.of<GetWalletViewModel>(context);
                         String after_Convenience_Fee = "$afterConvenienceFee";
 
                         String pay_amount =isChecked==true?getWallet.finalAmount.toString(): "$payamount";
-
-                        print(
-                            "payUserBill user_id:$user_id, store_id:$store_id, regularoffer_id: $regularoffer_id, bill_amount: $bill_amount, discount_Percentage: $discount_Percentage, discount_Amount: $discount_Amount, after_Discount_Amount: $after_Discount_Amount, convenience_Fee_Parcentacge: $convenience_Fee_Parcentacge, convenience_Fee: $convenience_Fee, after_Convenience_Fee: $after_Convenience_Fee, pay_amount: $pay_amount");
-                   print("😊😊");
                         await regularPayBill(
                             user_id,
                             store_id,
@@ -766,7 +793,11 @@ final getWallet=Provider.of<GetWalletViewModel>(context);
                             convenience_Fee_Parcentacge,
                             convenience_Fee,
                             after_Convenience_Fee,
-                            pay_amount);
+                            pay_amount,
+                          isChecked,
+                            getWallet.getWallet.data?.deductAmount.toString()??""
+                            // getWallet.getWallet.data?.deductAmount??0
+                        );
 
                         setState(() {
                           isLoading = false;
@@ -874,7 +905,11 @@ final getWallet=Provider.of<GetWalletViewModel>(context);
       String convenience_fee_percentage,
       String convenience_fee,
       String after_convenience_fee,
-      String pay_amount) async {
+      String pay_amount,
+      bool isChecked,
+      String deductWallet
+      ) async {
+    print(deductWallet);
     setState(() {
       isLoading = true;
     });
@@ -891,6 +926,8 @@ final getWallet=Provider.of<GetWalletViewModel>(context);
         "convenience_fee": convenience_fee,
         "after_convenience_fee": after_convenience_fee,
         "pay_amount": pay_amount,
+        "wallet_type":isChecked.toString(),
+        "wallet_dec_amt":deductWallet.toString(),
       };
       final response = await ApiServices.RegularPayBill(body);
       print('🪙🪙regularPayBill data: 2');
@@ -906,10 +943,6 @@ final getWallet=Provider.of<GetWalletViewModel>(context);
           final String order_id = data['id'] ;
           final int amount = data['amount'] as int;
           final app_key1 = response['app_key'];
-          print('regularPayBill order_id: $order_id');
-          print('regularPayBill amount: $amount');
-          print('regularPayBill app_key1: $app_key1');
-
 
           setState(() async {
             isLoading = false;
@@ -964,6 +997,7 @@ print("🙉🙉🙉");
         showErrorMessage(context, message: msg);
       }
     } catch (e) {
+      showErrorMessage(context, message: "$e");
       setState(() {
         isLoading = false;
       });
