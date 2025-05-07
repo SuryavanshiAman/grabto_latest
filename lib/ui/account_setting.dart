@@ -46,7 +46,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         height: heights*0.12,
                         width: widths*0.22,
                         decoration: BoxDecoration(
-                          color: Colors.red,
+
                             borderRadius: BorderRadius.circular(5),
                             image: DecorationImage(image: NetworkImage(user?.image??""),fit: BoxFit.fill)
                         ),

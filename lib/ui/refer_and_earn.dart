@@ -4,8 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:grabto/helper/user_provider.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ReferAndEarnScreen extends StatefulWidget {
   const ReferAndEarnScreen({super.key});
@@ -71,14 +73,22 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                                       color: Colors.black)),
                             ],
                           ),
-                          Text(user?.reffree.toString()??"",
-                              style: TextStyle(fontWeight: FontWeight.w500)),
+                          Row(
+                            children:[
+                              Text(user?.reffree.toString()??"",
+                                  style: TextStyle(fontWeight: FontWeight.w500)),
+                              SizedBox(width: widths*0.01,),
+                              Image.asset("assets/images/credit_card.png"),
+                              SizedBox(width: widths*0.01,),
+                            ]
+                          )
+
                         ],
                       ),
                       SizedBox(height: 30),
 
                       Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
+                        padding:  EdgeInsets.only(left: widths*0.05),
                         child: Center(
                           child: Text("Balance: ₹${user?.wallet??""}",
                               style: TextStyle(
@@ -89,24 +99,24 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                       ),
                       SizedBox(height: 8),
                       Padding(
-                        padding: const EdgeInsets.only(left: 80.0),
-                        child:   Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "Member Since:",
-                                style: TextStyle(
-                                    color: Colors.black54, fontSize: 12, fontWeight: FontWeight.w500),
-                              ),
-                              TextSpan(
-                                text: " 09/07/2024",
-                                style: TextStyle(fontSize: 14, color: Colors.black),
-                              ),
-                            ],
+                        padding:  EdgeInsets.only(left: widths*0.08),
+                        child:   Center(
+                          child: Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "Member Since:",
+                                  style: TextStyle(
+                                      color: Colors.black54, fontSize: 12, fontWeight: FontWeight.w500),
+                                ),
+                                TextSpan(
+                                  text:DateFormat('dd/MM/yyy').format(DateTime.parse(user?.created_at??"") ),
+                                  style: TextStyle(fontSize: 14, color: Colors.black),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        //   Text("Member Since: 09/07/2024",
-                        //       style: TextStyle(color: Colors.black54)),
                       ),
                       Spacer(),
                       Padding(
@@ -127,7 +137,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: "Earn ₹200",
+                        text: "Earn ₹100",
                         style: TextStyle(
                             color: MyColors.redBG, fontSize: 20, fontWeight: FontWeight.w800),
                       ),
@@ -139,7 +149,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                   ),
                 ),
                 SizedBox(height: 8),
-                Text("Earn ₹1000 for the first 5 referrals",
+                Text("Earn ₹500 for the first 5 referrals",
                     style: TextStyle(color:MyColors.textColorTwo,fontSize: 10)),
 
                 SizedBox(height: 12),
@@ -419,16 +429,21 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
             width: widths,
             color: Colors.black,
             child: Center(
-              child: Container(
-                alignment: Alignment.center,
-                width: widths*0.8,
-                height: heights*0.05,
-                padding: EdgeInsets.symmetric(horizontal: 24,vertical: 8),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: MyColors.redBG
+              child: InkWell(
+                onTap: (){
+                  openWhatsAppApp();
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  width: widths*0.8,
+                  height: heights*0.05,
+                  padding: EdgeInsets.symmetric(horizontal: 24,vertical: 8),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      color: MyColors.redBG
+                  ),
+                  child: Text("Invite from contacts",style: TextStyle(color: MyColors.whiteBG),),
                 ),
-                child: Text("Invite from contacts",style: TextStyle(color: MyColors.whiteBG),),
               ),
             ),
           ) ,
@@ -437,7 +452,14 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
     );
 
   }
-
+  void openWhatsAppApp() async {
+    final url = Uri.parse("https://wa.me/");
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not open WhatsApp';
+    }
+  }
   final List<_StepInfo> steps = [
     _StepInfo(icon: Icons.link, text: 'Share referral code or link with friends.'),
     _StepInfo(icon: Icons.inventory_2_outlined, text: 'When they place their first order, you both earn awards.'),

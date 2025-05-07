@@ -67,14 +67,14 @@ class ApiServices {
   }
   static Future<Map<String, dynamic>?> verify_otp(
       BuildContext context, Map body) async {
-    // const url = '$BASE_URL/verify_otp';
     const url = '$BASE_URL/user_verify_otp';
     final uri = Uri.parse(url);
     final response = await http.post(uri, body: body);
 
     if (response.statusCode == 200) {
       // Parse the JSON response
-      final jsonResponse = json.decode(response.body) as Map<String, dynamic>;
+      final jsonResponse = json.decode(response.body);
+      // as Map<String, dynamic>
       // Print the entire response
       debugPrint('verify_otp response: $jsonResponse');
 

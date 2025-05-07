@@ -155,7 +155,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500)),
                         Text(
-                            "+ ${widget.mobile}",
+                            "+91 ${widget.mobile}",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: MyColors.blackBG,
@@ -220,9 +220,7 @@ class _OtpScreenState extends State<OtpScreen> {
                           // ),
                           child: ElevatedButton(
                             onPressed: () {
-
-                              verify_otp(widget.mobile, otpCon.text);
-                              // user_login(widget.mobile);
+                              verify_otp(widget.mobile,otpCon.text);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: MyColors.redBG,
@@ -231,7 +229,7 @@ class _OtpScreenState extends State<OtpScreen> {
                               ),
                             ),
                             child: Text(
-                              resendOtp==false?  "Verify":"Resend OTP",
+                            "Verify",
                               style:
                               TextStyle(fontSize: 15, color: Colors.white),
                             ),
@@ -250,19 +248,19 @@ class _OtpScreenState extends State<OtpScreen> {
                       ],
                     ),
                     // Show a loading indicator if _isLoading is true
-                    if (isLoading)
-                      Container(
-                        color: Colors.black.withOpacity(0.5), // Adjust opacity as needed
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              MyColors.primaryColor,
-                            ),
-                            // Change the color
-                            strokeWidth: 4,
-                          ),
-                        ),
-                      ),
+                    // if (isLoading)
+                    //   Container(
+                    //     color: Colors.black.withOpacity(0.5), // Adjust opacity as needed
+                    //     child: Center(
+                    //       child: CircularProgressIndicator(
+                    //         valueColor: AlwaysStoppedAnimation<Color>(
+                    //           MyColors.primaryColor,
+                    //         ),
+                    //         // Change the color
+                    //         strokeWidth: 4,
+                    //       ),
+                    //     ),
+                    //   ),
                   ],
                 ),
               ),
@@ -281,18 +279,13 @@ class _OtpScreenState extends State<OtpScreen> {
         isLoading = true;
       });
       final body = {"mobile": mobile};
-      print(body);
       final response = await ApiServices.send_otp(context, body);
-      print(body);
-      // Check if the response is null or doesn't contain the expected data
       if (response != null &&
           response.containsKey('res') &&
           response['res'] == 'success') {
 showSuccessMessage(context, message: response['msg']);
       } else if (response == null) {
         String msg = response!['msg'];
-
-        // Handle unsuccessful response or missing 'res' field
         showErrorMessage(context, message: msg);
       }
     } catch (e) {
@@ -304,7 +297,7 @@ showSuccessMessage(context, message: response['msg']);
       });
     }
   }
-  Future<void> verify_otp(String mobile, String otp) async {
+  Future<void> verify_otp(dynamic mobile, dynamic otp) async {
     if (mobile.isEmpty) {
       showErrorMessage(context, message: 'Please fill mobile number');
       return;
@@ -319,163 +312,146 @@ showSuccessMessage(context, message: response['msg']);
       });
       final body = {"mobile": mobile, "otp": otp};
       final response = await ApiServices.verify_otp(context, body);
-
-      // Check if the response is null or doesn't contain the expected data
+      print('zzzzz'+response.toString());
       if (response != null &&
           response.containsKey('res') &&
           response['res'] == 'success') {
         final data = response['data'];
-        // Ensure that the response data is in the expected format
-
-        if (data != null && data is Map<String, dynamic>) {
-          //print('verify_otp data: $data');
-          final user = UserModel.fromMap(data);
-          widget.type=="2"?  user_signup(widget.name??"", widget.mobile, widget.city??"", widget.dob??""):user_login(mobile);
-
-          if (user != null) {
-            //print('verify_otp data: 1');
-
-            await SharedPref.userLogin({
-              SharedPref.KEY_ID: user.id,
-              SharedPref.KEY_CURRENT_MONTH: user.current_month,
-              SharedPref.KEY_PREMIUM: user.premium,
-              SharedPref.KEY_STATUS: user.status,
-              SharedPref.KEY_NAME: user.name,
-              SharedPref.KEY_EMAIL: user.email,
-              SharedPref.KEY_MOBILE: user.mobile,
-              SharedPref.KEY_DOB: user.dob,
-              SharedPref.KEY_OTP: user.otp,
-              SharedPref.KEY_IMAGE: user.image,
-              SharedPref.KEY_HOME_LOCATION: user.home_location,
-              SharedPref.KEY_CURRENT_LOCATION: user.current_location,
-              SharedPref.KEY_LAT: user.lat,
-              SharedPref.KEY_LONG: user.long,
-              SharedPref.KEY_CREATED_AT: user.created_at,
-              SharedPref.KEY_UPDATED_AT: user.updated_at,
-            });
-            // Pop all screens until reaching the first screen
-            // Navigator.popUntil(context, (route) => route.isFirst);
-
-            // Replace the current screen with the login screen
-
-          } else {
-            // Handle null user
-            showErrorMessage(context, message: 'User data is invalid');
-          }
-        } else {
-          // Handle invalid response data format
-          showErrorMessage(context, message: 'Invalid response data format');
-        }
-      } else if (response != null) {
-        String msg = response['msg'];
-
-        // Handle unsuccessful response or missing 'res' field
+        user_login(mobile);
+        print('rama');
+        // // if (data != null && data is Map<String, dynamic>) {
+        // //   // final user = UserModel.fromMap(data);
+        // //   // user_login(mobile);
+        // //   // if (user != null) {
+        // //   //   await SharedPref.userLogin({
+        // //   //     SharedPref.KEY_ID: user.id,
+        // //   //     SharedPref.KEY_CURRENT_MONTH: user.current_month,
+        // //   //     SharedPref.KEY_PREMIUM: user.premium,
+        // //   //     SharedPref.KEY_STATUS: user.status,
+        // //   //     SharedPref.KEY_NAME: user.name,
+        // //   //     SharedPref.KEY_EMAIL: user.email,
+        // //   //     SharedPref.KEY_MOBILE: user.mobile,
+        // //   //     SharedPref.KEY_DOB: user.dob,
+        // //   //     SharedPref.KEY_OTP: user.otp,
+        // //   //     SharedPref.KEY_IMAGE: user.image,
+        // //   //     SharedPref.KEY_HOME_LOCATION: user.home_location,
+        // //   //     SharedPref.KEY_CURRENT_LOCATION: user.current_location,
+        // //   //     SharedPref.KEY_LAT: user.lat,
+        // //   //     SharedPref.KEY_LONG: user.long,
+        // //   //     SharedPref.KEY_CREATED_AT: user.created_at,
+        // //   //     SharedPref.KEY_UPDATED_AT: user.updated_at,
+        // //   //   });
+        // //   //   // user_login(mobile);
+        // //   // } else {
+        //     Navigator.push(context,
+        //         MaterialPageRoute(builder: (context) => SignupScreen(mobile:mobile)));
+        // //   // }
+        // // }
+        // else {
+        //   // Handle invalid response data format
+        //   showErrorMessage(context, message: 'Invalid response data format');
+        // }
+      } else {
+        String msg = response!['msg'];
         showErrorMessage(context, message: msg);
       }
-    } catch (e) {
-      //print('verify_otp error: $e');
-      // Handle error
-      //showErrorMessage(context, message: 'An error occurred: $e');
+    }
+    catch (e) {
+      showErrorMessage(context, message: 'An  occurred: $e');
     } finally {
       setState(() {
         isLoading = false;
       });
     }
   }
-  Future<void> user_signup(
-      String name, String mobile, String city, String dob) async {
-    print(dob);
-    print("dob");
-    if (name.isEmpty) {
-      showErrorMessage(context, message: 'Please fill name');
-      return;
-    } else if (mobile.isEmpty) {
-      showErrorMessage(context, message: 'Please fill mobile number');
-      return;
-    } else if (mobile.length != 10) {
-      showErrorMessage(context,
-          message: 'Please fill only 10 digit mobile number');
-      return;
-    } else if (dob==null) {
-      showErrorMessage(context, message: 'Please fill Date of birth');
-      return;
-    } else if (city == "0") {
-      showErrorMessage(context, message: 'Please fill city');
-      return;
-    }
-
-    try {
-      setState(() {
-        isLoading = true;
-      });
-      final body = {
-        "name": name,
-        "mobile": mobile,
-        "current_location": city,
-        "dob": dob,
-      };
-      final response = await ApiServices.user_signup(context, body);
-
-      // Check if the response is null or doesn't contain the expected data
-      if (response != null &&
-          response.containsKey('res') &&
-          response['res'] == 'success') {
-        final data = response['data'];
-        // Ensure that the response data is in the expected format
-        if (data != null && data is Map<String, dynamic>) {
-          //print('user_signup data: $data');
-          final user = UserModel.fromMap(data);
-
-          if (user != null) {
-            await SharedPref.userLogin({
-              SharedPref.KEY_ID: user.id,
-              SharedPref.KEY_CURRENT_MONTH: user.current_month,
-              SharedPref.KEY_PREMIUM: user.premium,
-              SharedPref.KEY_STATUS: user.status,
-              SharedPref.KEY_NAME: user.name,
-              SharedPref.KEY_EMAIL: user.email,
-              SharedPref.KEY_MOBILE: user.mobile,
-              SharedPref.KEY_DOB: user.dob,
-              SharedPref.KEY_OTP: user.otp,
-              SharedPref.KEY_IMAGE: user.image,
-              SharedPref.KEY_HOME_LOCATION: user.home_location,
-              SharedPref.KEY_CURRENT_LOCATION: user.current_location,
-              SharedPref.KEY_LAT: user.lat,
-              SharedPref.KEY_LONG: user.long,
-              SharedPref.KEY_CREATED_AT: user.created_at,
-              SharedPref.KEY_UPDATED_AT: user.updated_at,
-            });
-            _getCurrentLocation();
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (context) => OtpScreen(
-            //           mobile: mobile,
-            //         )));
-          } else {
-            // Handle null user
-            showErrorMessage(context, message: 'User data is invalid');
-          }
-        } else {
-          // Handle invalid response data format
-          showErrorMessage(context, message: 'Invalid response data format');
-        }
-      } else if (response != null) {
-        String msg = response['msg'];
-
-        // Handle unsuccessful response or missing 'res' field
-        showErrorMessage(context, message: msg);
-      }
-    } catch (e) {
-      //print('user_signup error: $e');
-      // Handle error
-      showErrorMessage(context, message: 'An error occurred: $e');
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
+  // Future<void> user_signup(
+  //     String name, String mobile, String city, String dob) async {
+  //   print(dob);
+  //   print("dob");
+  //   if (name.isEmpty) {
+  //     showErrorMessage(context, message: 'Please fill name');
+  //     return;
+  //   } else if (mobile.isEmpty) {
+  //     showErrorMessage(context, message: 'Please fill mobile number');
+  //     return;
+  //   } else if (mobile.length != 10) {
+  //     showErrorMessage(context,
+  //         message: 'Please fill only 10 digit mobile number');
+  //     return;
+  //   } else if (dob==null) {
+  //     showErrorMessage(context, message: 'Please fill Date of birth');
+  //     return;
+  //   } else if (city == "0") {
+  //     showErrorMessage(context, message: 'Please fill city');
+  //     return;
+  //   }
+  //
+  //   try {
+  //     setState(() {
+  //       isLoading = true;
+  //     });
+  //     final body = {
+  //       "name": name,
+  //       "mobile": mobile,
+  //       "current_location": city,
+  //       "dob": dob,
+  //     };
+  //     final response = await ApiServices.user_signup(context, body);
+  //
+  //     // Check if the response is null or doesn't contain the expected data
+  //     if (response != null &&
+  //         response.containsKey('res') &&
+  //         response['res'] == 'success') {
+  //       final data = response['data'];
+  //       // Ensure that the response data is in the expected format
+  //       if (data != null && data is Map<String, dynamic>) {
+  //         //print('user_signup data: $data');
+  //         final user = UserModel.fromMap(data);
+  //
+  //         if (user != null) {
+  //           await SharedPref.userLogin({
+  //             SharedPref.KEY_ID: user.id,
+  //             SharedPref.KEY_CURRENT_MONTH: user.current_month,
+  //             SharedPref.KEY_PREMIUM: user.premium,
+  //             SharedPref.KEY_STATUS: user.status,
+  //             SharedPref.KEY_NAME: user.name,
+  //             SharedPref.KEY_EMAIL: user.email,
+  //             SharedPref.KEY_MOBILE: user.mobile,
+  //             SharedPref.KEY_DOB: user.dob,
+  //             SharedPref.KEY_OTP: user.otp,
+  //             SharedPref.KEY_IMAGE: user.image,
+  //             SharedPref.KEY_HOME_LOCATION: user.home_location,
+  //             SharedPref.KEY_CURRENT_LOCATION: user.current_location,
+  //             SharedPref.KEY_LAT: user.lat,
+  //             SharedPref.KEY_LONG: user.long,
+  //             SharedPref.KEY_CREATED_AT: user.created_at,
+  //             SharedPref.KEY_UPDATED_AT: user.updated_at,
+  //           });
+  //           _getCurrentLocation();
+  //         } else {
+  //           // Handle null user
+  //           showErrorMessage(context, message: 'User data is invalid');
+  //         }
+  //       } else {
+  //         // Handle invalid response data format
+  //         showErrorMessage(context, message: 'Invalid response data format');
+  //       }
+  //     } else if (response != null) {
+  //       String msg = response['msg'];
+  //
+  //       // Handle unsuccessful response or missing 'res' field
+  //       showErrorMessage(context, message: msg);
+  //     }
+  //   } catch (e) {
+  //     //print('user_signup error: $e');
+  //     // Handle error
+  //     showErrorMessage(context, message: 'An error occurred: $e');
+  //   } finally {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
   Future<void> user_login(String mobile) async {
     if (mobile.isEmpty) {
       showErrorMessage(context, message: 'Please fill mobile number');
@@ -524,9 +500,9 @@ showSuccessMessage(context, message: response['msg']);
               SharedPref.KEY_CREATED_AT: user.created_at,
               SharedPref.KEY_UPDATED_AT: user.updated_at,
             });
+            showSuccessMessage(context, message: response['msg'] );
+
             _getCurrentLocation();
-            // Navigator.push(context,
-            //     MaterialPageRoute(builder: (context) => OtpScreen(mobile: mobile,)));
           } else {
             // Handle null user
             showErrorMessage(context, message: 'User data is invalid');
@@ -536,13 +512,8 @@ showSuccessMessage(context, message: response['msg']);
           showErrorMessage(context, message: 'Invalid response data format');
         }
       } else if (response != null) {
-        String msg = response['msg'];
-        showErrorMessage(context, message: 'Mobile no. is not registered.');
-        showErrorMessage(context, message: msg);
-        print("Aman");
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => SignupScreen(mobile:mobile)));
-        // Handle unsuccessful response or missing 'res' field
 
       }
     } catch (e) {

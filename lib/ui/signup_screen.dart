@@ -19,6 +19,7 @@ import '../theme/theme.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import '../widget/filter_date-formate.dart';
+import 'home_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   final String mobile;
@@ -287,52 +288,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          Container(
-                                            height: 50,
-                                            child: TextField(
-                                              controller: referralCont,
-                                              enabled: true,
-                                              cursorColor: Colors.white,
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              //maxLength: 10,
-                                              minLines: 1,
-                                              style: const TextStyle(
-                                                  color: MyColors.whiteBG),
-                                              decoration: InputDecoration(
-                                                hintText: 'Referral code ',
-                                                hintStyle: const TextStyle(
-                                                    color: Color(0xFFDDDDDD)),
-                                                prefixIcon: const Icon(
-                                                    Icons.redeem_sharp,
-                                                    color: MyColors.whiteBG),
-                                                enabledBorder:
-                                                    OutlineInputBorder(
-                                                  gapPadding: 0,
-                                                  borderSide: const BorderSide(
-                                                      color: MyColors
-                                                          .primaryColor),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          50.0),
-                                                ),
-                                                focusedBorder:
-                                                    OutlineInputBorder(
-                                                  borderSide: const BorderSide(
-                                                      color: MyColors.whiteBG),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          50.0),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
                                           Container(
                                             margin: EdgeInsets.only(top: 10),
                                             padding: EdgeInsets.only(left: 8),
@@ -358,8 +313,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                               ],
                                             ),
                                           ),
+
                                           const SizedBox(
-                                            height: 17,
+                                            height: 10,
                                           ),
                                           GestureDetector(
                                             onTap: _showCityDialog,
@@ -410,11 +366,53 @@ class _SignupScreenState extends State<SignupScreen> {
                                               ),
                                             ),
                                           ),
-
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Container(
+                                            height: 50,
+                                            child: TextField(
+                                              controller: referralCont,
+                                              enabled: true,
+                                              cursorColor: Colors.white,
+                                              // keyboardType:
+                                              //     TextInputType.number,
+                                              //maxLength: 10,
+                                              minLines: 1,
+                                              style: const TextStyle(
+                                                  color: MyColors.whiteBG),
+                                              decoration: InputDecoration(
+                                                hintText: 'Referral code ',
+                                                hintStyle: const TextStyle(
+                                                    color: Color(0xFFDDDDDD)),
+                                                prefixIcon: const Icon(
+                                                    Icons.redeem_sharp,
+                                                    color: MyColors.whiteBG),
+                                                enabledBorder:
+                                                OutlineInputBorder(
+                                                  gapPadding: 0,
+                                                  borderSide: const BorderSide(
+                                                      color: MyColors
+                                                          .primaryColor),
+                                                  borderRadius:
+                                                  BorderRadius.circular(
+                                                      50.0),
+                                                ),
+                                                focusedBorder:
+                                                OutlineInputBorder(
+                                                  borderSide: const BorderSide(
+                                                      color: MyColors.whiteBG),
+                                                  borderRadius:
+                                                  BorderRadius.circular(
+                                                      50.0),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                           const SizedBox(
                                             height: 17,
                                           ),
-                                          ElevatedButton(
+                                          isLoading?CircularProgressIndicator(color: MyColors.redBG,): ElevatedButton(
                                             onPressed: () async {
                                               if (_selectedDate==null) {
                                                 showErrorMessage(context, message: 'Please fill Date of birth');
@@ -428,16 +426,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                               String token = await SharedPref.getToken();
                                               print("llll:${_selectedDate}");
                                               user_signup(name, mobile,referralCont.text ,city,dob);
-                                              // Navigator.push(
-                                              //     context,
-                                              //     MaterialPageRoute(
-                                              //         builder: (context) => OtpScreen(
-                                              //           name:name,
-                                              //           mobile: mobile,
-                                              //           dob:dob,
-                                              //           city:city,
-                                              //           type:"2"
-                                              //         )));
                                             },
                                             style: ButtonStyle(
                                               backgroundColor:
@@ -522,11 +510,10 @@ class _SignupScreenState extends State<SignupScreen> {
       // Check if the response is null or doesn't contain the expected data
       if (response != null &&
           response.containsKey('res') &&
-          response['res'] == 'success') {
+          response['res']      == 'success') {
         final data = response['data'];
         // Ensure that the response data is in the expected format
         if (data != null && data is Map<String, dynamic>) {
-          //print('user_signup data: $data');
           final user = UserModel.fromMap(data);
 
           if (user != null) {
@@ -550,6 +537,7 @@ class _SignupScreenState extends State<SignupScreen> {
               SharedPref.KEY_UPDATED_AT: user.updated_at,
               SharedPref.WALLET: user.wallet,
             });
+            showSuccessMessage(context, message: response['msg'] );
             _getCurrentLocation();
           } else {
             // Handle null user
@@ -569,10 +557,6 @@ class _SignupScreenState extends State<SignupScreen> {
       //print('user_signup error: $e');
       // Handle error
       showErrorMessage(context, message: 'An error occurred: $e');
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
     }
   }
   late LatLng _currentLocation;
@@ -607,6 +591,7 @@ class _SignupScreenState extends State<SignupScreen> {
       final response = await http.get(url,
       );
       if (response.statusCode == 200) {
+
         final data = json.decode(response.body);
         String formattedAddress = data["results"][0]["formatted_address"];
         List<dynamic> addressComponents = data["results"][0]["address_components"];
@@ -614,7 +599,14 @@ class _SignupScreenState extends State<SignupScreen> {
         String longName2 = addressComponents.isNotEmpty ? addressComponents[1]["long_name"] : "Not Available";
         address.setArea(formattedAddress);
         address.setAddress(longName2);
-
+        confirmAddress(formattedAddress,lat,lng);
+        setState(() {
+          isLoading = false;
+        });
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
       } else {
         setState(() {
         });
@@ -622,6 +614,43 @@ class _SignupScreenState extends State<SignupScreen> {
     } catch (e) {
       print("Error fetching address: $e");
       setState(() {
+      });
+    }
+  }
+  Future<void> confirmAddress(String address, dynamic lat, dynamic long,) async {
+    UserModel n = await SharedPref.getUser();
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      final body = {
+        "user_id": n.id.toString(),
+        "address": address,
+        "lat": lat.toString(),
+        "long": long.toString(),
+      };
+      print(body);
+      final response = await ApiServices.confirmAddress(context, body);
+
+      // Check if the response is null or doesn't contain the expected data
+      if (
+      response!['error'] == false) {
+        showSuccessMessage(context, message: response['message']);
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+
+      } else if (response != null) {
+        String msg = response['message'];
+
+        // Handle unsuccessful response or missing 'res' field
+        showErrorMessage(context, message: msg);
+      }
+    } catch (e) {
+      //print('verify_otp error: $e');
+      // Handle error
+      showErrorMessage(context, message: 'An error occurred: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
       });
     }
   }

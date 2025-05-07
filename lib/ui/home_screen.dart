@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:grabto/generated/assets.dart';
 import 'package:grabto/helper/shared_pref.dart';
 import 'package:grabto/helper/user_provider.dart';
 import 'package:grabto/main.dart';
@@ -12,26 +9,18 @@ import 'package:grabto/model/user_model.dart';
 import 'package:grabto/services/api.dart';
 import 'package:grabto/services/api_services.dart';
 import 'package:grabto/theme/theme.dart';
-import 'package:grabto/ui/about_us_screen.dart';
 import 'package:grabto/ui/bottom_categories_screen.dart';
 import 'package:grabto/ui/bottom_home_screen.dart';
 import 'package:grabto/ui/bottom_login_screen.dart';
 import 'package:grabto/ui/bottom_profile_screen.dart';
 import 'package:grabto/ui/bottom_sortlist_screen.dart';
-import 'package:grabto/ui/customer_care.dart';
-import 'package:grabto/ui/delete_screen.dart';
-import 'package:grabto/ui/how_it_works.dart';
-import 'package:grabto/ui/refer_and_earn.dart';
 import 'package:grabto/ui/restaurant_payment_screen.dart';
-import 'package:grabto/ui/term_and_condition.dart';
-import 'package:grabto/ui/transaction_screen.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:grabto/widget/item_list_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:lucide_icons/lucide_icons.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -39,7 +28,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../helper/location_provider.dart';
 import 'account_setting.dart';
-import 'bottom_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -216,7 +204,7 @@ print("dsd ${banners.length}");
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: MyColors.backgroundBg,
-      appBar:_selectedIndex!=0? AppBar(
+      appBar:_selectedIndex!=0&&_selectedIndex!=4? AppBar(
         backgroundColor: MyColors.backgroundBg,
         leadingWidth: 20,
         leading: GestureDetector(
