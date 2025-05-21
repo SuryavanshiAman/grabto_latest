@@ -31,10 +31,15 @@ class _ViewMenuScreenState extends State<ViewMenuScreen> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: MyColors.backgroundBg,
+        backgroundColor: MyColors.textColor,
         appBar: AppBar(
-          backgroundColor: MyColors.backgroundBg,
-          title: Text('Menu List'),
+          leading: InkWell(
+              onTap: (){
+                Navigator.pop(context);
+              },
+              child: Icon(Icons.arrow_back,color: MyColors.whiteBG,)),
+          backgroundColor: MyColors.textColor,
+          title: Text('Menu List',style: TextStyle(color: MyColors.whiteBG),),
         ),
         body: _isLoading1
             ? Center(

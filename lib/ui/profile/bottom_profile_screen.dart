@@ -6,11 +6,14 @@ import 'package:grabto/main.dart';
 import 'package:grabto/model/user_model.dart';
 import 'package:grabto/services/api.dart';
 import 'package:grabto/theme/theme.dart';
-import 'package:grabto/ui/edit_profiel_Screen.dart';
+import 'package:grabto/ui/profile/edit_profiel_Screen.dart';
 import 'package:flutter/material.dart';
+import 'package:grabto/view_model/get_post_view_model.dart';
 import 'package:provider/provider.dart';
 
-import 'account_setting.dart';
+import '../../model/get_post_model.dart';
+import '../account_setting.dart';
+import 'add_post_screen.dart';
 
 class ProfileBottomScreen extends StatefulWidget {
   @override
@@ -30,8 +33,9 @@ class _ProfileBottomScreenState extends State<ProfileBottomScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getUserDetails();
+Provider.of<GetPostViewModel>(context,listen: false).getPostApi(context);
 
-      getUserDetails();
 
 
   }
@@ -53,10 +57,20 @@ class _ProfileBottomScreenState extends State<ProfileBottomScreen> {
   int isSelected=0;
   @override
   Widget build(BuildContext context) {
+    final post=Provider.of<GetPostViewModel>(context).postList.data?.data;
+    final List<PostImage> allImages = [];
+    if (post != null) {
+      for (var p in post) {
+        if (p.postImage != null) {
+          allImages.addAll(p.postImage!);
+        }
+      }
+    }
    return Consumer<UserProvider>(
      builder: (context, userProvider, child) {
        final user = userProvider.user;
-        return SingleChildScrollView(
+        return
+          SingleChildScrollView(
           child: Column(
             children: [
               Stack(
@@ -116,8 +130,7 @@ Color(0xffef5a42).withAlpha(50),
                           ),
                           child:CircleAvatar(
                             radius: 42,
-                            backgroundImage: AssetImage(
-                              'assets/images/grabto_logo_without_text.png',
+                            backgroundImage: NetworkImage(user?.image??"",
                             ),
                           ) ,
                         ),
@@ -140,7 +153,7 @@ Color(0xffef5a42).withAlpha(50),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Sanjay Mishra",
+                  Text(user?.name??"",
                       style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
                   const SizedBox(width: 8),
                   Container(
@@ -281,21 +294,24 @@ Color(0xffef5a42).withAlpha(50),
                 crossAxisCount: 2,
                 mainAxisSpacing: 8,
                 crossAxisSpacing: 8,
-                itemCount:imageData.length,
+                itemCount:allImages.length,
                 itemBuilder: (context, index) {
-                  return Image(image: AssetImage(imageData[index]));
-                  // CachedNetworkImage(
-                  //   imageUrl: data?.image??"",
-                  //   fit: BoxFit.fill,
-                  //   placeholder: (context, url) => Image.asset(
-                  //     'assets/images/placeholder.png',
-                  //     fit: BoxFit.cover,
-                  //     width: double.infinity,
-                  //     height: double.infinity,
-                  //   ),
-                  //   errorWidget: (context, url, error) =>
-                  //       Center(child: Icon(Icons.error)),
-                  // );
+                  final data =allImages[index];
+                  return AspectRatio(
+                    aspectRatio: 3 / 4,
+                    child: CachedNetworkImage(
+                      imageUrl: data.image??"",
+                      fit: BoxFit.fill,
+                      placeholder: (context, url) => Image.asset(
+                        'assets/images/placeholder.png',
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                      errorWidget: (context, url, error) =>
+                          Center(child: Icon(Icons.error)),
+                    ),
+                  );
                 },
               ):isSelected==1?_buildReviewItem():GridView.builder(
                 padding: EdgeInsets.zero,
@@ -309,172 +325,14 @@ Color(0xffef5a42).withAlpha(50),
                     mainAxisSpacing: 5,
                     mainAxisExtent: 280),
                 itemBuilder: (BuildContext context, int index) {
-                  return Image(image: AssetImage(imageData[index]),fit: BoxFit.fill,);
+                  return Image(image: AssetImage(imageData[index]),fit: BoxFit.cover,);
                 },
               )
 
             ],
           ),
         );
-       //    Container(
-       //   color: MyColors.backgroundBg,
-       //   child: Container(
-       //     padding: EdgeInsets.only(left: 16, top: 25, right: 16),
-       //     child: GestureDetector(
-       //       onTap: () {
-       //         //FocusScope.of(context).unfocus();
-       //       },
-       //       child: ListView(
-       //         children: [
-       //           SizedBox(
-       //             height: 15,
-       //           ),
-       //           Center(
-       //             child: Stack(
-       //               children: [
-       //                 Container(
-       //                   width: 110,
-       //                   height: 110,
-       //                   decoration: BoxDecoration(
-       //                     border: Border.all(
-       //                         width: 4,
-       //                         color: Theme.of(context).scaffoldBackgroundColor),
-       //                     boxShadow: [
-       //                       BoxShadow(
-       //                           spreadRadius: 2,
-       //                           blurRadius: 10,
-       //                           color: Colors.black.withOpacity(0.1),
-       //                           offset: Offset(0, 10))
-       //                     ],
-       //                     shape: BoxShape.circle,
-       //
-       //                   ),
-       //                   child: ClipOval(
-       //                     child: CachedNetworkImage(
-       //                       imageUrl: userImage.isNotEmpty
-       //                           ? userImage
-       //                           : image,
-       //                       fit: BoxFit.fill,
-       //                       placeholder: (context, url) => Image.asset(
-       //                         'assets/images/placeholder.png',
-       //                         // Path to your placeholder image asset
-       //                         fit: BoxFit.cover,
-       //                         width: double.infinity,
-       //                         height: double.infinity,
-       //                       ),
-       //                       errorWidget: (context, url, error) =>
-       //                           Center(child: Icon(Icons.error)),
-       //                     ),
-       //                     // child: Image.network(
-       //                     //   userImage.isNotEmpty
-       //                     //       ? userImage
-       //                     //       : image,
-       //                     //   loadingBuilder: (BuildContext context,
-       //                     //       Widget child,
-       //                     //       ImageChunkEvent? loadingProgress) {
-       //                     //     if (loadingProgress == null) {
-       //                     //       return child;
-       //                     //     }
-       //                     //     else {
-       //                     //       return Center(
-       //                     //         child: CircularProgressIndicator(
-       //                     //           value:
-       //                     //           loadingProgress.expectedTotalBytes !=
-       //                     //               null
-       //                     //               ? loadingProgress
-       //                     //               .cumulativeBytesLoaded /
-       //                     //               (loadingProgress
-       //                     //                   .expectedTotalBytes ??
-       //                     //                   1)
-       //                     //               : null,
-       //                     //         ),
-       //                     //       );
-       //                     //     }
-       //                     //   },
-       //                     //   errorBuilder: (BuildContext context, Object error,
-       //                     //       StackTrace? stackTrace) {
-       //                     //     return Icon(Icons
-       //                     //         .person); // Placeholder icon for error case
-       //                     //   },
-       //                     ),
-       //                   ),
-       //
-       //                 // Positioned(
-       //                 //     bottom: 0,
-       //                 //     right: 0,
-       //                 //     child: Container(
-       //                 //       height: 40,
-       //                 //       width: 40,
-       //                 //       decoration: BoxDecoration(
-       //                 //         shape: BoxShape.circle,
-       //                 //         border: Border.all(
-       //                 //           width: 4,
-       //                 //           color: Theme.of(context).scaffoldBackgroundColor,
-       //                 //         ),
-       //                 //         color: MyColors.primaryColor,
-       //                 //       ),
-       //                 //       child: Icon(
-       //                 //         Icons.edit,
-       //                 //         color: Colors.white,
-       //                 //       ),
-       //                 //     )),
-       //               ],
-       //             ),
-       //           ),
-       //           SizedBox(
-       //             height: 35,
-       //           ),
-       //           buildText("Name", userName.isNotEmpty
-       //               ? userName
-       //               : "Update your Name"),
-       //           buildText("Mobile", userMobile.isNotEmpty
-       //               ? userMobile
-       //               : "Update your Mobile"),
-       //           buildText("Email", userEmail.isNotEmpty
-       //               ? userEmail
-       //               : "Update your email"),
-       //           buildText("Dath of Birth", userDob.isNotEmpty
-       //               ? userDob
-       //               : "Update your Dob"),
-       //           buildText("City", userLocation.isNotEmpty
-       //               ? userLocation
-       //               : "Update your city"),
-       //           SizedBox(
-       //             height: 35,
-       //           ),
-       //           Row(
-       //             mainAxisAlignment: MainAxisAlignment.center,
-       //             children: [
-       //               ElevatedButton(
-       //                 style: ButtonStyle(
-       //                   side: MaterialStateProperty.all<BorderSide>(
-       //                     BorderSide(
-       //                         color:
-       //                         MyColors.primaryColor), // Change the color here
-       //                   ),
-       //                   backgroundColor: MaterialStateProperty.all<Color>(
-       //                       MyColors.primaryColor),
-       //                 ),
-       //                 onPressed: () {
-       //                   // Navigator.push(context,
-       //                   //     MaterialPageRoute(builder: (context) {
-       //                   //       return EditProfileBottomScreen();
-       //                   //     }));
-       //                   navigateToEditProfileBottomScreen();
-       //                 },
-       //                 child: Text("Edit",
-       //                     style: TextStyle(
-       //                         fontSize: 14,
-       //                         letterSpacing: 2.2,
-       //                         color: Colors.white)),
-       //               ),
-       //             ],
-       //           )
-       //         ],
-       //       ),
-       //     ),
-       //   ),
-       // );
+
      },
    );
 
@@ -646,25 +504,25 @@ Color(0xffef5a42).withAlpha(50),
   // }
 
 
-  // void navigateToEditProfileBottomScreen() async {
-  //   // Navigate to the edit profile screen and wait for result
-  //   final Map<String, dynamic>? result = await Navigator.push(
-  //     context,
-  //     MaterialPageRoute(builder: (context) => EditProfileBottomScreen()),
-  //   );
-  //   // Check if the result is not null and contains updated user details
-  //   if (result != null) {
-  //     // Update user details based on the received data
-  //     setState(() {
-  //       userName = result['name'] ?? userName;
-  //       userEmail = result['email'] ?? userEmail;
-  //       userLocation = result['location'] ?? userLocation;
-  //       userDob = result['dob'] ?? userDob;
-  //     });
-  //     await getUserDetails();
-  //
-  //   }
-  // }
+  void navigateToEditProfileScreen() async {
+    // Navigate to the edit profile screen and wait for result
+    final Map<String, dynamic>? result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditProfileScreen()),
+    );
+    // Check if the result is not null and contains updated user details
+    if (result != null) {
+      // Update user details based on the received data
+      setState(() {
+        userName = result['name'] ?? userName;
+        userEmail = result['email'] ?? userEmail;
+        userLocation = result['location'] ?? userLocation;
+        userDob = result['dob'] ?? userDob;
+      });
+      await getUserDetails();
+
+    }
+  }
 
 
   void showInsightBottomSheet(BuildContext context) {
@@ -910,13 +768,13 @@ Color(0xffef5a42).withAlpha(50),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildSheetButton(Icons.grid_view, 'Add Post'),
+              _buildSheetButton(Icons.grid_view, 'Add Post',AddPostScreen(status:"1")),
                Divider(color: MyColors.textColorTwo.withAlpha(30),),
-              _buildSheetButton(Icons.travel_explore, 'Add Flick'),
+              _buildSheetButton(Icons.travel_explore, 'Add Flick',AddPostScreen(status:"2")),
                Divider(color: MyColors.textColorTwo.withAlpha(30),),
-              _buildSheetButton(Icons.rate_review_outlined, 'Add Review'),
+              _buildSheetButton(Icons.rate_review_outlined, 'Add Review',AddPostScreen(status:"3")),
                Divider(color: MyColors.textColorTwo.withAlpha(30),),
-              _buildSheetButton(Icons.star_border_rounded, 'Add Highlight'),
+              _buildSheetButton(Icons.star_border_rounded, 'Add Highlight',AddPostScreen(status:"4")),
             ],
           ),
         );
@@ -924,10 +782,10 @@ Color(0xffef5a42).withAlpha(50),
     );
   }
 
-  Widget _buildSheetButton(IconData icon, String label) {
+  Widget _buildSheetButton(IconData icon, String label, Widget screen) {
     return GestureDetector(
       onTap: () {
-        // Handle tap
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>screen));
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12),

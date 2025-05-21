@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:grabto/helper/shared_pref.dart';
+import 'package:grabto/main.dart';
 import 'package:grabto/model/user_model.dart';
 import 'package:grabto/services/api_services.dart';
 import 'package:grabto/theme/theme.dart';
@@ -14,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter/animation.dart';
-// import 'package:uni_links/uni_links.dart';
 
 class YourTickerProvider implements TickerProvider {
   @override
@@ -42,9 +42,11 @@ class _SplashScreenState extends State<SplashScreen> {
     SharedPref.updateToken("${widget.token}");
     getwayStatus();
     Timer(Duration(seconds: 3), () {
-      navigateToScreen(context);
+      if (!MyApp.hasHandledDeepLink) {
+        navigateToScreen(context);
+        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomeScreen()));
+      }
     });
-
     _controller = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: YourTickerProvider(),
@@ -57,6 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
       ),
     );
   }
+
   @override
   void dispose() {
     _controller.dispose();

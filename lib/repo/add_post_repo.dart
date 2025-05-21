@@ -1,0 +1,27 @@
+
+
+
+
+
+
+import 'package:flutter/foundation.dart';
+
+import '../helper/network/base_api_services.dart';
+import '../helper/network/network_api_services.dart';
+import '../services/api.dart';
+
+class AddPostRepo {
+  final BaseApiServices _apiServices = NetworkApiServices();
+
+  Future<dynamic> addPostApi(dynamic data) async {
+    try {
+      dynamic response =
+      await _apiServices.getPostApiResponse('$BASE_URL/user-post-add',data );
+      return response;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error occurred during addPostApi: $e');
+      }
+      rethrow;
+    }
+  }}

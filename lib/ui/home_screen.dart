@@ -12,8 +12,9 @@ import 'package:grabto/theme/theme.dart';
 import 'package:grabto/ui/bottom_categories_screen.dart';
 import 'package:grabto/ui/bottom_home_screen.dart';
 import 'package:grabto/ui/bottom_login_screen.dart';
-import 'package:grabto/ui/bottom_profile_screen.dart';
+import 'package:grabto/ui/profile/bottom_profile_screen.dart';
 import 'package:grabto/ui/bottom_sortlist_screen.dart';
+import 'package:grabto/ui/explore_screen.dart';
 import 'package:grabto/ui/restaurant_payment_screen.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:grabto/widget/item_list_dialog.dart';
@@ -28,6 +29,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../helper/location_provider.dart';
 import 'account_setting.dart';
+import 'flicks_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -184,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
   final List<String> _image = [
     "assets/images/home_app_logo.png",
-    "assets/images/Menu Icons.png",
+    "assets/images/menu_Icons.png",
     "assets/images/add_card.png",
     "assets/images/travel_explore.png",
     "assets/images/home_app_logo.png",
@@ -204,7 +206,7 @@ print("dsd ${banners.length}");
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: MyColors.backgroundBg,
-      appBar:_selectedIndex!=0&&_selectedIndex!=4? AppBar(
+      appBar:_selectedIndex!=0&&_selectedIndex!=3&&_selectedIndex!=4&& _selectedIndex!=1?AppBar(
         backgroundColor: MyColors.backgroundBg,
         leadingWidth: 20,
         leading: GestureDetector(
@@ -240,7 +242,9 @@ print("dsd ${banners.length}");
         SizedBox(width: widths*0.02,)
       ]:null,
       ):null,
-      body:banners !=[] && banners.isNotEmpty && banners.length>=1 ?Stack(children: [
+      body:
+      // banners !=[] && banners.isNotEmpty && banners.length>=1 ?
+      Stack(children: [
         Container(
           constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width,
@@ -251,12 +255,14 @@ print("dsd ${banners.length}");
             HomeBottamScreen(
               onFetchMembership: currentMembership, bannersDa:banners,
             ),
-
-            CategoriesBottamWidget(),
+            ExploreScreen(),
+            // CategoriesBottamWidget(),
             RestaurantPaymentScreen(),
             // Center(child: Text("Page: ${_labels[_selectedIndex]}")),
             //BottomLoginScreen(),
-            user_id == 0 ? const BottomLoginScreen() : SortListBottamWidget(),
+            // user_id == 0 ? const BottomLoginScreen() : SortListBottamWidget(),
+            user_id == 0 ? const BottomLoginScreen() :FlicksScreen(),
+            // Center(child: _buildNoDataWidget()),
 
             user_id == 0 ? const BottomLoginScreen() : ProfileBottomScreen(),
           ][_selectedIndex],
@@ -275,7 +281,8 @@ print("dsd ${banners.length}");
         //       ),
         //     ),
         //   ),
-      ]):Center(child: CircularProgressIndicator(color: MyColors.redBG,)),
+      ]),
+          // :Center(child: CircularProgressIndicator(color: MyColors.redBG,)),
       // drawer: Drawer(
       //   backgroundColor: Colors.white,
       //   child: ListView(
@@ -713,7 +720,26 @@ print("dsd ${banners.length}");
       ),
     );
   }
-
+  Widget _buildNoDataWidget() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+            width: 150,
+            height: 100,
+            child: Image.asset('assets/vector/blank.png')),
+        // Assuming you have an image asset for 'No coupons available'
+        SizedBox(height: 16),
+        Text(
+          'No Flicks Available',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w200,
+          ),
+        ),
+      ],
+    );
+  }
   void _onItemTappedd(int index) {
     setState(() {
       _selectedIndex = index;
@@ -845,9 +871,10 @@ print("dsd ${banners.length}");
   }
 
   Future<void> getUserDetails() async {
-    // SharedPref sharedPref=new SharedPref();
-    // userName = (await SharedPref.getUser()).name;
+
     String token = await SharedPref.getToken();
+    user_details("${user_id}");
+
     UserModel n = await SharedPref.getUser();
     print("getUserDetails: ${n.id}");
     setState(() {
@@ -865,6 +892,7 @@ print("dsd ${banners.length}");
         currentMembership("$user_id");
       }
     });
+
   }
 
   Future<void> fetchCity() async {
@@ -931,8 +959,6 @@ print("dsd ${banners.length}");
         "user_id": user_id,
       };
       final response = await ApiServices.user_details(context, body);
-
-      // Check if the response is null or doesn't contain the expected data
       if (response != null &&
           response.containsKey('res') &&
           response['res'] == 'success') {
@@ -947,29 +973,32 @@ print("dsd ${banners.length}");
           });
           print(banners.length);
           if (user != null) {
-            await SharedPref.userLogin({
-              SharedPref.KEY_ID: user.id,
-              SharedPref.REFFREE: user.reffree,
-              SharedPref.KEY_CURRENT_MONTH: user.current_month,
-              SharedPref.KEY_PREMIUM: user.premium,
-              SharedPref.KEY_STATUS: user.status,
-              SharedPref.KEY_NAME: user.name,
-              SharedPref.KEY_EMAIL: user.email,
-              SharedPref.KEY_MOBILE: user.mobile,
-              SharedPref.KEY_DOB: user.dob,
-              SharedPref.KEY_OTP: user.otp,
-              SharedPref.KEY_IMAGE: user.image,
-              SharedPref.KEY_HOME_LOCATION: user.home_location,
-              SharedPref.KEY_CURRENT_LOCATION: user.current_location,
-              SharedPref.ADDRESS: user.address,
-              SharedPref.KEY_LAT: user.lat,
-              SharedPref.KEY_LONG: user.long,
-              SharedPref.WALLET: user.wallet,
-              SharedPref.REFERRALLINK: user.referralLink,
-              SharedPref.KEY_CREATED_AT: user.created_at,
-              SharedPref.KEY_UPDATED_AT: user.updated_at,
-              // SharedPref.KEY_BANNER: jsonEncode(user.banners),
+            setState(() {
+               SharedPref.userLogin({
+                SharedPref.KEY_ID: user.id,
+                SharedPref.REFFREE: user.reffree,
+                SharedPref.KEY_CURRENT_MONTH: user.current_month,
+                SharedPref.KEY_PREMIUM: user.premium,
+                SharedPref.KEY_STATUS: user.status,
+                SharedPref.KEY_NAME: user.name,
+                SharedPref.KEY_EMAIL: user.email,
+                SharedPref.KEY_MOBILE: user.mobile,
+                SharedPref.KEY_DOB: user.dob,
+                SharedPref.KEY_OTP: user.otp,
+                SharedPref.KEY_IMAGE: user.image,
+                SharedPref.KEY_HOME_LOCATION: user.home_location,
+                SharedPref.KEY_CURRENT_LOCATION: user.current_location,
+                SharedPref.ADDRESS: user.address,
+                SharedPref.KEY_LAT: user.lat,
+                SharedPref.KEY_LONG: user.long,
+                SharedPref.WALLET: user.wallet,
+                SharedPref.REFERRALLINK: user.referralLink,
+                SharedPref.KEY_CREATED_AT: user.created_at,
+                SharedPref.KEY_UPDATED_AT: user.updated_at,
+                SharedPref.KEY_BANNER: jsonEncode(user.banners),
+              });
             });
+
             Provider.of<UserProvider>(context, listen: false)
                 .updateUserDetails(user);
           } else {

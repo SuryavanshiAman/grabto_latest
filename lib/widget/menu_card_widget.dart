@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:grabto/view_model/menu_type_view_model.dart';
@@ -16,19 +17,23 @@ class MenuWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.fromLTRB(8,0,8,12),
-      height: 210,
+      // height: 210,
+      height: heights*0.31,
       color: Color(0xff1e1f16),
       child: ListView.builder(
         itemCount: menuData?.data?.length??0,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
           final menu = menuData?.data?[index];
-          return GestureDetector(
-            onTap: () {
-              index==0?Provider.of<MenuTypeViewModel>(context,listen: false).menuTypeApi(context, storeId,"1"):
-              Provider.of<MenuTypeViewModel>(context,listen: false).menuTypeApi(context, storeId,"2");
-            },
-            child: buildMenuWidget(context,menu),
+          return Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: GestureDetector(
+              onTap: () {
+                index==0?Provider.of<MenuTypeViewModel>(context,listen: false).menuTypeApi(context, storeId,"1"):
+                Provider.of<MenuTypeViewModel>(context,listen: false).menuTypeApi(context, storeId,"2");
+              },
+              child: buildMenuWidget(context,menu),
+            ),
           );
         },
 
@@ -37,7 +42,7 @@ class MenuWidget extends StatelessWidget {
   }
 
   Widget buildMenuWidget(BuildContext context,Data? menuUrl) {
-    final width = MediaQuery.of(context).size.width * 0.33;
+    final width = MediaQuery.of(context).size.width * 0.5;
     final height = width * 25; // Adjust as needed
     return Stack(
       alignment: Alignment.bottomCenter,
@@ -60,13 +65,24 @@ class MenuWidget extends StatelessWidget {
                 height: double.infinity,
               ),
               errorWidget: (context, url, error) =>
-                  Center(child: Icon(Icons.error)),
+                  Center(child: Image.asset(
+                    'assets/images/vertical_placeholder.jpg',
+                    // Path to your placeholder image asset
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                  )),
             ),
           ),
         ),
-        Container( width: width,
+        Container(
+          width: width,
           height: height,
-          color: Colors.black26,
+
+          decoration: BoxDecoration(
+              color: Colors.black26,
+            borderRadius: BorderRadius.circular(10)
+          ),
         ),
         Padding(
           padding: const EdgeInsets.only(bottom: 30.0),
@@ -74,7 +90,7 @@ class MenuWidget extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.only(bottom: 16.0),
-          child: Text("${menuUrl?.status??" "} pages",style: TextStyle(color: MyColors.whiteBG,fontWeight: FontWeight.w500)),
+          child: Text("${menuUrl?.imageCount.toString()??" "} pages",style: TextStyle(color: MyColors.whiteBG,fontWeight: FontWeight.w500)),
         ),
       ],
     );

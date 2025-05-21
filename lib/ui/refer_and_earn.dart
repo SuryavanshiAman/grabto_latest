@@ -110,7 +110,8 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                                       color: Colors.black54, fontSize: 12, fontWeight: FontWeight.w500),
                                 ),
                                 TextSpan(
-                                  text:DateFormat('dd/MM/yyy').format(DateTime.parse(user?.created_at??"") ),
+                                  text: "",
+                                  // text:DateFormat('dd/MM/yyy').format(DateTime.parse(user?.created_at??"") ),
                                   style: TextStyle(fontSize: 14, color: Colors.black),
                                 ),
                               ],
@@ -212,7 +213,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                               ],
                             ),
                             SizedBox(height: 8),
-                            Text("25% off upto ₹200 on your next order.",
+                            Text("25% off upto ₹200 on your next payment.",
                                 style: TextStyle(fontSize: 10,color: MyColors.textColorTwo)),
                           ],
                         ),
@@ -252,7 +253,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                             //     style: TextStyle(
                             //         fontWeight: FontWeight.bold, fontSize: 14)),
                             SizedBox(height: 8),
-                            Text("25% off upto ₹50 on their first order.",
+                            Text("25% off upto ₹50 on their first payment.",
                                 style: TextStyle(fontSize: 10,color: MyColors.textColorTwo
                                 )),
                           ],
@@ -323,7 +324,9 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                           child: IconButton(
                             visualDensity: VisualDensity(vertical: -4,horizontal: -4),
                             icon: Icon(Icons.share_outlined, color: Colors.red),
-                            onPressed: () {},
+                            onPressed: () {
+                              Share.share(user?.referralLink??"");
+                            },
                           ),
                         ),
                         Text("Share", style: TextStyle(color: Colors.black,fontSize: 12)),
@@ -431,7 +434,8 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
             child: Center(
               child: InkWell(
                 onTap: (){
-                  openWhatsAppApp();
+                  // openWhatsAppApp();
+                  openWhatsAppAppWithMessage("Use this * ${user?.referralLink??""} *  referral link and get exciting rewards ");
                 },
                 child: Container(
                   alignment: Alignment.center,
@@ -452,8 +456,18 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
     );
 
   }
-  void openWhatsAppApp() async {
-    final url = Uri.parse("https://wa.me/");
+  // void openWhatsAppApp() async {
+  //   final url = Uri.parse("https://wa.me/");
+  //   if (await canLaunchUrl(url)) {
+  //     await launchUrl(url, mode: LaunchMode.externalApplication);
+  //   } else {
+  //     throw 'Could not open WhatsApp';
+  //   }
+  // }
+  void openWhatsAppAppWithMessage(String message) async {
+    final encodedMessage = Uri.encodeComponent(message);
+    final url = Uri.parse("whatsapp://send?text=$encodedMessage");
+
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {

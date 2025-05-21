@@ -2,9 +2,8 @@ class DifferentLocationModel {
   String? res;
   String? msg;
   List<Data>? data;
-  List<Data>? data1; // Use the same Data class
 
-  DifferentLocationModel({this.res, this.msg, this.data, this.data1});
+  DifferentLocationModel({this.res, this.msg, this.data});
 
   DifferentLocationModel.fromJson(Map<String, dynamic> json) {
     res = json['res'];
@@ -15,40 +14,56 @@ class DifferentLocationModel {
         data!.add(Data.fromJson(v));
       });
     }
-    if (json['data1'] != null) {
-      data1 = <Data>[];
-      json['data1'].forEach((v) {
-        data1!.add(Data.fromJson(v));
-      });
-    }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> jsonData = {};
-    jsonData['res'] = res;
-    jsonData['msg'] = msg;
-    if (data != null) {
-      jsonData['data'] = data!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['res'] = res;
+    data['msg'] = msg;
+    if (this.data != null) {
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
-    if (data1 != null) {
-      jsonData['data1'] = data1!.map((v) => v.toJson()).toList();
-    }
-    return jsonData;
+    return data;
   }
 }
 
 class Data {
-  String? localityName;
+  int? id;
+  String? cityId;
+  String? locality;
+  String? image;
+  String? status;
+  String? createdAt;
+  String? updatedAt;
 
-  Data({this.localityName});
+  Data(
+      {this.id,
+        this.cityId,
+        this.locality,
+        this.image,
+        this.status,
+        this.createdAt,
+        this.updatedAt});
 
   Data.fromJson(Map<String, dynamic> json) {
-    localityName = json['locality_name'];
+    id = json['id'];
+    cityId = json['city_id'];
+    locality = json['locality'];
+    image = json['image'];
+    status = json['status'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'locality_name': localityName,
-    };
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = id;
+    data['city_id'] = cityId;
+    data['locality'] = locality;
+    data['image'] = image;
+    data['status'] = status;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    return data;
   }
 }

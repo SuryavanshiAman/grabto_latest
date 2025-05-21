@@ -1,3 +1,4 @@
+import 'package:grabto/main.dart';
 import 'package:grabto/services/api.dart';
 import 'package:grabto/services/api_services.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
@@ -40,14 +41,149 @@ class _CustomerCareState extends State<CustomerCare> {
             onTap: () {
               Navigator.pop(context);
             },
-            child: Icon(Icons.arrow_back_ios)),
-        centerTitle: true,
+            child: Icon(Icons.arrow_back)),
+        // centerTitle: true,
         title: Text(
-          "Customer Care",
+          "Support",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
-      body: Stack(
+      body:
+      // Padding(
+      //   padding: const EdgeInsets.all(20),
+      //   child: Column(
+      //     crossAxisAlignment: CrossAxisAlignment.center,
+      //     children: [
+      //       const SizedBox(height: 30),
+      //
+      //       // Illustration
+      //       Image.asset(
+      //         'assets/images/support.png', // replace with your image
+      //         height: 200,
+      //       ),
+      //
+      //       const SizedBox(height: 16),
+      //       const Text(
+      //         "Our customer support team is ready to make sure you have the best service.",
+      //         textAlign: TextAlign.center,
+      //         style: TextStyle(fontSize: 12,color: MyColors.textColorTwo),
+      //       ),
+      //       Divider(color: MyColors.textColorTwo.withAlpha(10)),
+      //       Row(
+      //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //         children: [
+      //           SupportActionButton(
+      //             icon: Icons.email_outlined,
+      //             label: 'Send Email',
+      //             onTap: ()   {
+      //               _sendEmail( email);
+      //             },
+      //           ),
+      //           SupportActionButton(
+      //             icon: Icons.call_outlined,
+      //             label: 'Call Us',
+      //             onTap: () {
+      //               _makePhoneCall(mobile);
+      //             },
+      //           ),
+      //         ],
+      //       ),
+      //       Divider(color: MyColors.textColorTwo.withAlpha(10)),
+      //       Row(
+      //         mainAxisAlignment: MainAxisAlignment.center,
+      //         children: [
+      //           Icon(Icons.thumb_up_alt_outlined,size: 14,color: MyColors.redBG,),
+      //           const Text(
+      //             "GIVE APP FEEDBACK",
+      //             style: TextStyle(
+      //               color: Colors.red,
+      //               fontSize: 12,
+      //               fontWeight: FontWeight.w500,
+      //             ),
+      //           ),
+      //         ],
+      //       ),
+      //
+      //       const SizedBox(height: 30),
+      //       const Align(
+      //         alignment: Alignment.centerLeft,
+      //         child: Text(
+      //           "Help us improve",
+      //           style: TextStyle(
+      //             fontWeight: FontWeight.w500,
+      //             color: Colors.black87,
+      //           ),
+      //         ),
+      //       ),
+      //       const SizedBox(height: 8),
+      //       const Align(
+      //         alignment: Alignment.centerLeft,
+      //         child: Text(
+      //           "Report a bug or suggest ways to make Grabto better.",style: TextStyle(fontWeight: FontWeight.w500,color: MyColors.textColorTwo),
+      //         ),
+      //       ),
+      //       const SizedBox(height: 10),
+      //
+      //       Align(
+      //         alignment: Alignment.centerRight,
+      //         child: Container(
+      //           width: widths*0.39,
+      //           padding: EdgeInsets.symmetric(vertical: 5,horizontal: 20),
+      //           decoration: BoxDecoration(
+      //             color: MyColors.redBG,
+      //               borderRadius: BorderRadius.circular(5),
+      //               // border: Border.all(color: MyColors.grey.withAlpha(100))
+      //           ),
+      //           child: Row(
+      //             children: [
+      //               Text("Give Feedback ",style: TextStyle(fontSize: 12,color: MyColors.whiteBG,fontWeight: FontWeight.w500),),
+      //               Icon(Icons.arrow_forward,color: MyColors.whiteBG,size: 12,)
+      //             ],
+      //           ),
+      //         ),
+      //       ),
+      //
+      //       const Spacer(),
+      //
+      //       // Social Icons
+      //        Align(
+      //         alignment: Alignment.centerLeft,
+      //         child: Row(
+      //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //           children: [
+      //             Text(
+      //               "Follow us on",
+      //               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+      //             ),
+      //             SizedBox(
+      //               width: widths*0.4,
+      //               child: Row(
+      //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //                 children: [
+      //                   Padding(
+      //                     padding: const EdgeInsets.only(top: 8.0),
+      //                     child: Image.asset("assets/images/youtube.png"),
+      //                   ),
+      //                   Image.asset("assets/images/insta.png"),
+      //                   Image.asset("assets/images/facebook.png"),
+      //                   Image.asset("assets/images/linkdin.png"),
+      //                   // IconButton(onPressed: () {}, icon: const Icon(Icons.play_circle_filled_outlined)),
+      //                   // IconButton(onPressed: () {}, icon: const Icon(Icons.camera_alt_outlined)),
+      //                   // IconButton(onPressed: () {}, icon: const Icon(Icons.facebook_outlined)),
+      //                   // IconButton(onPressed: () {}, icon: const Icon(Icons.linked_camera_outlined)),
+      //                 ],
+      //               ),
+      //             ),
+      //           ],
+      //         ),
+      //
+      //       ),
+      //       const SizedBox(height: 8),
+      //
+      //     ],
+      //   ),
+      // ),
+      Stack(
         children: [
           Container(
             color: MyColors.backgroundBg,
@@ -263,5 +399,154 @@ class _CustomerCareState extends State<CustomerCare> {
         isLoading = false;
       });
     }
+  }
+}
+// import 'package:flutter/material.dart';
+//
+// class SupportScreen extends StatelessWidget {
+//   const SupportScreen({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Padding(
+//         padding: const EdgeInsets.all(20),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: [
+//             const SizedBox(height: 30),
+//
+//             // Illustration
+//             Image.asset(
+//               'assets/support_illustration.png', // replace with your image
+//               height: 200,
+//             ),
+//
+//             const SizedBox(height: 16),
+//             const Text(
+//               "Our customer support team is ready to make sure you have the best service.",
+//               textAlign: TextAlign.center,
+//               style: TextStyle(fontSize: 16),
+//             ),
+//
+//             const SizedBox(height: 20),
+//
+//             // Email and Call Us
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//               children: [
+//                 SupportActionButton(
+//                   icon: Icons.email_outlined,
+//                   label: 'Send Email',
+//                   onTap: () {},
+//                 ),
+//                 SupportActionButton(
+//                   icon: Icons.call_outlined,
+//                   label: 'Call Us',
+//                   onTap: () {},
+//                 ),
+//               ],
+//             ),
+//
+//             const SizedBox(height: 16),
+//             const Text(
+//               "🔁 GIVE APP FEEDBACK",
+//               style: TextStyle(
+//                 color: Colors.red,
+//                 fontWeight: FontWeight.bold,
+//               ),
+//             ),
+//
+//             const SizedBox(height: 30),
+//             const Align(
+//               alignment: Alignment.centerLeft,
+//               child: Text(
+//                 "Help us improve",
+//                 style: TextStyle(
+//                   fontWeight: FontWeight.bold,
+//                   color: Colors.black87,
+//                 ),
+//               ),
+//             ),
+//             const SizedBox(height: 8),
+//             const Align(
+//               alignment: Alignment.centerLeft,
+//               child: Text(
+//                 "Report a bug or suggest ways to make Grabto better.",
+//               ),
+//             ),
+//             const SizedBox(height: 10),
+//
+//             Align(
+//               alignment: Alignment.centerLeft,
+//               child: ElevatedButton.icon(
+//                 style: ElevatedButton.styleFrom(
+//                   backgroundColor: Colors.deepOrange,
+//                 ),
+//                 icon: const Icon(Icons.feedback_outlined),
+//                 label: const Text("Give Feedback"),
+//                 onPressed: () {},
+//               ),
+//             ),
+//
+//             const Spacer(),
+//
+//             // Social Icons
+//             const Align(
+//               alignment: Alignment.centerLeft,
+//               child: Text(
+//                 "Follow us on",
+//                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+//               ),
+//             ),
+//             const SizedBox(height: 8),
+//             Row(
+//               children: [
+//                 IconButton(onPressed: () {}, icon: const Icon(Icons.play_circle_filled_outlined)),
+//                 IconButton(onPressed: () {}, icon: const Icon(Icons.camera_alt_outlined)),
+//                 IconButton(onPressed: () {}, icon: const Icon(Icons.facebook_outlined)),
+//                 IconButton(onPressed: () {}, icon: const Icon(Icons.linked_camera_outlined)),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+class SupportActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const SupportActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Ink(
+          padding: EdgeInsets.zero,
+          decoration:  ShapeDecoration(
+            color:MyColors.redBG.withAlpha(30),
+            shape: RoundedRectangleBorder(),
+          ),
+          child: IconButton(
+            visualDensity: VisualDensity(vertical: -3,horizontal: -4),
+            icon: Icon(icon),
+            color: Colors.deepOrange,
+            onPressed: onTap,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(label,style: TextStyle(fontSize: 13,fontWeight: FontWeight.w500),),
+      ],
+    );
   }
 }

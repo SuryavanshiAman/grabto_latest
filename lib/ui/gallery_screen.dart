@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:grabto/model/features_model.dart';
 import 'package:grabto/model/gallery_model.dart';
-import 'package:grabto/model/vibe_model.dart';
 import 'package:grabto/services/api_services.dart';
 import 'package:grabto/theme/theme.dart';
 import 'package:grabto/ui/full_screen_gallery.dart';
@@ -9,9 +8,8 @@ import 'package:flutter/material.dart';
 
 class GalleryScreen extends StatefulWidget {
   int store_id = 0;
-  final VibeModel ? data;
 
-  GalleryScreen(this.store_id,this.data);
+  GalleryScreen(this.store_id);
 
   @override
   State<GalleryScreen> createState() => _GalleryScreenState();
@@ -37,10 +35,11 @@ class _GalleryScreenState extends State<GalleryScreen> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: MyColors.backgroundBg,
+        backgroundColor: MyColors.textColor,
         appBar: AppBar(
-          backgroundColor: MyColors.backgroundBg,
-          title: Text('Gallery'),
+          backgroundColor: MyColors.textColor,
+          leading: Icon(Icons.arrow_back,color: MyColors.whiteBG,),
+          title: Text('Gallery',style: TextStyle(color: MyColors.whiteBG),),
           // bottom: TabBar(
           //   tabs: [
           //     Tab(text: 'Ambience'),
@@ -61,10 +60,11 @@ class _GalleryScreenState extends State<GalleryScreen> {
             color: MyColors
                 .primaryColor, // Set the loading indicator color
           ),
-        )
-            : foodList.isEmpty
-            ? Center(child: _buildNoImagesWidget())
-            : GalleryGrid(images: widget.data),
+        ):
+            // : foodList.isEmpty
+            // ? Center(child: _buildNoImagesWidget())
+            // :
+        GalleryGrid(images: ambienceList),
 
         // TabBarView(
         //   children: [
@@ -101,7 +101,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
     try {
       final body = {"store_id": "$store_id", "food_type": "$food_type"};
       final response = await ApiServices.store_multiple_gallery(body);
-      //print("object: $response");
+      print("object: $response");
       if (response != null) {
         setState(() {
           foodList = response;
@@ -120,22 +120,23 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
   Future<void> fetchGalleryImagesAmbience(
       String store_id) async {
+    print(store_id);
+    print("store_id");
     setState(() {
       _isLoading1 = true;
     });
     try {
-      final body1 = {"store_id": "$store_id", "food_type": "food"};
-      final responseFood = await ApiServices.store_multiple_gallery(body1);
+      // final body1 = {"store_id": "$store_id", "food_type": "food"};
+      // final responseFood = await ApiServices.store_multiple_gallery(body1);
 
       final body2 = {"store_id": "$store_id", "food_type": "ambience"};
       final responseAmbience = await ApiServices.store_multiple_gallery(body2);
 
-
-      if (responseFood != null) {
-        setState(() {
-          foodList = responseFood;
-        });
-      }
+      // if (responseFood != null) {
+      //   setState(() {
+      //     foodList = responseFood;
+      //   });
+      // }
       if (responseAmbience != null) {
         setState(() {
           ambienceList = responseAmbience;
@@ -177,7 +178,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
 }
 
 class GalleryGrid extends StatefulWidget {
-  final VibeModel? images;
+  final List<GalleryModel> images;
 
   GalleryGrid({required this.images});
 
@@ -198,7 +199,7 @@ class _GalleryGridState extends State<GalleryGrid> {
     return Container(
       margin: EdgeInsets.all(10),
       child: GridView.builder(
-        itemCount: widget.images?.data?.length??0,
+        itemCount: widget.images.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           crossAxisSpacing: 8,
@@ -209,7 +210,7 @@ class _GalleryGridState extends State<GalleryGrid> {
           return GestureDetector(
             onTap: () {
               List<String> imageUrls =
-              widget.images?.data?.map((e) => e.image).whereType<String>() .toList()??[];
+              widget.images.map((e) => e.image).toList();
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -223,7 +224,7 @@ class _GalleryGridState extends State<GalleryGrid> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child:  CachedNetworkImage(
-                imageUrl:widget.images?.data?[index].image,
+                imageUrl:widget.images[index].image,
                 fit: BoxFit.fill,
                 placeholder: (context, url) => Image.asset(
                   'assets/images/vertical_placeholder.jpg',

@@ -14,7 +14,7 @@ class NetworkApiServices extends BaseApiServices {
     dynamic responseJson;
     try {
       final response =
-          await http.get(Uri.parse(url),).timeout( Duration(seconds: 15));
+          await http.get(Uri.parse(url),).timeout( Duration(minutes: 15));
       if (kDebugMode) {
         print('Api Url : $url');
       }
@@ -32,7 +32,7 @@ class NetworkApiServices extends BaseApiServices {
     try {
       final response =
           await http.post(Uri.parse(url), body: jsonEncode(data),
-            headers: {"Content-Type": "application/json"},).timeout( Duration(seconds: 15));
+            headers: {"Content-Type": "application/json"},).timeout( Duration(minutes: 15));
 
       if (kDebugMode) {
         print('Api Url : $url');

@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../helper/shared_pref.dart';
 import '../helper/user_provider.dart';
 import 'about_us_screen.dart';
+import 'bottom_sortlist_screen.dart';
 import 'customer_care.dart';
 import 'how_it_works.dart';
 
@@ -143,7 +144,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   visualDensity: VisualDensity(vertical: -4),
                   leading: Icon(Icons.favorite, color: Colors.red,size: 18),
                   title: Text('Favorite Restaurants',style: TextStyle(fontSize: 13),),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                          return SortListBottamWidget();
+                        }));
+                  },
                 ),
                 ListTile(
                   visualDensity: VisualDensity(vertical: -4),

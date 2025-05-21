@@ -85,19 +85,19 @@ class StoreWidget extends StatelessWidget {
                                         ),
                                         // if (store.rating.isNotEmpty)
 
-                                        Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(color: Colors.grey.withOpacity(0.3)),
-                                              // color: Color(0xff00bd62),
-                                              borderRadius: BorderRadius.circular(3)
-                                          ),
-                                          child:StarRating(
-                                            color: Colors.yellow,
-                                            rating: double.parse( store.rating.toString()),
-                                            size: 14,
-                                          ),
-                                        ),
+                                        // Container(
+                                        //   padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                                        //   decoration: BoxDecoration(
+                                        //       border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                                        //       // color: Color(0xff00bd62),
+                                        //       borderRadius: BorderRadius.circular(3)
+                                        //   ),
+                                        //   child:StarRating(
+                                        //     color: Colors.yellow,
+                                        //     rating: double.parse( store.rating.toString()),
+                                        //     size: 14,
+                                        //   ),
+                                        // ),
                                       ],
                                     ),
                                     const SizedBox(height: 5),

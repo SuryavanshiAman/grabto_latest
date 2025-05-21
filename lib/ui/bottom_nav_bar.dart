@@ -11,7 +11,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
 
   final List<String> _image = [
     "assets/images/home_app_logo.png",
-    "assets/images/Menu Icons.png",
+    "assets/images/menu_Icons.png",
     "assets/images/add_card.png",
     "assets/images/travel_explore.png",
     "assets/images/home_app_logo.png",

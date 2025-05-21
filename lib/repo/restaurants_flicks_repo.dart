@@ -7,18 +7,17 @@ import 'package:grabto/services/api.dart';
 
 import '../helper/network/base_api_services.dart';
 import '../helper/network/network_api_services.dart';
-import '../model/flicks_model.dart';
 import '../model/restaurants_flickes_model.dart';
 import '../model/similar_restaurant_model.dart';
 
-class FlicksRepo {
+class RestaurantsFlicksRepo {
   final BaseApiServices _apiServices = NetworkApiServices();
 
-  Future<FlicksModel> flicksApi(dynamic data) async {
+  Future<RestaurantsFlicksModel> restaurantsFlicksApi(dynamic data) async {
     try {
       dynamic response =
-      await _apiServices.getGetApiResponse('$BASE_URL/reel?user_id=$data');
-      return FlicksModel.fromJson(response);
+      await _apiServices.getPostApiResponse('$BASE_URL/api-flicks-store',data);
+      return RestaurantsFlicksModel.fromJson(response);
     } catch (e) {
       if (kDebugMode) {
         print('Error occurred during flicksApi: $e');

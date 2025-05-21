@@ -24,8 +24,9 @@ import 'home_screen.dart';
 class SignupScreen extends StatefulWidget {
   final String mobile;
   final String ?referralCode;
+  final String ?type;
 
-  const SignupScreen({super.key, required this.mobile,  this.referralCode});
+  const SignupScreen({super.key, required this.mobile,  this.referralCode, this.type});
 
   @override
   State<SignupScreen> createState() => _SignupScreenState();
@@ -425,7 +426,15 @@ class _SignupScreenState extends State<SignupScreen> {
                                               final dob =  DateFormat('dd-MM-yyy').format(DateTime.parse(_selectedDate.toString()??""));
                                               String token = await SharedPref.getToken();
                                               print("llll:${_selectedDate}");
+                                              widget.type=="1"?
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => OtpScreen(name:name,mobile: mobile,dob:dob,city:city,type: widget.type,refCode: referralCont.text),
+                                                ),
+                                              ):
                                               user_signup(name, mobile,referralCont.text ,city,dob);
+
                                             },
                                             style: ButtonStyle(
                                               backgroundColor:

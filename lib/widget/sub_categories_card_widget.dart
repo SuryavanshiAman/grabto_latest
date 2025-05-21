@@ -30,7 +30,7 @@ class SubCategoriesCardWidget extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Card(
-          color: Colors.white,
+          color: Colors.transparent,
           clipBehavior: Clip.antiAliasWithSaveLayer,
           elevation: 2,
           shape: RoundedRectangleBorder(
@@ -185,7 +185,21 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     return _controller.value.isInitialized
         ? AspectRatio(
       aspectRatio: _controller.value.aspectRatio,
-      child: VideoPlayer(_controller),
+      child:
+      // CachedNetworkImage(
+      //   imageUrl: widget.videoUrl,
+      //   fit: BoxFit.fill,
+      //   placeholder: (context, url) => Image.asset(
+      //     'assets/images/placeholder.png',
+      //     fit: BoxFit.cover,
+      //     width: double.infinity,
+      //     height: double.infinity,
+      //   ),
+      //   errorWidget: (context, url, error) =>
+      //       Center(child: Icon(Icons.error)),
+      // ),
+      // Image.network(widget.videoUrl)
+      VideoPlayer(_controller),
     )
         : Center(child: CircularProgressIndicator(color: MyColors.redBG));
   }

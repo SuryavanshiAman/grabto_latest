@@ -29,7 +29,9 @@ class Data {
   String? storeId;
   String? image;
   String? menuType;
+  int? imageCount ;
   String? status;
+
   String? createdAt;
   String? updatedAt;
 
@@ -38,6 +40,7 @@ class Data {
         this.storeId,
         this.image,
         this.menuType,
+        this.imageCount,
         this.status,
         this.createdAt,
         this.updatedAt});
@@ -47,6 +50,7 @@ class Data {
     storeId = json['store_id'];
     image = json['image'];
     menuType = json['menu_type'];
+    imageCount = json['image_count'];
     status = json['status'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
@@ -58,6 +62,7 @@ class Data {
     data['store_id'] = storeId;
     data['image'] = image;
     data['menu_type'] = menuType;
+    data['image_count '] = imageCount;
     data['status'] = status;
     data['created_at'] = createdAt;
     data['updated_at'] = updatedAt;

@@ -202,6 +202,7 @@ class _AllCouponScreenState extends State<AllCouponScreen> {
         //"city_id": "9",
         "locality_id": "$localtiy_id",
       };
+      print(body);
       final response;
 
       if (widget.appBarName == "Trending Restaurants") {

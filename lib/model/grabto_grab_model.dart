@@ -77,6 +77,8 @@ class Data {
   dynamic featureNames;
   dynamic discountPercentage;
   dynamic availableSeat;
+  dynamic avgRating;
+  dynamic amount;
   List<BannerImage>? image;
 
   Data(
@@ -129,6 +131,8 @@ class Data {
         this.featureNames,
         this.discountPercentage,
         this.availableSeat,
+        this.avgRating,
+        this.amount,
         this.image});
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -181,6 +185,8 @@ class Data {
     featureNames = json['feature_names'];
     discountPercentage = json['discount_percentage'];
     availableSeat = json['available_seat'];
+    avgRating = json['avg_rating'];
+    amount = json['amount'];
     if (json['image'] != null) {
       image = <BannerImage>[];
       json['image'].forEach((v) {
@@ -240,6 +246,8 @@ class Data {
     data['feature_names'] = this.featureNames;
     data['discount_percentage'] = this.discountPercentage;
     data['available_seat'] = this.availableSeat;
+    data['avg_rating'] = this.avgRating;
+    data['amount'] = this.amount;
     if (this.image != null) {
       data['image'] = this.image!.map((v) => v.toJson()).toList();
     }

@@ -1,10 +1,10 @@
-class FlicksModel {
+class RestaurantsFlicksModel {
   String? res;
   List<Data>? data;
 
-  FlicksModel({this.res, this.data});
+  RestaurantsFlicksModel({this.res, this.data});
 
-  FlicksModel.fromJson(Map<String, dynamic> json) {
+  RestaurantsFlicksModel.fromJson(Map<String, dynamic> json) {
     res = json['res'];
     if (json['data'] != null) {
       data = <Data>[];
@@ -16,7 +16,7 @@ class FlicksModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['res'] = res;
+    data['res'] = this.res;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -25,16 +25,18 @@ class FlicksModel {
 }
 
 class Data {
-  dynamic id;
-  dynamic storeId;
- dynamic image;
- dynamic status;
- dynamic createdAt;
- dynamic updatedAt;
+  int? id;
+  int? storeId;
+  String? thumbnailImage;
+  String? image;
+  String? status;
+  String? createdAt;
+  String? updatedAt;
 
   Data(
       {this.id,
         this.storeId,
+        this.thumbnailImage,
         this.image,
         this.status,
         this.createdAt,
@@ -43,6 +45,7 @@ class Data {
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     storeId = json['store_id'];
+    thumbnailImage = json['thumbnail_image'];
     image = json['image'];
     status = json['status'];
     createdAt = json['created_at'];
@@ -50,13 +53,14 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = id;
-    data['store_id'] = storeId;
-    data['image'] = image;
-    data['status'] = status;
-    data['created_at'] = createdAt;
-    data['updated_at'] = updatedAt;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['store_id'] = this.storeId;
+    data['thumbnail_image'] = this.thumbnailImage;
+    data['image'] = this.image;
+    data['status'] = this.status;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
     return data;
   }
 }

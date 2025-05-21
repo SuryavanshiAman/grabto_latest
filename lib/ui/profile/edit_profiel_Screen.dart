@@ -17,7 +17,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../theme/theme.dart';
+import '../../theme/theme.dart';
 
 class EditProfileScreen extends StatefulWidget {
   @override

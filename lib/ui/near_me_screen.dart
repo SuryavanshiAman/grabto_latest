@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
+import 'package:grabto/ui/total_visit_screen.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
 import 'package:grabto/widget/rating.dart';
 import 'package:provider/provider.dart';
@@ -452,18 +453,44 @@ class _RestaurantCardState extends State<RestaurantCard> {
   }
   final CarouselSliderController _carouselController =
   CarouselSliderController();
+  final List<String> avatars = [
+    'assets/images/grabto_logo_with_text.png',
+    'assets/images/grabto_logo.png',
+    'assets/images/grabto_logo_with_text.png',
+    'assets/images/grabto_logo_with_text.png',
+    'assets/images/grabto_logo_with_text.png',
+    'assets/images/grabto_logo_with_text.png',
+  ];
   int _currentIndex = 0;
+  final int maxVisibleAvatars = 5;
   @override
   Widget build(BuildContext context) {
     final imageList = widget.filter.image ?? [];
-    return  InkWell(
-      onTap: (){
+    // List<dynamic> dishList = widget.filter.dish.split(',').where((e) => e.trim().isNotEmpty).map((e) => e.trim()).toList();
+    // List<dynamic> dishList = (widget.filter.dish.toString()).split(',').map((e) => e.trim())
+    //     .where((e) => e.isNotEmpty).toList();
+    List<String> dishList = [];
+
+    String? rawDish = widget.filter.dish?.toString();
+
+    if (rawDish != null &&
+        rawDish.trim().isNotEmpty &&
+        rawDish.trim().toLowerCase() != 'null') {
+      dishList = rawDish
+          .split(',')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+    }
+    return widget.filter != "null"
+        ? InkWell(
+      onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return CouponFullViewScreen(widget.filter.id.toString());
         }));
       },
       child: Container(
-        margin: EdgeInsets.all(8),
+        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
           // color: MyColors.whiteBG,
           color: Color(0xffffffff),
@@ -489,7 +516,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: CachedNetworkImage(
-                          imageUrl: img.url.toString(),
+                          imageUrl: img.url??"",
                           fit: BoxFit.fill,
                           placeholder: (context, url) => Image.asset(
                             'assets/images/placeholder.png',
@@ -502,25 +529,95 @@ class _RestaurantCardState extends State<RestaurantCard> {
                         ),
                       ),
                     );
-                  }).toList() ?? [],
+                  }).toList() ??
+                      [],
                   carouselController:
                   _carouselController, // Use empty list if image is null
                   options: CarouselOptions(
-                    height: heights * 0.22,
+                    height: heights * 0.27,
                     enlargeCenterPage: true,
-                    autoPlay: true,
+                    autoPlay: false,
                     reverse: true,
                     disableCenter: true,
                     aspectRatio: 1 / 9,
                     autoPlayCurve: Curves.fastOutSlowIn,
                     enableInfiniteScroll: true,
-                    autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                    autoPlayAnimationDuration:
+                    const Duration(milliseconds: 800),
                     viewportFraction: 1,
                     onPageChanged: (index, reason) {
                       setState(() {
                         _currentIndex = index;
                       });
                     },
+                  ),
+                ),
+                Positioned(
+                  top: 10,
+                  left: widths*0.03,
+                  child: Row(
+                    children: [
+                      widget.filter.availableSeat != null
+                          ? Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: int.parse(widget
+                              .filter.availableSeat) <=
+                              5
+                              ? MyColors.redBG
+                              : MyColors.green,
+                          // color:MyColors.green ,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Text(
+                          "${widget.filter.availableSeat.toString() ?? ""} seat left",
+                          style: TextStyle(
+                              color: MyColors.whiteBG,
+                              fontFamily: 'wix',fontWeight: FontWeight.w600,
+                              fontSize: 11),
+                        ),
+                      )
+                          : Container(),
+                      // Spacer(),
+                      SizedBox(
+                        width: widths * 0.42,
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(right: widths*0.04),
+                        padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Text(
+                          "${widget.filter.avgRating.toStringAsFixed(1)}/5",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'wix',fontWeight: FontWeight.w600,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                      CircleAvatar(
+                        radius: 12,
+                        backgroundColor: MyColors.whiteBG,
+                        child: InkWell(
+                          onTap: () {
+                            wishlist("$userId", "${widget.filter.id}");
+                          },
+                          child: Icon(
+                            wishlist_status == 'true'
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            size: 16,
+                            color: wishlist_status == 'true'
+                                ? Colors.red
+                                : Colors.black,
+                          ),
+                        ),
+                      )
+                    ],
                   ),
                 ),
                 Positioned(
@@ -545,8 +642,9 @@ class _RestaurantCardState extends State<RestaurantCard> {
                 Positioned(
                   bottom: 20,
                   left: 0,
-                  right: 0,
+                  right: 10,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
                         // width: widths*0.3,
@@ -564,172 +662,44 @@ class _RestaurantCardState extends State<RestaurantCard> {
                             Text(
                               widget.filter.subCategoriesName,
                               style: const TextStyle(
-                                fontWeight: FontWeight.w500,
+                                fontFamily: 'wix',fontWeight: FontWeight.w600,
                                 color: MyColors.whiteBG,
-                                fontSize: 12,
+                                fontSize: 11,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                widget.filter.availableSeat!=null?   Positioned(
-                  top: 10,
-                  left: 10,
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color:int.parse(widget.filter.availableSeat) <=5?MyColors.redBG:MyColors.green ,
-                          // color:MyColors.green ,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Text(
-                          "${widget.filter.availableSeat.toString()??""} seat left",
-                          style: TextStyle(
-                              color: MyColors.whiteBG,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 11),
-                        ),
-                      ),
-                      // Spacer(),
-                      SizedBox(
-                        width: widths * 0.43,
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(right: 15),
-                        padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Text(
-                          "${widget.filter.avgRating.toStringAsFixed(1)}/5",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 11,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          // Center align the text
+                          text: TextSpan(
+                            text:
+                            "₹${widget.filter.amount}",
+                            style: TextStyle(
+                                fontFamily: 'wix',fontWeight: FontWeight.w600,
+                                color: MyColors.whiteBG
+                            ),
+                            children: [
+                              TextSpan(
+                                text: "\n for two",
+                                style: TextStyle(
+                                  color: MyColors.whiteBG,
+                                  fontSize: 11,
+                                  fontFamily: 'wix',fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
 
-                      CircleAvatar(
-                        radius: 12,
-                        backgroundColor: MyColors.whiteBG,
-                        child:InkWell(
-                          onTap: (){
-                            wishlist("$userId", "${widget.filter.id}");
-                          },
-                          child: Icon(
-                            wishlist_status == 'true'
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            size: 16,
-                            color:
-                            wishlist_status == 'true' ? Colors.red : Colors.black,
-                          ),
-                        ),
-                        // InkWell(
-                        //   onTap: (){
-                        //     setState(() {
-                        //       selectedIndex=widget.index;
-                        //     });
-                        //   },
-                        //   child: Icon(
-                        //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
-                        //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
-                        //     size: 16,
-                        //   ),
-                        // )
-                      )
-                      // Icon(Icons.favorite_border, color: Colors.white),
                     ],
                   ),
-                ):Container(),
-                // Positioned(
-                //   top: 10,
-                //   left: 10,
-                //   child: Row(
-                //     children: [
-                //       Container(
-                //         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                //         decoration: BoxDecoration(
-                //           color: MyColors.redBG,
-                //           borderRadius: BorderRadius.circular(5),
-                //         ),
-                //         child: Text(
-                //           "${widget.filter.availableSeat} seat left",
-                //           style: TextStyle(
-                //               color: MyColors.whiteBG,
-                //               fontWeight: FontWeight.bold,
-                //               fontSize: 12),
-                //         ),
-                //       ),
-                //       // Spacer(),
-                //       SizedBox(
-                //         width: widths * 0.43,
-                //       ),
-                //       Container(
-                //         margin: EdgeInsets.only(right: 15),
-                //         padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
-                //         decoration: BoxDecoration(
-                //           color: Colors.green,
-                //           borderRadius: BorderRadius.circular(5),
-                //         ),
-                //         child: Text(
-                //           "${widget.filter.avgRating.toStringAsFixed(1)}/5",
-                //           style: const TextStyle(
-                //             color: Colors.white,
-                //             fontWeight: FontWeight.bold,
-                //             fontSize: 12,
-                //           ),
-                //         ),
-                //       ),
-                //       CircleAvatar(
-                //           radius: 12,
-                //           backgroundColor: MyColors.whiteBG,
-                //           child: InkWell(
-                //             onTap: (){
-                //               wishlist("$userId", "${widget.filter.id}");
-                //             },
-                //             child: Icon(
-                //               wishlist_status == 'true'
-                //                   ? Icons.favorite
-                //                   : Icons.favorite_border,
-                //               size: 16,
-                //               color:
-                //               wishlist_status == 'true' ? Colors.red : Colors.black,
-                //             ),
-                //           ),
-                //           // InkWell(
-                //           //   onTap: (){
-                //           //     setState(() {
-                //           //       selectedIndex=widget.index;
-                //           //     });
-                //           //   },
-                //           //   child: Icon(
-                //           //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
-                //           //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
-                //           //     size: 16,
-                //           //   ),
-                //           // )
-                //       )
-                //       // Icon(Icons.favorite_border, color: Colors.white),
-                //     ],
-                //   ),
-                // ),
-                // Positioned(
-                //   top: 10,
-                //   right: 10,
-                //   child: CircleAvatar(
-                //       radius: 12,
-                //       child: Icon(Icons.favorite_border, color: Colors.white,size: 16,)),
-                // ),
+                ),
               ],
             ),
 
@@ -742,132 +712,618 @@ class _RestaurantCardState extends State<RestaurantCard> {
                     children: [
                       Container(
                         width: widths * 0.58,
-                        // color: Colors.red,
                         child: Text(
-                          widget.filter.storeName,
+                          widget.filter.storeName.toString(),
                           style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w500),
+                              fontSize: 14,   fontFamily: 'wix',fontWeight: FontWeight.w600),
                         ),
                       ),
                       Spacer(),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 3, vertical: 1),
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Colors.grey.withOpacity(0.3)),
-                            // color: Color(0xff00bd62),
-                            borderRadius: BorderRadius.circular(3)),
-                        child:  StarRating(color: Colors.yellow,rating: double.parse(widget.filter.avgRating.toStringAsFixed(1).toString()),size: 16,),
-                      ),
-                      // CircleAvatar(
-                      //     radius: 9,
-                      //     backgroundColor: MyColors.darkGreen,
-                      //     child: Icon(Icons.star,
-                      //         color: MyColors.whiteBG, size: 12)),
-                      // SizedBox(width: 4),
-                      // Text(
-                      //   widget.restaurant.rating.toString(),
-                      //   style: TextStyle(
-                      //       fontSize: 20,
-                      //       fontWeight: FontWeight.bold,
-                      //       color: MyColors.blackBG),
+                      // Container(
+                      //   padding: EdgeInsets.symmetric(
+                      //       horizontal: 3, vertical: 1),
+                      //   decoration: BoxDecoration(
+                      //       border: Border.all(
+                      //           color: Colors.grey.withOpacity(0.3)),
+                      //       // color: Color(0xff00bd62),
+                      //       borderRadius: BorderRadius.circular(3)),
+                      //   child: StarRating(
+                      //     color: Colors.yellow,
+                      //     rating: double.parse(widget.filter.avgRating
+                      //         .toStringAsFixed(1)
+                      //         .toString()),
+                      //     size: 14,
+                      //   ),
                       // ),
                     ],
                   ),
                   SizedBox(height: 4),
-                  Container(
-                    width: widths*0.85,
-                    // color: MyColors.redBG,
-                    child: Text(
-                      "${widget.filter.address}-${widget.filter.distance}Km",
-                      style: TextStyle(color: MyColors.textColorTwo, fontSize: 12),
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  // Text(
-                  //   "${widget.restaurant.cuisine} • ${widget.restaurant.price}",
-                  //   style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                  // ),
-                  SizedBox(height: 6),
-                  // Row(
-                  //   children: [
-                  //     Container(
-                  //         padding: EdgeInsets.all(3),
-                  //         decoration: BoxDecoration(
-                  //           color: Colors.grey.withOpacity(0.3),
-                  //           borderRadius: BorderRadius.circular(10),
-                  //         ),
-                  //         child: Row(
-                  //           children: [
-                  //             Icon(
-                  //               Icons.calendar_month_outlined,
-                  //               color: Colors.grey[600],
-                  //               size: 12,
-                  //             ),
-                  //             SizedBox(width: 6),
-                  //             Text(
-                  //               "Table Booking",
-                  //               style: TextStyle(
-                  //                   fontSize: 12,
-                  //                   color: Colors.black.withOpacity(0.5)),
-                  //             ),
-                  //           ],
-                  //         )),
-                  //   ],
-                  // ),
-                  Divider(),
-                  widget.filter.dish != null
-                      ? Text(
-                    widget.filter.dish.toString(),
+                  Text(
+                    widget.filter.address.toString(),
                     style: TextStyle(
-                        color: MyColors.textColorTwo, fontSize: 12),
-                  )
-                      : Container(),
+                        color: MyColors.textColorTwo, fontSize: 10,  fontFamily: 'wix',fontWeight: FontWeight.w600),
+                  ),
+                  Divider(
+                    color: MyColors.textColorTwo.withAlpha(20),
+                  ),
+                  // widget.filter.dish != null
+                  //     ? Text(
+                  //   widget.filter.dish.toString(),
+                  //   style: TextStyle(
+                  //       color: MyColors.textColorTwo, fontSize: 14),
+                  // )
+                  //     : Container(),
+                  dishList.isNotEmpty?SizedBox(
+                      width: widths*0.8,
+                      child: GridView.builder(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        itemCount: dishList.length,
+                        gridDelegate:
+                        SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          crossAxisSpacing: 5,
+                          mainAxisSpacing: 5,
+                          mainAxisExtent: 25,
+                          // childAspectRatio:1.9
+                        ),
+                        itemBuilder: (BuildContext context, int index) {
+                          final data = dishList[index];
+                          return data=="null"?Container():Container(
+                            padding:EdgeInsets.all(5),
+                            // margin:EdgeInsets.all(5),
+                            color:MyColors.textColorTwo.withAlpha(10),
+                            child: Center(
+                              child: Text(
+                                data=="null"?"":data,
+                                style: TextStyle(
+                                    fontSize: 12,  fontFamily: 'wix',fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                  ):Container(),
                   widget.filter.dish != null
                       ? Divider(
-                    color: MyColors.textColorTwo.withOpacity(0.3),
+                    color: MyColors.textColorTwo.withAlpha(20),
                   )
                       : Container(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 58.0),
+                        child: Row(
+                          children: <Widget>[
+                            Stack(
+                              children: [
+                                // Show up to maxVisibleAvatars - 1 avatars
+                                ...avatars.asMap().entries.map((entry) {
+                                  int idx = entry.key;
+                                  String avatar = entry.value;
+
+                                  if (idx < maxVisibleAvatars - 1) {
+                                    return Transform.translate(
+                                      offset: Offset(idx * -20.0, 0),
+                                      child: Container(
+                                        width: widths * 0.06,
+                                        height: heights * 0.05,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                            image: AssetImage(avatar),
+                                            fit: BoxFit.cover,
+                                          ),
+                                          border: Border.all(color: MyColors.whiteBG, width: 1),
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    return SizedBox.shrink();
+                                  }
+                                }).toList(),
+                                if (avatars.length > maxVisibleAvatars)
+                                  Transform.translate(
+                                    offset: Offset((maxVisibleAvatars -5) * -12.0, 0),
+                                    child: Container(
+                                      width: widths * 0.06,
+                                      height: heights * 0.05,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.grey[400],
+                                        border: Border.all(color: MyColors.whiteBG, width: 1),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          '+${avatars.length - (maxVisibleAvatars - 1)}',
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black,
+                                              fontFamily: 'wix',fontWeight: FontWeight.w600
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                // // Optional: show the last visible avatars before `+remaining`
+                                // if (avatars.length <= maxVisibleAvatars)
+                                //   Transform.translate(
+                                //     offset: Offset((avatars.length - 1) * -12.0, 0),
+                                //     child: Container(
+                                //       width: widths * 0.06,
+                                //       height: heights * 0.05,
+                                //       decoration: BoxDecoration(
+                                //         shape: BoxShape.circle,
+                                //         image: DecorationImage(
+                                //           image: AssetImage(avatars.last),
+                                //           fit: BoxFit.cover,
+                                //         ),
+                                //         border: Border.all(color: MyColors.whiteBG, width: 1),
+                                //       ),
+                                //     ),
+                                //   ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      InkWell(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>MapProfileUI()));
+                          },
+                          child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 2,horizontal: 5),
+
+                              decoration: BoxDecoration(
+                                  color:  MyColors.redBG.withAlpha(10),
+                                  borderRadius: BorderRadius.circular(2)
+                              ),
+                              child: Text("View >",style:TextStyle(color: MyColors.redBG,fontSize: 12),)))
+                    ],
+                  ),
                   Container(
                     width: widths,
                     padding:
-                    EdgeInsets.symmetric(horizontal: 3, vertical: 5),
+                    EdgeInsets.symmetric(horizontal: 3, vertical: 3),
                     decoration: BoxDecoration(
                         color: Color(0xff00bd62),
                         borderRadius: BorderRadius.circular(3)),
                     child: Text(
-                        widget.filter.offers!=""? "% Flat ${widget.filter.discountPercentage.toString()}% off on pre-booking       +${widget.filter.offers.toString()} offers":
-                        "% Flat ${widget.filter.discountPercentage.toString()??""}% off on pre-booking",
+                        widget.filter.offers != ""
+                            ? "% Flat ${widget.filter.discountPercentage.toString()}% off on pre-booking       +${widget.filter.offers.toString()} offers"
+                            : "% Flat ${widget.filter.discountPercentage.toString() ?? ""}% off on pre-booking",
                         style: TextStyle(
                           color: MyColors.whiteBG,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
+                          fontFamily: 'wix',fontWeight: FontWeight.w600,
+                          fontSize: 12,
                         )),
                   ),
-          //         Container(
-          //   padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-          //   decoration: BoxDecoration(
-          //   color: Color(0xff00bd62),
-          //   borderRadius: BorderRadius.circular(3)
-          //   ),
-          //   child: Text(
-          // "Flat 50% off on pre-booking       +${widget.filter.offers} offers",
-          //   style: TextStyle(
-          //   color:MyColors.whiteBG,
-          //   fontWeight: FontWeight.w500,
-          //   fontSize: 14,
-          //   )),
-          //
-          //         ),
                 ],
               ),
             ),
           ],
         ),
       ),
-    );
+    )
+        : Text("Nodata");
   }
+  // @override
+  // Widget build(BuildContext context) {
+  //   final imageList = widget.filter.image ?? [];
+  //   return  InkWell(
+  //     onTap: (){
+  //       Navigator.push(context, MaterialPageRoute(builder: (context) {
+  //         return CouponFullViewScreen(widget.filter.id.toString());
+  //       }));
+  //     },
+  //     child: Container(
+  //       margin: EdgeInsets.all(8),
+  //       decoration: BoxDecoration(
+  //         // color: MyColors.whiteBG,
+  //         color: Color(0xffffffff),
+  //         borderRadius: BorderRadius.circular(10),
+  //         // color: Colors.red
+  //         boxShadow: [
+  //           BoxShadow(
+  //             color: Colors.grey.withOpacity(0.3),
+  //             spreadRadius: 2,
+  //             blurRadius: 5,
+  //           ),
+  //         ],
+  //       ),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           // Image with overlay
+  //           Stack(
+  //             children: [
+  //               CarouselSlider(
+  //                 items: widget.filter.image?.map((img) {
+  //                   return GestureDetector(
+  //                     child: ClipRRect(
+  //                       borderRadius: BorderRadius.circular(10),
+  //                       child: CachedNetworkImage(
+  //                         imageUrl: img.url.toString(),
+  //                         fit: BoxFit.fill,
+  //                         placeholder: (context, url) => Image.asset(
+  //                           'assets/images/placeholder.png',
+  //                           fit: BoxFit.cover,
+  //                           width: double.infinity,
+  //                           height: double.infinity,
+  //                         ),
+  //                         errorWidget: (context, url, error) =>
+  //                         const Center(child: Icon(Icons.error)),
+  //                       ),
+  //                     ),
+  //                   );
+  //                 }).toList() ?? [],
+  //                 carouselController:
+  //                 _carouselController, // Use empty list if image is null
+  //                 options: CarouselOptions(
+  //                   height: heights * 0.22,
+  //                   enlargeCenterPage: true,
+  //                   autoPlay: true,
+  //                   reverse: true,
+  //                   disableCenter: true,
+  //                   aspectRatio: 1 / 9,
+  //                   autoPlayCurve: Curves.fastOutSlowIn,
+  //                   enableInfiniteScroll: true,
+  //                   autoPlayAnimationDuration: const Duration(milliseconds: 800),
+  //                   viewportFraction: 1,
+  //                   onPageChanged: (index, reason) {
+  //                     setState(() {
+  //                       _currentIndex = index;
+  //                     });
+  //                   },
+  //                 ),
+  //               ),
+  //               Positioned(
+  //                 bottom: 10,
+  //                 left: 0,
+  //                 right: 0,
+  //                 child: Center(
+  //                   child: AnimatedSmoothIndicator(
+  //                     activeIndex: _currentIndex,
+  //                     count: imageList.length,
+  //                     effect: const ExpandingDotsEffect(
+  //                       dotHeight: 6,
+  //                       dotWidth: 6,
+  //                       spacing: 6,
+  //                       expansionFactor: 3,
+  //                       activeDotColor: MyColors.whiteBG,
+  //                       dotColor: Colors.white70,
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //               Positioned(
+  //                 bottom: 20,
+  //                 left: 0,
+  //                 right: 0,
+  //                 child: Row(
+  //                   children: [
+  //                     Container(
+  //                       // width: widths*0.3,
+  //
+  //                       decoration: BoxDecoration(
+  //                           color: MyColors.blackBG.withOpacity(0.6),
+  //                           borderRadius: BorderRadius.circular(15)),
+  //                       margin: EdgeInsets.all(8),
+  //                       padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
+  //                       child: Row(
+  //                         mainAxisAlignment: MainAxisAlignment.center,
+  //                         children: [
+  //                           Image.asset("assets/images/local_cafe.png"),
+  //                           const SizedBox(width: 5),
+  //                           Text(
+  //                             widget.filter.subCategoriesName,
+  //                             style: const TextStyle(
+  //                               fontWeight: FontWeight.w500,
+  //                               color: MyColors.whiteBG,
+  //                               fontSize: 12,
+  //                               overflow: TextOverflow.ellipsis,
+  //                             ),
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //               widget.filter.availableSeat!=null?   Positioned(
+  //                 top: 10,
+  //                 left: 10,
+  //                 child: Row(
+  //                   children: [
+  //                     Container(
+  //                       padding: EdgeInsets.symmetric(
+  //                           horizontal: 8, vertical: 2),
+  //                       decoration: BoxDecoration(
+  //                         color:int.parse(widget.filter.availableSeat) <=5?MyColors.redBG:MyColors.green ,
+  //                         // color:MyColors.green ,
+  //                         borderRadius: BorderRadius.circular(5),
+  //                       ),
+  //                       child: Text(
+  //                         "${widget.filter.availableSeat.toString()??""} seat left",
+  //                         style: TextStyle(
+  //                             color: MyColors.whiteBG,
+  //                             fontWeight: FontWeight.w500,
+  //                             fontSize: 11),
+  //                       ),
+  //                     ),
+  //                     // Spacer(),
+  //                     SizedBox(
+  //                       width: widths * 0.43,
+  //                     ),
+  //                     Container(
+  //                       margin: EdgeInsets.only(right: 15),
+  //                       padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
+  //                       decoration: BoxDecoration(
+  //                         color: Colors.green,
+  //                         borderRadius: BorderRadius.circular(5),
+  //                       ),
+  //                       child: Text(
+  //                         "${widget.filter.avgRating.toStringAsFixed(1)}/5",
+  //                         style: const TextStyle(
+  //                           color: Colors.white,
+  //                           fontWeight: FontWeight.w500,
+  //                           fontSize: 11,
+  //                         ),
+  //                       ),
+  //                     ),
+  //
+  //                     CircleAvatar(
+  //                       radius: 12,
+  //                       backgroundColor: MyColors.whiteBG,
+  //                       child:InkWell(
+  //                         onTap: (){
+  //                           wishlist("$userId", "${widget.filter.id}");
+  //                         },
+  //                         child: Icon(
+  //                           wishlist_status == 'true'
+  //                               ? Icons.favorite
+  //                               : Icons.favorite_border,
+  //                           size: 16,
+  //                           color:
+  //                           wishlist_status == 'true' ? Colors.red : Colors.black,
+  //                         ),
+  //                       ),
+  //                       // InkWell(
+  //                       //   onTap: (){
+  //                       //     setState(() {
+  //                       //       selectedIndex=widget.index;
+  //                       //     });
+  //                       //   },
+  //                       //   child: Icon(
+  //                       //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
+  //                       //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
+  //                       //     size: 16,
+  //                       //   ),
+  //                       // )
+  //                     )
+  //                     // Icon(Icons.favorite_border, color: Colors.white),
+  //                   ],
+  //                 ),
+  //               ):Container(),
+  //               // Positioned(
+  //               //   top: 10,
+  //               //   left: 10,
+  //               //   child: Row(
+  //               //     children: [
+  //               //       Container(
+  //               //         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+  //               //         decoration: BoxDecoration(
+  //               //           color: MyColors.redBG,
+  //               //           borderRadius: BorderRadius.circular(5),
+  //               //         ),
+  //               //         child: Text(
+  //               //           "${widget.filter.availableSeat} seat left",
+  //               //           style: TextStyle(
+  //               //               color: MyColors.whiteBG,
+  //               //               fontWeight: FontWeight.bold,
+  //               //               fontSize: 12),
+  //               //         ),
+  //               //       ),
+  //               //       // Spacer(),
+  //               //       SizedBox(
+  //               //         width: widths * 0.43,
+  //               //       ),
+  //               //       Container(
+  //               //         margin: EdgeInsets.only(right: 15),
+  //               //         padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
+  //               //         decoration: BoxDecoration(
+  //               //           color: Colors.green,
+  //               //           borderRadius: BorderRadius.circular(5),
+  //               //         ),
+  //               //         child: Text(
+  //               //           "${widget.filter.avgRating.toStringAsFixed(1)}/5",
+  //               //           style: const TextStyle(
+  //               //             color: Colors.white,
+  //               //             fontWeight: FontWeight.bold,
+  //               //             fontSize: 12,
+  //               //           ),
+  //               //         ),
+  //               //       ),
+  //               //       CircleAvatar(
+  //               //           radius: 12,
+  //               //           backgroundColor: MyColors.whiteBG,
+  //               //           child: InkWell(
+  //               //             onTap: (){
+  //               //               wishlist("$userId", "${widget.filter.id}");
+  //               //             },
+  //               //             child: Icon(
+  //               //               wishlist_status == 'true'
+  //               //                   ? Icons.favorite
+  //               //                   : Icons.favorite_border,
+  //               //               size: 16,
+  //               //               color:
+  //               //               wishlist_status == 'true' ? Colors.red : Colors.black,
+  //               //             ),
+  //               //           ),
+  //               //           // InkWell(
+  //               //           //   onTap: (){
+  //               //           //     setState(() {
+  //               //           //       selectedIndex=widget.index;
+  //               //           //     });
+  //               //           //   },
+  //               //           //   child: Icon(
+  //               //           //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
+  //               //           //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
+  //               //           //     size: 16,
+  //               //           //   ),
+  //               //           // )
+  //               //       )
+  //               //       // Icon(Icons.favorite_border, color: Colors.white),
+  //               //     ],
+  //               //   ),
+  //               // ),
+  //               // Positioned(
+  //               //   top: 10,
+  //               //   right: 10,
+  //               //   child: CircleAvatar(
+  //               //       radius: 12,
+  //               //       child: Icon(Icons.favorite_border, color: Colors.white,size: 16,)),
+  //               // ),
+  //             ],
+  //           ),
+  //
+  //           Padding(
+  //             padding: EdgeInsets.all(12),
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 Row(
+  //                   children: [
+  //                     Container(
+  //                       width: widths * 0.58,
+  //                       // color: Colors.red,
+  //                       child: Text(
+  //                         widget.filter.storeName,
+  //                         style: TextStyle(
+  //                             fontSize: 14, fontWeight: FontWeight.w500),
+  //                       ),
+  //                     ),
+  //                     Spacer(),
+  //                     Container(
+  //                       padding: EdgeInsets.symmetric(
+  //                           horizontal: 3, vertical: 1),
+  //                       decoration: BoxDecoration(
+  //                           border: Border.all(
+  //                               color: Colors.grey.withOpacity(0.3)),
+  //                           // color: Color(0xff00bd62),
+  //                           borderRadius: BorderRadius.circular(3)),
+  //                       child:  StarRating(color: Colors.yellow,rating: double.parse(widget.filter.avgRating.toStringAsFixed(1).toString()),size: 16,),
+  //                     ),
+  //                     // CircleAvatar(
+  //                     //     radius: 9,
+  //                     //     backgroundColor: MyColors.darkGreen,
+  //                     //     child: Icon(Icons.star,
+  //                     //         color: MyColors.whiteBG, size: 12)),
+  //                     // SizedBox(width: 4),
+  //                     // Text(
+  //                     //   widget.restaurant.rating.toString(),
+  //                     //   style: TextStyle(
+  //                     //       fontSize: 20,
+  //                     //       fontWeight: FontWeight.bold,
+  //                     //       color: MyColors.blackBG),
+  //                     // ),
+  //                   ],
+  //                 ),
+  //                 SizedBox(height: 4),
+  //                 Container(
+  //                   width: widths*0.85,
+  //                   // color: MyColors.redBG,
+  //                   child: Text(
+  //                     "${widget.filter.address}-${widget.filter.distance}Km",
+  //                     style: TextStyle(color: MyColors.textColorTwo, fontSize: 12),
+  //                   ),
+  //                 ),
+  //                 SizedBox(height: 4),
+  //                 // Text(
+  //                 //   "${widget.restaurant.cuisine} • ${widget.restaurant.price}",
+  //                 //   style: TextStyle(color: Colors.grey[600], fontSize: 12),
+  //                 // ),
+  //                 SizedBox(height: 6),
+  //                 // Row(
+  //                 //   children: [
+  //                 //     Container(
+  //                 //         padding: EdgeInsets.all(3),
+  //                 //         decoration: BoxDecoration(
+  //                 //           color: Colors.grey.withOpacity(0.3),
+  //                 //           borderRadius: BorderRadius.circular(10),
+  //                 //         ),
+  //                 //         child: Row(
+  //                 //           children: [
+  //                 //             Icon(
+  //                 //               Icons.calendar_month_outlined,
+  //                 //               color: Colors.grey[600],
+  //                 //               size: 12,
+  //                 //             ),
+  //                 //             SizedBox(width: 6),
+  //                 //             Text(
+  //                 //               "Table Booking",
+  //                 //               style: TextStyle(
+  //                 //                   fontSize: 12,
+  //                 //                   color: Colors.black.withOpacity(0.5)),
+  //                 //             ),
+  //                 //           ],
+  //                 //         )),
+  //                 //   ],
+  //                 // ),
+  //                 Divider(),
+  //                 widget.filter.dish != null
+  //                     ? Text(
+  //                   widget.filter.dish.toString(),
+  //                   style: TextStyle(
+  //                       color: MyColors.textColorTwo, fontSize: 12),
+  //                 )
+  //                     : Container(),
+  //                 widget.filter.dish != null
+  //                     ? Divider(
+  //                   color: MyColors.textColorTwo.withOpacity(0.3),
+  //                 )
+  //                     : Container(),
+  //                 Container(
+  //                   width: widths,
+  //                   padding:
+  //                   EdgeInsets.symmetric(horizontal: 3, vertical: 5),
+  //                   decoration: BoxDecoration(
+  //                       color: Color(0xff00bd62),
+  //                       borderRadius: BorderRadius.circular(3)),
+  //                   child: Text(
+  //                       widget.filter.offers!=""? "% Flat ${widget.filter.discountPercentage.toString()}% off on pre-booking       +${widget.filter.offers.toString()} offers":
+  //                       "% Flat ${widget.filter.discountPercentage.toString()??""}% off on pre-booking",
+  //                       style: TextStyle(
+  //                         color: MyColors.whiteBG,
+  //                         fontWeight: FontWeight.w500,
+  //                         fontSize: 14,
+  //                       )),
+  //                 ),
+  //         //         Container(
+  //         //   padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+  //         //   decoration: BoxDecoration(
+  //         //   color: Color(0xff00bd62),
+  //         //   borderRadius: BorderRadius.circular(3)
+  //         //   ),
+  //         //   child: Text(
+  //         // "Flat 50% off on pre-booking       +${widget.filter.offers} offers",
+  //         //   style: TextStyle(
+  //         //   color:MyColors.whiteBG,
+  //         //   fontWeight: FontWeight.w500,
+  //         //   fontSize: 14,
+  //         //   )),
+  //         //
+  //         //         ),
+  //               ],
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   bool isLoading = true;
 

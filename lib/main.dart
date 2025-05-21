@@ -1,25 +1,29 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:app_links/app_links.dart';
 import 'package:grabto/generated/assets.dart';
-// import 'package:grabto/helper/InAppScreen.dart';
 import 'package:grabto/helper/user_provider.dart';
+import 'package:grabto/test.dart';
 import 'package:grabto/theme/theme.dart';
-import 'package:grabto/ui/near_me_screen.dart';
+import 'package:grabto/ui/coupon_fullview_screen.dart';
+import 'package:grabto/ui/profile/preview_post_screen.dart';
+import 'package:grabto/ui/signup_screen.dart';
 import 'package:grabto/ui/splash_screen.dart';
-// import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:grabto/view_model/add_post_view_model.dart';
 import 'package:grabto/view_model/different_location_view_model.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
 import 'package:grabto/view_model/flicks_view_model.dart';
+import 'package:grabto/view_model/get_post_view_model.dart';
 import 'package:grabto/view_model/get_wallet_view_model.dart';
 import 'package:grabto/view_model/grabto_grab_view_model.dart';
 import 'package:grabto/view_model/menu_data_view_model.dart';
 import 'package:grabto/view_model/menu_type_view_model.dart';
 import 'package:grabto/view_model/near_me_image_view_model.dart';
 import 'package:grabto/view_model/recommended_view_model.dart';
+import 'package:grabto/view_model/restaurants_flicks_view_model.dart';
 import 'package:grabto/view_model/similar_restro_view_model.dart';
 import 'package:grabto/view_model/vibe_view_model.dart';
-// import 'package:in_app_update/in_app_update.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,7 +32,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'helper/location_provider.dart';
-
 final _messageStreamController = BehaviorSubject<RemoteMessage>();
 
 // TODO: Define the background message handler
@@ -103,6 +106,7 @@ Future<void> main() async {
 
 class MyApp extends StatefulWidget {
   final String? token;
+  static bool hasHandledDeepLink = false;
 
   const MyApp(this.token, {super.key});
 
@@ -111,28 +115,62 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  StreamSubscription? _sub;
+  late final AppLinks _appLinks;
+  bool _hasHandledDeepLink = false;
   @override
   void initState() {
     super.initState();
+    initDeepLinks();
     // checkForUpdate();
   }
 
-  // AppUpdateInfo? _updateInfo;
-  // Future<void> checkForUpdate() async {
-  //   try {
-  //     final info = await InAppUpdate.checkForUpdate();
-  //     setState(() {
-  //       _updateInfo = info;
-  //     });
-  //
-  //     if (_updateInfo?.updateAvailability ==
-  //         UpdateAvailability.updateAvailable) {
-  //       showUpdatePopup();
-  //     }
-  //   } catch (e) {
-  //     print("Error checking for updates: $e");
-  //   }
-  // }
+  bool hasHandledDeepLink = false;
+  Future<void> initDeepLinks() async {
+    _appLinks = AppLinks();
+
+    // ✅ Use getInitialLink() instead of getInitialAppLink()
+    try {
+      final Uri? initialUri = await _appLinks.getInitialLink();
+      handleIncomingLink(initialUri?.toString());
+    } catch (e) {
+      print('Error getting initial link: $e');
+    }
+
+    // Listen for background/foreground links
+    _appLinks.uriLinkStream.listen((Uri? uri) {
+      handleIncomingLink(uri?.toString());
+    });
+  }
+
+
+  void handleIncomingLink(String? link) {
+    if (link != null && !_hasHandledDeepLink) {
+      _hasHandledDeepLink = true; // Prevent multiple navigations
+      final uri = Uri.parse(link);
+      final segments = uri.pathSegments;
+
+      if (segments.isNotEmpty) {
+        if (segments.first == 'restaurants' && segments.length > 1) {
+          final restaurantId = segments[1];
+          navigatorKey.currentState?.pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => CouponFullViewScreen(restaurantId),
+            ),
+          );
+          return;
+        }
+
+        final referralCode = segments.first;
+        navigatorKey.currentState?.pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => SignupScreen(referralCode: referralCode, mobile: '', type:"1"),
+          ),
+        );
+      }
+    }
+  }
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   void showUpdatePopup() {
     showDialog(
@@ -216,13 +254,17 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => SimilarRestroViewModel()),
         ChangeNotifierProvider(create: (_) => RecommendedViewModel()),
         ChangeNotifierProvider(create: (_) => VibeViewModel()),
-        ChangeNotifierProvider(create: (_) => FlicksViewModel()),
+        ChangeNotifierProvider(create: (_) => RestaurantsFlicksViewModel()),
         ChangeNotifierProvider(create: (_) => MenuDataViewModel()),
         ChangeNotifierProvider(create: (_) => MenuTypeViewModel()),
         ChangeNotifierProvider(create: (_) => GetWalletViewModel()),
         ChangeNotifierProvider(create: (_) => NearMeImageViewModel()),
+        ChangeNotifierProvider(create: (_) => FlicksViewModel()),
+        ChangeNotifierProvider(create: (_) => AddPostViewModel()),
+        ChangeNotifierProvider(create: (_) => GetPostViewModel()),
       ],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Grabto',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -233,7 +275,7 @@ class _MyAppState extends State<MyApp> {
         home: SplashScreen(
           token: widget.token,
         ),
-        // home:NearMeScreen(),
+        // home:PreviewPostScreen(),
       ),
     );
   }

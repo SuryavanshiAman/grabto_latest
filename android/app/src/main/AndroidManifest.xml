@@ -40,8 +40,8 @@
 
                 <data
                     android:scheme="https"
-                    android:host="grabto.in"
-                    android:pathPrefix="/" />
+                    android:host="grabto.in" />
+
             </intent-filter>
 
         </activity>

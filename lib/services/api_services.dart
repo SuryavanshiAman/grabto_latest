@@ -882,7 +882,8 @@ print(url);
     const url = '$BASE_URL/store_multiple_gallery';
     final uri = Uri.parse(url);
     final response = await http.post(uri, body: body);
-
+    print("object: ${response.body}");
+    print("object: 😶‍🌫️🏆🏆🏆🏆🏆🏆🏆");
     if (response.statusCode == 200) {
       // Parse the JSON response
       final jsonResponse = json.decode(response.body) as Map;

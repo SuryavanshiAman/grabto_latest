@@ -19,7 +19,7 @@ class FilteredDataModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['res'] = this.res;
+    data['res'] = res;
     data['msg'] = msg;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
@@ -75,6 +75,7 @@ class Data {
   dynamic name;
   dynamic discountPercentage;
   dynamic availableSeat;
+  dynamic amount;
   dynamic avgRating;
   List<BannerImage>? image;
 
@@ -125,6 +126,7 @@ class Data {
         this.name,
         this.discountPercentage,
         this.availableSeat,
+        this.amount,
         this.avgRating,
         this.image});
 
@@ -175,6 +177,7 @@ class Data {
     name = json['name'];
     discountPercentage = json['discount_percentage'];
     availableSeat = json['available_seat'];
+    amount = json['amount'];
     avgRating = json['avg_rating'];
     if (json['image'] != null) {
       image = <BannerImage>[];
@@ -186,55 +189,56 @@ class Data {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['store_type'] = this.storeType;
-    data['owner_mobile'] = this.ownerMobile;
-    data['store_name'] = this.storeName;
-    data['dish'] = this.dish;
-    data['mobile'] = this.mobile;
-    data['password'] = this.password;
-    data['category_id'] = this.categoryId;
-    data['subcategory_id'] = this.subcategoryId;
-    data['qrcode'] = this.qrcode;
-    data['logo'] = this.logo;
-    data['banner'] = this.banner;
-    data['trendding'] = this.trendding;
-    data['address'] = this.address;
-    data['map_link'] = this.mapLink;
-    data['status'] = this.status;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['distance'] = this.distance;
-    data['lat'] = this.lat;
-    data['long'] = this.long;
-    data['offers'] = this.offers;
-    data['rating'] = this.rating;
-    data['redem'] = this.redem;
-    data['offer_id'] = this.offerId;
-    data['topcollection_id'] = this.topcollectionId;
-    data['trending_status'] = this.trendingStatus;
-    data['recent_status'] = this.recentStatus;
-    data['topcollection_status'] = this.topcollectionStatus;
-    data['owner_fname'] = this.ownerFname;
-    data['owner_lname'] = this.ownerLname;
-    data['address2'] = this.address2;
-    data['country'] = this.country;
-    data['state'] = this.state;
-    data['locality_id'] = this.localityId;
-    data['postcode'] = this.postcode;
-    data['location'] = this.location;
-    data['otp'] = this.otp;
-    data['email'] = this.email;
-    data['alternate_mobile'] = this.alternateMobile;
-    data['position'] = this.position;
-    data['commission'] = this.commission;
-    data['subcategory_name'] = this.subCategoriesName;
-    data['name'] = this.name;
-    data['discount_percentage'] = this.discountPercentage;
-    data['available_seat'] = this.availableSeat;
-    data['avg_rating'] = this.avgRating;
-    if (this.image != null) {
-      data['image'] = this.image!.map((v) => v.toJson()).toList();
+    data['id'] = id;
+    data['store_type'] = storeType;
+    data['owner_mobile'] = ownerMobile;
+    data['store_name'] = storeName;
+    data['dish'] = dish;
+    data['mobile'] = mobile;
+    data['password'] = password;
+    data['category_id'] = categoryId;
+    data['subcategory_id'] = subcategoryId;
+    data['qrcode'] = qrcode;
+    data['logo'] = logo;
+    data['banner'] = banner;
+    data['trendding'] = trendding;
+    data['address'] = address;
+    data['map_link'] = mapLink;
+    data['status'] = status;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['distance'] = distance;
+    data['lat'] = lat;
+    data['long'] = long;
+    data['offers'] = offers;
+    data['rating'] = rating;
+    data['redem'] = redem;
+    data['offer_id'] = offerId;
+    data['topcollection_id'] = topcollectionId;
+    data['trending_status'] = trendingStatus;
+    data['recent_status'] = recentStatus;
+    data['topcollection_status'] = topcollectionStatus;
+    data['owner_fname'] = ownerFname;
+    data['owner_lname'] = ownerLname;
+    data['address2'] = address2;
+    data['country'] = country;
+    data['state'] = state;
+    data['locality_id'] = localityId;
+    data['postcode'] = postcode;
+    data['location'] = location;
+    data['otp'] = otp;
+    data['email'] = email;
+    data['alternate_mobile'] = alternateMobile;
+    data['position'] = position;
+    data['commission'] = commission;
+    data['subcategory_name'] = subCategoriesName;
+    data['name'] = name;
+    data['discount_percentage'] = discountPercentage;
+    data['available_seat'] = availableSeat;
+    data['amount'] = amount;
+    data['avg_rating'] = avgRating;
+    if (image != null) {
+      data['image'] = image!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -251,7 +255,7 @@ class BannerImage {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['url'] = this.url;
+    data['url'] = url;
     return data;
   }
 }

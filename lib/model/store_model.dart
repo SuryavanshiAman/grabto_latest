@@ -2,6 +2,7 @@ class StoreModel {
   final int id;
   final String storeType;
   final String storeName;
+  final String dish;
   final String categoryId;
   final String subcategoryId;
   final String qrCode;
@@ -32,9 +33,10 @@ class StoreModel {
   final String state;
   final String postcode;
   final String description;
+  final String amount;
   final String categoryName;
   final String subcategoryName;
-  final String wishlistStatus; // Add wishlistStatus field
+  final String wishlistStatus;
   final String kycStatus;
   final String seat;
 
@@ -42,6 +44,7 @@ class StoreModel {
     required this.id,
     required this.storeType,
     required this.storeName,
+    required this.dish,
     required this.categoryId,
     required this.subcategoryId,
     required this.qrCode,
@@ -72,6 +75,7 @@ class StoreModel {
     required this.state,
     required this.postcode,
     required this.description,
+    required this.amount,
     required this.categoryName,
     required this.subcategoryName,
     required this.wishlistStatus, // Initialize wishlistStatus
@@ -84,6 +88,7 @@ class StoreModel {
       id: map['id'] ?? 0,
       storeType: map['store_type'] ?? '',
       storeName: map['store_name'] ?? '',
+      dish: map['dish'] ?? '',
       categoryId: map['category_id'] ?? '',
       subcategoryId: map['subcategory_id'] ?? '',
       qrCode: map['qrcode']?.toString() ?? '',
@@ -114,6 +119,7 @@ class StoreModel {
       state: map['state'] ?? '',
       postcode: map['postcode'] ?? '',
       description: map['description'] ?? '',
+      amount: map['amount'] ?? '',
       categoryName: map['category_name'] ?? '',
       subcategoryName: map['subcategory_name'] ?? '',
       wishlistStatus: map['wishlist_status'] ?? '', // Initialize wishlistStatus

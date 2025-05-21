@@ -1,29 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:grabto/model/flicks_model.dart';
 
 import '../helper/response/api_response.dart';
-import '../helper/shared_pref.dart';
 import '../model/restaurants_flickes_model.dart';
-import '../model/user_model.dart';
-import '../repo/flicks_repo.dart';
 import '../repo/restaurants_flicks_repo.dart';
 
-class FlicksViewModel with ChangeNotifier {
-  final _flickRepo =FlicksRepo();
+class RestaurantsFlicksViewModel with ChangeNotifier {
+  final _flickRepo =RestaurantsFlicksRepo();
 
-  ApiResponse<FlicksModel> flickList = ApiResponse.loading();
+  ApiResponse<RestaurantsFlicksModel> flickList = ApiResponse.loading();
 
-  setFlicksList(ApiResponse<FlicksModel> response) {
+  setFlicksList(ApiResponse<RestaurantsFlicksModel> response) {
     flickList = response;
     notifyListeners();
   }
 
-  Future<void>flicksApi(context) async {
+  Future<void>restaurantsFlicksApi(context, dynamic storeId) async {
     setFlicksList(ApiResponse.loading());
-    UserModel n = await SharedPref.getUser();
-    _flickRepo.flicksApi(n.id).then((value) {
+    Map data={
+      "store_id":storeId
+    };
+    _flickRepo.restaurantsFlicksApi(data).then((value) {
       if (value.res == "success") {
         setFlicksList(ApiResponse.completed(value));
         print("🐬🐬🐬🐬");

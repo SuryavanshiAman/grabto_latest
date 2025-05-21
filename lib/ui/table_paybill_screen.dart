@@ -779,7 +779,7 @@ String _appName = '';
                             ),
                           ),
                           Text(
-                            '\u{20B9}${getWallet
+                            '- \u{20B9}${getWallet
                                 .getWallet.data?.deductAmount??"0.0"}',
                             style: const TextStyle(
                               fontSize: 14,

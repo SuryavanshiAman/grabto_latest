@@ -26,19 +26,29 @@ class _SortListBottamWidgetState extends State<SortListBottamWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: MyColors.backgroundBg,
-      //child: SortListWidget(),
-      child: isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(MyColors.primaryColor),
-                strokeWidth: 4,
-              ),
-            )
-          : storeList.isEmpty
-          ? Center(child: _buildNoDataWidget())
-          :   StoreWidget(storeList),
+    return Scaffold(
+      appBar: AppBar(
+        leading: InkWell(
+          onTap: (){
+            Navigator.pop(context);
+          },
+            child: Icon(Icons.arrow_back)),
+        title: Text("Favorite Restaurants",style: TextStyle(fontSize: 18,color: MyColors.textColor),),
+      ),
+      body: Container(
+        color: MyColors.backgroundBg,
+        //child: SortListWidget(),
+        child: isLoading
+            ? Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(MyColors.primaryColor),
+                  strokeWidth: 4,
+                ),
+              )
+            : storeList.isEmpty
+            ? Center(child: _buildNoDataWidget())
+            :   StoreWidget(storeList),
+      ),
     );
   }
 
