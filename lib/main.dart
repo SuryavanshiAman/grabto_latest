@@ -6,23 +6,42 @@ import 'package:grabto/helper/user_provider.dart';
 import 'package:grabto/test.dart';
 import 'package:grabto/theme/theme.dart';
 import 'package:grabto/ui/coupon_fullview_screen.dart';
+import 'package:grabto/ui/profile/edit_profiel_Screen.dart';
 import 'package:grabto/ui/profile/preview_post_screen.dart';
 import 'package:grabto/ui/signup_screen.dart';
 import 'package:grabto/ui/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:grabto/view_model/add_flick_view_model.dart';
+import 'package:grabto/view_model/add_heighlight_view_model.dart';
 import 'package:grabto/view_model/add_post_view_model.dart';
+import 'package:grabto/view_model/add_rivew_view_model.dart';
 import 'package:grabto/view_model/different_location_view_model.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
 import 'package:grabto/view_model/flicks_view_model.dart';
+import 'package:grabto/view_model/follow_view_model.dart';
+import 'package:grabto/view_model/get_flick_view_model.dart';
+import 'package:grabto/view_model/get_highlight_view_model.dart';
 import 'package:grabto/view_model/get_post_view_model.dart';
+import 'package:grabto/view_model/get_review_view_model.dart';
 import 'package:grabto/view_model/get_wallet_view_model.dart';
 import 'package:grabto/view_model/grabto_grab_view_model.dart';
+import 'package:grabto/view_model/like_view_model.dart';
 import 'package:grabto/view_model/menu_data_view_model.dart';
 import 'package:grabto/view_model/menu_type_view_model.dart';
+import 'package:grabto/view_model/my_followers_view_model.dart';
+import 'package:grabto/view_model/my_following_view_model.dart';
+import 'package:grabto/view_model/my_saved_flick_view_model.dart';
 import 'package:grabto/view_model/near_me_image_view_model.dart';
+import 'package:grabto/view_model/profile_view_model.dart';
 import 'package:grabto/view_model/recommended_view_model.dart';
 import 'package:grabto/view_model/restaurants_flicks_view_model.dart';
+import 'package:grabto/view_model/save_flick_view_model.dart';
 import 'package:grabto/view_model/similar_restro_view_model.dart';
+import 'package:grabto/view_model/un_follow_view_model.dart';
+import 'package:grabto/view_model/un_like_view_model.dart';
+import 'package:grabto/view_model/un_save_flick_view_model.dart';
+import 'package:grabto/view_model/update_cover_image_view_model.dart';
+import 'package:grabto/view_model/update_profile_view_model.dart';
 import 'package:grabto/view_model/vibe_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
@@ -262,6 +281,24 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => FlicksViewModel()),
         ChangeNotifierProvider(create: (_) => AddPostViewModel()),
         ChangeNotifierProvider(create: (_) => GetPostViewModel()),
+        ChangeNotifierProvider(create: (_) => AddFlickViewModel()),
+        ChangeNotifierProvider(create: (_) => AddHighlightViewModel()),
+        ChangeNotifierProvider(create: (_) => AddReviewViewModel()),
+        ChangeNotifierProvider(create: (_) => GetFlickViewModel()),
+        ChangeNotifierProvider(create: (_) => GetHighlightViewModel()),
+        ChangeNotifierProvider(create: (_) => GetReviewViewModel()),
+        ChangeNotifierProvider(create: (_) => ProfileViewModel()),
+        ChangeNotifierProvider(create: (_) => UpdateCoverImageViewModel()),
+        ChangeNotifierProvider(create: (_) => UpdateProfileViewModel()),
+        ChangeNotifierProvider(create: (_) => SaveFlickViewModel()),
+        ChangeNotifierProvider(create: (_) => UnSaveFlickViewModel()),
+        ChangeNotifierProvider(create: (_) => MySavedFlickViewModel()),
+        ChangeNotifierProvider(create: (_) => MyFollowersViewModel()),
+        ChangeNotifierProvider(create: (_) => MyFollowingViewModel()),
+        ChangeNotifierProvider(create: (_) => FollowViewModel()),
+        ChangeNotifierProvider(create: (_) => UnFollowViewModel()),
+        ChangeNotifierProvider(create: (_) => LikeViewModel()),
+        ChangeNotifierProvider(create: (_) => UnLikeViewModel()),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,
@@ -275,7 +312,7 @@ class _MyAppState extends State<MyApp> {
         home: SplashScreen(
           token: widget.token,
         ),
-        // home:PreviewPostScreen(),
+        // home:EditProfileScreen(),
       ),
     );
   }

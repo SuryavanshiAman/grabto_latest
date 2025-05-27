@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
+import 'package:grabto/ui/profile/edit_profiel_Screen.dart';
 import 'package:grabto/ui/refer_and_earn.dart';
 import 'package:grabto/ui/term_and_condition.dart';
 import 'package:grabto/ui/transaction_screen.dart';
@@ -72,22 +73,27 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           SizedBox(height: heights*0.01,),
                           Row(
                             children: [
-                              Container(
-                                alignment: Alignment.center,
-                                width: widths*0.3,
-                                height: heights*0.03,
-                                // padding: EdgeInsets.symmetric(horizontal: 24,vertical: 8),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    color:MyColors.redBG
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Icon(Icons.mode_edit_outline_outlined, size: 14, color: MyColors.whiteBG),
+                              InkWell(
+                                onTap:(){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfileScreen()));
+                                },
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  width: widths*0.3,
+                                  height: heights*0.03,
+                                  // padding: EdgeInsets.symmetric(horizontal: 24,vertical: 8),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color:MyColors.redBG
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Icon(Icons.mode_edit_outline_outlined, size: 14, color: MyColors.whiteBG),
 
-                                    Text("Edit Profile",style: TextStyle(color: MyColors.whiteBG,fontSize: 12),),
-                                  ],
+                                      Text("Edit Profile",style: TextStyle(color: MyColors.whiteBG,fontSize: 12),),
+                                    ],
+                                  ),
                                 ),
                               ),
 

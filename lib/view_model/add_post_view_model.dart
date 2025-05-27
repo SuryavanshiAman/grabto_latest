@@ -9,7 +9,14 @@ import '../model/user_model.dart';
 import 'get_post_view_model.dart';
 class AddPostViewModel with ChangeNotifier {
   final _addPostRepo =AddPostRepo();
+  String _storeId="0";
 
+  String get storeId => _storeId;
+
+  setStoreId(String value) {
+    _storeId = value;
+    notifyListeners();
+  }
 
   Future<void>addPostApi(
       context,

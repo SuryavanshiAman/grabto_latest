@@ -29,6 +29,7 @@ import 'package:grabto/ui/vibe_screen.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
 import 'package:grabto/view_model/menu_data_view_model.dart';
+import 'package:grabto/view_model/profile_view_model.dart';
 import 'package:grabto/view_model/recommended_view_model.dart';
 import 'package:grabto/view_model/restaurants_flicks_view_model.dart';
 import 'package:grabto/view_model/similar_restro_view_model.dart';
@@ -37,11 +38,7 @@ import 'package:grabto/widget/add_rating_widget.dart';
 import 'package:grabto/widget/features_widget.dart';
 import 'package:grabto/widget/menu_card_widget.dart';
 import 'package:grabto/widget/opneing_hours.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -183,16 +180,18 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
   void initState() {
     super.initState();
     fetchData();
+    final profile = Provider.of<ProfileViewModel>(context,listen: false).profileData.data?.data;
     Provider.of<SimilarRestroViewModel>(context, listen: false)
         .similarRestroApi(context, widget.id.toString());
     Provider.of<RecommendedViewModel>(context, listen: false)
         .recomendedApi(context);
     Provider.of<VibeViewModel>(context, listen: false)
         .vibeApi(context, widget.id);
-    Provider.of<RestaurantsFlicksViewModel>(context, listen: false)
-        .restaurantsFlicksApi(context, widget.id);
+    Provider.of<RestaurantsFlicksViewModel>(context, listen: false).restaurantsFlicksApi(context, widget.id);
     Provider.of<MenuDataViewModel>(context, listen: false)
         .menuDataApi(context, widget.id);
+    Provider.of<FilterViewModel>(context, listen: false)
+        .filterApi(context,profile?.lat??"", profile?.long, "", "", "", [], []);
   }
 
   _makePhoneCall(String? phoneNumber) async {
@@ -1339,7 +1338,6 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                 ? SizedBox(
                                     height: heights * 0.38,
                                     width: widths,
-                                    // color: MyColors.redBG,
                                     child: ListView.builder(
                                       itemCount: flick.data?.data?.length ?? 0,
                                       shrinkWrap: true,
@@ -1347,9 +1345,6 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                       itemBuilder: (context, index) {
                                         final data = flick.data?.data?[index];
                                         final mediaUrl = data?.thumbnailImage ?? "";
-
-                                        bool isVideo = mediaUrl
-                                            .endsWith('.mp4');
 
                                         return InkWell(
                                           onTap:(){
@@ -1780,7 +1775,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                       fontWeight: FontWeight.w200,
                                     ),
                                   ),
-                            Container(
+                            data.filterList.data?.data?.length!=0?   Container(
                               margin: const EdgeInsets.only(
                                   top: 10, left: 15, right: 15),
                               child: Row(
@@ -1803,11 +1798,8 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                   ),
                                 ],
                               ),
-                            ),
-                            data.filterList.data?.data?.length == null
-                                ? Center(child: CircularProgressIndicator())
-                                : data.filterList.data!.data!.isNotEmpty
-                                    ? SizedBox(
+                            ):Container(),
+                            data.filterList.data?.data?.length!=0?SizedBox(
                                         height: heights * 0.45,
                                         width: widths * 0.9,
                                         // color: Colors.red,
@@ -1831,13 +1823,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                           },
                                         ),
                                       )
-                                    : Text(
-                                        "No Restaurant's are available",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w200,
-                                        ),
-                                      ),
+                                    : Container(),
                             Container(
                               margin:
                                   const EdgeInsets.only(left: 15, right: 15),
@@ -1915,40 +1901,75 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                               GestureDetector(
                                 onTap: () async {
                                   UserModel n = await SharedPref.getUser();
-                                  print(n.name);
                                   if (n.id == 0) {
                                     Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                BottomLoginScreen()));
-                                  } else {
-                                    if (kyc_status == "Approve") {
-                                      if (prebookofferlist.isEmpty) {
-                                        showErrorMessage(context,
-                                            message:
-                                                "Pre-Book Offer not available");
-                                      } else {
-                                        // showErrorMessage(context, message: end_time);
-
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  BookTableScreen(
-                                                      start_time,
-                                                      // "$end_time",
-                                                      storeName,
-                                                      widget.id,
-                                                      category_name)),
-                                        );
-                                      }
-                                    } else {
-                                      showErrorMessage(context,
-                                          message:
-                                              "Store temporarily unavailable here.  Kindly visit store for more details.");
-                                    }
+                                      context,
+                                      MaterialPageRoute(builder: (context) => BottomLoginScreen()),
+                                    );
+                                    return;
                                   }
+
+                                  if (kyc_status != "Approve") {
+                                    showErrorMessage(
+                                      context,
+                                      message: "Store temporarily unavailable here. Kindly visit store for more details.",
+                                    );
+                                    return;
+                                  }
+
+                                  if (prebookofferlist.isEmpty) {
+                                    showErrorMessage(
+                                      context,
+                                      message: "Pre-Book Offer not available",
+                                    );
+                                    return;
+                                  }
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BookTableScreen(
+                                        start_time,
+                                        storeName,
+                                        widget.id,
+                                        category_name,
+                                      ),
+                                    ),
+                                  );
+
+                                  // if (n.id == 0) {
+                                  //   Navigator.push(
+                                  //       context,
+                                  //       MaterialPageRoute(
+                                  //           builder: (context) =>
+                                  //               BottomLoginScreen()));
+                                  // } else {
+                                  //   if (kyc_status == "Approve") {
+                                  //     if (prebookofferlist.isEmpty) {
+                                  //       showErrorMessage(context,
+                                  //           message:
+                                  //               "Pre-Book Offer not available");
+                                  //     } else {
+                                  //       // showErrorMessage(context, message: end_time);
+                                  //
+                                  //       Navigator.push(
+                                  //         context,
+                                  //         MaterialPageRoute(
+                                  //             builder: (context) =>
+                                  //                 BookTableScreen(
+                                  //                     start_time,
+                                  //                     // "$end_time",
+                                  //                     storeName,
+                                  //                     widget.id,
+                                  //                     category_name)),
+                                  //       );
+                                  //     }
+                                  //   } else {
+                                  //     showErrorMessage(context,
+                                  //         message:
+                                  //             "Store temporarily unavailable here.  Kindly visit store for more details.");
+                                  //   }
+                                  // }
                                 },
                                 child: Container(
                                   height: 49,

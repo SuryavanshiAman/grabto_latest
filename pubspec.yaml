@@ -3,7 +3,7 @@ description: "A new Flutter project."
 
 publish_to: 'none'
 
-version: 1.0.43
+version: 1.0.44
 
 environment:
   sdk: ^3.6.0
@@ -46,6 +46,8 @@ dependencies:
   photo_manager:
   file_picker:
   flutter_image_compress:
+  video_thumbnail: ^0.5.3
+  path_provider:
 
 #  uni_links: ^0.5.1
 

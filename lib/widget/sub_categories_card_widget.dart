@@ -170,7 +170,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         setState(() {});
         _controller.play();
         _controller.setLooping(true);
-        _controller.setVolume(0); // mute the video
+        _controller.setVolume(1.0); // mute the video
       });
   }
 
@@ -186,19 +186,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         ? AspectRatio(
       aspectRatio: _controller.value.aspectRatio,
       child:
-      // CachedNetworkImage(
-      //   imageUrl: widget.videoUrl,
-      //   fit: BoxFit.fill,
-      //   placeholder: (context, url) => Image.asset(
-      //     'assets/images/placeholder.png',
-      //     fit: BoxFit.cover,
-      //     width: double.infinity,
-      //     height: double.infinity,
-      //   ),
-      //   errorWidget: (context, url, error) =>
-      //       Center(child: Icon(Icons.error)),
-      // ),
-      // Image.network(widget.videoUrl)
       VideoPlayer(_controller),
     )
         : Center(child: CircularProgressIndicator(color: MyColors.redBG));

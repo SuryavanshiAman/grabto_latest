@@ -1,14 +1,18 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:grabto/helper/image_selection.dart';
 import 'package:grabto/helper/shared_pref.dart';
 import 'package:grabto/helper/user_provider.dart';
+import 'package:grabto/main.dart';
 import 'package:grabto/model/city_model.dart';
 import 'package:grabto/model/user_model.dart';
 import 'package:grabto/services/api.dart';
 import 'package:grabto/services/api_services.dart';
 import 'package:grabto/utils/snackbar_helper.dart';
+import 'package:grabto/view_model/profile_view_model.dart';
+import 'package:grabto/view_model/update_profile_view_model.dart';
 import 'package:grabto/widget/filter_date-formate.dart';
 import 'package:grabto/widget/item_list_dialog.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,6 +22,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../theme/theme.dart';
+import '../../view_model/update_cover_image_view_model.dart';
 
 class EditProfileScreen extends StatefulWidget {
   @override
@@ -25,15 +30,13 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController locationController = TextEditingController();
-  TextEditingController _dobController = TextEditingController();
+
   List<CityModel> cityList = [];
 
   final picker = ImagePicker();
   File? _imageFile;
-
+  final coverPicker = ImagePicker();
+  File? coverImageFile;
   int userId = 0;
   String userName = '';
   String userEmail = '';
@@ -74,11 +77,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     if (selectedCity != null) {
       setState(() {
-        cityId= "${selectedCity.id}";
+        cityId = "${selectedCity.id}";
         locationController.text = selectedCity.city;
-        userLocation=selectedCity.city;
+        userLocation = selectedCity.city;
         //showErrorMessage(context, message: selectedCity.city);
-
       });
     }
   }
@@ -120,6 +122,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       },
     );
   }
+  void _openCoverPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.photo_library),
+              title: Text('Choose from gallery'),
+              onTap: () {
+                _pickCoverFromGallery();
+                Navigator.pop(
+                    context); // Close the modal bottom sheet after selection
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.camera_alt),
+              title: Text('Take a photo'),
+              onTap: () {
+                _takePhotoWithCamera();
+                Navigator.pop(
+                    context); // Close the modal bottom sheet after selection
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Future<void> _pickImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -128,6 +160,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _imageFile = File(pickedFile.path);
         if (_imageFile != null) {
           update_profile_image("$userId", _imageFile);
+        }
+      });
+    }
+  }
+
+  Future<void> _pickCoverFromGallery() async {
+    List<String> base64Images = [];
+    final coverImage=Provider.of<UpdateCoverImageViewModel>(context,listen: false);
+    final pickedFile = await coverPicker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      coverImageFile = File(pickedFile.path);
+      final bytes = await coverImageFile!.readAsBytes();
+      String base64Image = 'data:image/jpeg;base64,${base64Encode(bytes)}';
+      setState(() {
+
+        if (coverImageFile != null) {
+          base64Images.add(base64Image);
+          coverImage.updateCoverApi(context, base64Images);
         }
       });
     }
@@ -144,27 +194,61 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
     }
   }
-
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();
+  final TextEditingController bioController = TextEditingController();
+  final TextEditingController _dobController = TextEditingController();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      initializeProfileData();
+    });
+
+
+  }
+
+  Future<void> initializeProfileData() async {
+    await Provider.of<ProfileViewModel>(context, listen: false).profileApi(context);
+    await Future.delayed(Duration(seconds: 2)); // Small buffer for safety
+    profileData();
     getUserDetails();
     fetchCity();
   }
 
+  void profileData() {
+    final profile = Provider.of<ProfileViewModel>(context, listen: false).profileData.data?.data;
+
+    if (profile != null) {
+      setState(() {
+        nameController.text = profile.name ?? "";
+        emailController.text = profile.email ?? "";
+        locationController.text = profile.homeLocation ?? "";
+        bioController.text = profile.bio ?? "";
+        _dobController.text = profile.dob ?? "";
+        print("DOB: ${_dobController.text}");
+      });
+    } else {
+      print("Profile is still null.");
+    }
+  }
   @override
   Widget build(BuildContext context) {
+    final profile = Provider.of<ProfileViewModel>(context).profileData.data?.data;
+    final updateProfile = Provider.of<UpdateProfileViewModel>(context);
+
     return WillPopScope(
         onWillPop: () async {
           // Pass back the updated user details when pressing the back button
-          Navigator.pop(context, {
-            'name': nameController.text,
-            'email': emailController.text,
-            'location': locationController.text,
-            'dob': _dobController.text,
-            // Add other user details as needed
-          });
+          // Navigator.pop(context, {
+          //   'name': nameController.text,
+          //   'email': emailController.text,
+          //   'location': locationController.text,
+          //   'dob': _dobController.text,
+          //   // Add other user details as needed
+          // });
           return true;
         },
         child: Scaffold(
@@ -189,18 +273,72 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
           body: Stack(
+            clipBehavior: Clip.none,
             children: [
               Container(
                 color: MyColors.backgroundBg,
-                padding: EdgeInsets.only(left: 16, top: 25, right: 16),
                 child: GestureDetector(
                   onTap: () {
                     FocusScope.of(context).unfocus();
+                    // print("aman");
                   },
                   child: ListView(
                     children: [
-                      SizedBox(
-                        height: 15,
+
+                      (profile?.coverPhoto != null &&
+                              profile!.coverPhoto!.isNotEmpty)
+                          ? CachedNetworkImage(
+                              height: heights * 0.3,
+                              imageUrl: profile.coverPhoto ?? "",
+                              fit: BoxFit.fill,
+                              placeholder: (context, url) => Image.asset(
+                                'assets/images/vertical_placeholder.jpg',
+                                // Path to your placeholder image asset
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                              ),
+                              errorWidget: (context, url, error) => Center(
+                                  child: Image.asset(
+                                      "assets/images/vertical_placeholder.jpg")),
+                            )
+                          : coverImageFile != null
+                              ? Image.file(
+                                  coverImageFile!,
+                                  fit: BoxFit.cover,
+                                  height: heights * 0.3,
+                                )
+                              : Image(
+                                  image: AssetImage(
+                                      "assets/images/placeholder.png"),
+                                  height: heights * 0.3,
+                                  fit: BoxFit.fill,
+                                ),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            _openCoverPicker(context);                          },
+                          child: Container(
+                            padding:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                            margin:  EdgeInsets.symmetric(vertical: 15),
+
+                            decoration: BoxDecoration(
+                              // color: MyColors.redBG,
+                                borderRadius: BorderRadius.circular(5),
+                                color: MyColors.redBG,
+                                // border: Border.all(
+                                //     color: MyColors.grey.withAlpha(100))
+                            ),
+                            child: Text(
+                              "Edit Cover Photo",
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: MyColors.whiteBG,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ),
                       ),
                       Center(
                         child: Stack(
@@ -244,13 +382,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       SizedBox(
                         height: 35,
                       ),
+
                       buildTextField(
                         labelText: "Full Name",
                         placeholder: "Enter Your Name",
                         isPasswordTextField: false,
                         isReadOnly: false,
                         controller: nameController,
-                        initialValue: userName.isNotEmpty ? userName : null,
                       ),
                       buildTextField(
                         labelText: "E-mail",
@@ -258,7 +396,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         isPasswordTextField: false,
                         isReadOnly: false,
                         controller: emailController,
-                        initialValue: userEmail.isNotEmpty ? userEmail : null,
                       ),
                       buildTextField(
                         labelText: "DOB",
@@ -266,35 +403,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         isPasswordTextField: false,
                         isReadOnly: true,
                         controller: _dobController,
-                        initialValue: userDob.isNotEmpty ? userDob : "",
+                        // initialValue: profile?.dob??"",
                         suffixIcon: Container(
                           color: MyColors.blackBG,
                           child: FilterDateFormat(
-                            onDateSelected:
-                                (DateTime selectedDate) {
+                            onDateSelected: (DateTime selectedDate) {
                               setState(() {
                                 _selectedDate = selectedDate;
-                                _dobController.text =
-                                    DateFormat('dd-MM-yyyy').format(selectedDate);
+                                _dobController.text = DateFormat('dd-MM-yyyy')
+                                    .format(selectedDate);
                               });
                             },
                           ),
                         ),
-
                       ),
-
                       buildTextField(
-                        labelText: "Location",
-                        placeholder: "Enter Your City",
+                        labelText: "Bio",
+                        placeholder: "Tell us about yourself",
                         isPasswordTextField: false,
-                        isReadOnly: true,
-                        controller: locationController,
-                        initialValue:
-                            userLocation.isNotEmpty ? userLocation : null,
+                        maxLines: 2,
+                        isReadOnly: false,
+                        controller: bioController,
+                        // initialValue:profile?.bio??"",
+                      ),
+                      buildTextField(
+                          labelText: "Location",
+                          placeholder: "Enter Your City",
+                          isPasswordTextField: false,
+                          isReadOnly: true,
+                          controller: locationController,
+                          // initialValue:
+                          // profile?.homeLocation??"",
                           onTap: () {
                             _showCityDialog();
-                          }
-                      ),
+                          }),
                       SizedBox(
                         height: 35,
                       ),
@@ -328,16 +470,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           ElevatedButton(
                             onPressed: () {
-                              final user_Id = userId;
-                              final name = nameController.text;
-                              final email = emailController.text;
-                              final city_id = cityId;
-                              final cityName = locationController.text;
-                              final dob = _dobController.text;
-                              // final dob = "";
-
-                              update_profile(
-                                  '$user_Id', name, email, city_id,cityName, dob);
+                              // final user_Id = userId;
+                              // final name = nameController.text;
+                              // final email = emailController.text;
+                              // final city_id = cityId;
+                              // final cityName = locationController.text;
+                              // final dob = _dobController.text;
+                              // // final dob = "";
+                              //
+                              // update_profile('$user_Id', name, email, city_id,
+                              //     cityName, dob);
                             },
                             style: ButtonStyle(
                               side: MaterialStateProperty.all<BorderSide>(
@@ -370,7 +512,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(
-                       MyColors.primary,
+                        MyColors.primary,
                       ),
                       // Change the color
                       strokeWidth: 4,
@@ -378,6 +520,62 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
             ],
+          ),
+          bottomSheet:  Container(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            color: Colors.black,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                InkWell(
+                  onTap: () {
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 32),
+                    decoration: BoxDecoration(
+                      color: MyColors.whiteBG,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: MyColors.textColor,
+                          fontFamily: 'wix',
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    final user_Id = userId;
+                    final name = nameController.text;
+                    final email = emailController.text;
+                    final city_id = cityId;
+                    final cityName = locationController.text;
+                    final dob = _dobController.text;
+                    final bio = bioController.text;
+                    // final dob = "";
+                    updateProfile.updateProfileApi(context, dob, name, email, cityName, bio);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 33),
+                    decoration: BoxDecoration(
+                      color: MyColors.redBG,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      "Update",
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: MyColors.whiteBG,
+                          fontFamily: 'wix',
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ));
   }
@@ -473,7 +671,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> update_profile(String user_id, String name, String email,
-      String city_id,String cityName, String dob) async {
+      String city_id, String cityName, String dob,dynamic bio) async {
     if (name.isEmpty) {
       showErrorMessage(context, message: 'Please fill name');
       return;
@@ -501,6 +699,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         "home_location": city_id,
         "current_location": city_id,
         "dob": dob,
+        "bio":bio
       };
       final response = await ApiServices.updateProfile(context, body);
 
@@ -593,51 +792,55 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     bool isPasswordTextField = false,
     bool isReadOnly = false,
     Widget? suffixIcon,
-    required TextEditingController controller,
+    int? maxLines,
+     TextEditingController? controller,
     String? initialValue,
     Function()? onTap, // Optional onTap parameter
   }) {
     // Set initial value if provided
-    if (initialValue != null && initialValue.isNotEmpty) {
-      controller.text = initialValue;
-    }
+    // if (initialValue != null && initialValue.isNotEmpty) {
+    //   controller.text = initialValue;
+    // }
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 35.0),
+      padding: EdgeInsets.only(left: 16, top: 25, right: 16),
       child: TextField(
         controller: controller,
         obscureText: isPasswordTextField ? showPassword : false,
         readOnly: isReadOnly,
         onTap: onTap,
+        maxLines: maxLines,
         // Use the provided onTap function, if any
         style: TextStyle(
           color: Colors.black,
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: FontWeight.w600,
+          fontFamily: 'wix'
         ),
         decoration: InputDecoration(
           // prefixIcon:prefixIcon ,
           suffixIcon: suffixIcon,
-              // ? IconButton(
-              //     onPressed: () {
-              //       // Toggle password visibility
-              //       showPassword = !showPassword;
-              //       controller.clear();
-              //     },
-              //     icon: Icon(
-              //       Icons.remove_red_eye,
-              //       color: Colors.grey,
-              //     ),
-              //   )
-              // : null,
-          contentPadding: EdgeInsets.only(bottom: 3),
+          contentPadding: EdgeInsets.only(bottom: 3,left: 5),
           labelText: labelText,
           floatingLabelBehavior: FloatingLabelBehavior.always,
           hintText: placeholder,
           hintStyle: TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w400,
             color: Colors.grey,
+          ),
+          enabledBorder: OutlineInputBorder(
+            gapPadding: 0,
+            borderSide:
+            BorderSide(color: MyColors.grey.withAlpha(100)),
+            borderRadius:
+            BorderRadius.circular(5.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+                color:  MyColors.grey.withAlpha(100)),
+            borderRadius:
+            BorderRadius.circular(5.0),
           ),
         ),
       ),
@@ -681,18 +884,18 @@ class ProfileImageWidget extends StatelessWidget {
                 height: 100,
               )
             : CachedNetworkImage(
-          imageUrl: userImage.isNotEmpty ? userImage : image,
-          fit: BoxFit.fill,
-          placeholder: (context, url) => Image.asset(
-            'assets/images/placeholder.png',
-            // Path to your placeholder image asset
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
-          ),
-          errorWidget: (context, url, error) =>
-              Center(child: Icon(Icons.error)),
-        ),
+                imageUrl: userImage.isNotEmpty ? userImage : image,
+                fit: BoxFit.fill,
+                placeholder: (context, url) => Image.asset(
+                  'assets/images/placeholder.png',
+                  // Path to your placeholder image asset
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
+                errorWidget: (context, url, error) =>
+                    Center(child: Icon(Icons.error)),
+              ),
         // Image.network(
         //         userImage.isNotEmpty ? userImage : image,
         //         loadingBuilder: (BuildContext context, Widget child,

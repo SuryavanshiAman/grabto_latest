@@ -86,7 +86,7 @@ class _SearchStoreScreenState extends State<SearchStoreScreen> {
 
               // Navigate to coupon full view screen here
               // You can use Navigator to push a new screen onto the navigation stack
-            widget.status=="0"?  Navigator.push(
+              widget.status=="0"?  Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
@@ -130,7 +130,7 @@ class _SearchStoreScreenState extends State<SearchStoreScreen> {
           MaterialPageRoute(
               builder: (context) =>
                   PayBillScreen(
-                    regularofferlist[0],
+                      regularofferlist[0],
                       _filteredStores[index].storeName,
                       "${_filteredStores[index].address} ${_filteredStores[index].address2} ${_filteredStores[index].country} ${_filteredStores[index].state}, ${_filteredStores[index].postcode}"
                   )),

@@ -52,6 +52,7 @@ import '../helper/location_provider.dart';
 import '../model/city_model.dart';
 import '../model/features_model.dart';
 import '../services/api.dart';
+import '../view_model/profile_view_model.dart';
 import '../widget/sub_categories_card_widget.dart';
 import 'about_us_screen.dart';
 import 'account_setting.dart';
@@ -80,7 +81,7 @@ class HomeBottamScreen extends StatefulWidget {
 class _HomeBottamScreenState extends State<HomeBottamScreen>
     with WidgetsBindingObserver {
   final CarouselSliderController _controller = CarouselSliderController();
-
+  List<BannerModel> banner=[];
   List imageSlider = [];
   List<CategoriesModel> categories = [];
   List<StoreModel> trendingStoreList = [];
@@ -117,6 +118,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
       getUserDetails();
       fetchSubCategories(5);
       getBanners();
+      Provider.of<ProfileViewModel>(context, listen: false).profileApi(context);
       Provider.of<DifferentLocationViewModel>(context, listen: false).differentLocationApi(context);
       Provider.of<GrabtoGrabViewModel>(context, listen: false).grabtoGrabApi(context);
       Provider.of<NearMeImageViewModel>(context, listen: false).nearMeImageApi(context);
@@ -163,6 +165,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
   String lat = "";
   String long = "";
   Future<void> getUserDetails() async {
+    final profile = Provider.of<ProfileViewModel>(context,listen: false).profileData.data?.data;
     setState(() {
       isLoading = true;
     });
@@ -182,9 +185,10 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
       home_location = n.home_location;
       lat = n.lat;
       long = n.long;
+      banner=n.banners;
     });
     Provider.of<FilterViewModel>(context, listen: false)
-        .filterApi(context, lat, long, "", "", "", [], []);
+        .filterApi(context,profile?.lat??"", profile?.long, "", "", "", [], []);
     await allApiCall(cityId);
   }
 
@@ -320,6 +324,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
   Widget build(BuildContext context) {
     List<FirstList> orderedList = list;
     final location = Provider.of<Address>(context);
+    final profile = Provider.of<ProfileViewModel>(context).profileData.data?.data;
     final differentLocation = Provider.of<DifferentLocationViewModel>(context);
     final data = Provider.of<FilterViewModel>(context);
     final grab = Provider.of<GrabtoGrabViewModel>(context).grabList.data?.data;
@@ -348,27 +353,29 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
 
                       InkWell(
                         onTap: () {
-                          print(widget.bannersDa[0].url);
+                          // print(banner[0].url);
+                          print(profile?.banner?[0].url);
                           print("widget.bannersDa[0].url");
-                          widget.bannersDa[0].type == "1"
+                          // profile.banner
+                          profile?.banner?[0].type == "1"
                               ? navigateToAllCouponScreen(
                                   context,
-                                  widget.bannersDa[0].subcategory_name,
-                                  widget.bannersDa[0].category_id,
-                                  widget.bannersDa[0].id)
+                              profile?.banner?[0].subcategoryName,
+                              profile?.banner?[0].categoryId,
+                              profile?.banner?[0].id)
                               : Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           CouponFullViewScreen(
-                                              "${widget.bannersDa[0].url}")));
+                                              "${profile?.banner?[0].url}")));
                         },
                         child: Container(
                           height: heights * 0.53,
                           decoration: BoxDecoration(
                               // color: Colors.red,
                               image: DecorationImage(
-                                  image: NetworkImage(widget.bannersDa[0].image),
+                                  image: NetworkImage(profile?.banner?[0].image??""),
                                   fit: BoxFit.fill),
                               borderRadius: BorderRadius.only(
                                   bottomLeft: Radius.circular(20),
@@ -455,10 +462,9 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                             top: 2),
                                                         // width: widths * 0.6,
                                                         child: Text(
-                                                          address.toString() !=
+                                                          profile?.address.toString() !=
                                                                   ""
-                                                              ? address
-                                                                  .toString()
+                                                              ? profile?.address
                                                                   .split(',')[0]
                                                               : location.address
                                                                   .toString(),
@@ -485,8 +491,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                 SizedBox(
                                                     width: widths * 0.57,
                                                     child: Text(
-                                                      address != ""
-                                                          ? address
+                                                      profile?.address != ""
+                                                          ? profile?.address
                                                           : location.area,
                                                       maxLines: 1,
                                                       style: TextStyle(
@@ -1479,8 +1485,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                         ? index == 0
                                             ? showFilterBottomSheet(
                                                 context,
-                                                lat,
-                                                long,
+                                        profile?.lat,
+                                        profile?.long,
                                                 featureData,
                                                 subCategoriesList)
                                             : index == 1
@@ -1488,16 +1494,16 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                 : index == 2
                                                     ? data.filterApi(
                                                         context,
-                                                        lat,
-                                                        long,
+                                        profile?.lat,
+                                        profile?.long,
                                                         "4",
                                                         "",
                                                         "", [], [])
                                                     : index == 3
                                                         ? data.filterApi(
                                                             context,
-                                                            lat,
-                                                            long,
+                                      profile?.lat,
+                                      profile?.long,
                                                             "",
                                                             "5",
                                                             "",
@@ -1506,8 +1512,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                                           )
                                                         : data.filterApi(
                                                             context,
-                                                            lat,
-                                                            long,
+                                        profile?.lat,
+                                        profile?.long,
                                                             "",
                                                             "",
                                                             "10", [], [])
@@ -1587,8 +1593,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                              itemBuilder: (context, index) {
                                List<Data> sortedList = List.from(data.filterList.data?.data ?? []);
                                if (data.filterIndex == 1) {
-                                 double userLat = double.tryParse(lat) ?? 0;
-                                 double userLng = double.tryParse(long) ?? 0;
+                                 double userLat = double.tryParse(profile?.lat) ?? 0;
+                                 double userLng = double.tryParse(profile?.long) ?? 0;
 
                                  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
                                    const double p = 0.017453292519943295; // pi/180
@@ -1672,26 +1678,26 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                     ? index == 0
                                         ? showFilterBottomSheet(
                                             context,
-                                            lat,
-                                            long,
+                                    profile?.lat,
+                                    profile?.long,
                                             featureData,
                                             subCategoriesList)
                                         : index == 1
-                                            ? data.filterApi(context, lat, long,
+                                            ? data.filterApi(context, profile?.lat, profile?.long,
                                                 "4", "", "", [], [])
                                             : index == 2
                                                 ? data.filterApi(
                                                     context,
-                                                    lat,
-                                                    long,
+                                  profile?.lat,
+                                  profile?.long,
                                                     "",
                                                     "5",
                                                     "",
                                                     [],
                                                     [],
                                                   )
-                                                : data.filterApi(context, lat,
-                                                    long, "", "", "10", [], [])
+                                                : data.filterApi(context, profile?.lat,
+                                    profile?.long, "", "", "10", [], [])
                                     : null;
 
                                 // index==0?showFilterBottomSheet(context,lat,long,featureData,subCategoriesList):index==1?filterApi(lat, long,"4","",""):index==2?filterApi(lat, long,"","5",""):filterApi(lat, long,"","","10");
@@ -1794,8 +1800,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                       height: 70,
                                       child: ClipOval(
                                         child: CachedNetworkImage(
-                                          imageUrl: userimage.isNotEmpty
-                                              ? userimage
+                                          imageUrl: profile?.image.isNotEmpty
+                                              ? profile?.image
                                               : image,
                                           fit: BoxFit.fill,
                                           placeholder: (context, url) =>
@@ -1847,8 +1853,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                     height: 10,
                                   ),
                                   Visibility(
-                                    visible: userName.isNotEmpty ||
-                                        userEmail.isNotEmpty,
+                                    visible: profile?.name.isNotEmpty ||
+                                        profile?.email.isNotEmpty,
                                     child: RichText(
                                       text: TextSpan(
                                         style: const TextStyle(
@@ -1856,25 +1862,25 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                                           fontSize: 20,
                                         ),
                                         children: [
-                                          if (userName.isNotEmpty)
+                                          if (profile?.name.isNotEmpty)
                                             TextSpan(
-                                              text: '$userName\n',
+                                              text: '${profile?.name}\n',
                                               style: const TextStyle(
                                                 fontSize: 20,
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                          if (userName.isNotEmpty &&
-                                              userMobile.isNotEmpty)
+                                          if (profile?.name.isNotEmpty &&
+                                              profile?.mobile.isNotEmpty)
                                             const WidgetSpan(
                                               child: SizedBox(
                                                   height:
                                                       25), // Adjust the height as needed
                                             ),
-                                          if (userMobile.isNotEmpty)
+                                          if (profile?.mobile.isNotEmpty)
                                             TextSpan(
-                                              text: '$userMobile',
+                                              text: profile?.mobile??"",
                                               style: TextStyle(
                                                 fontSize: 17,
                                                 color: Colors.black
@@ -2061,6 +2067,8 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
 
   int filterIndex = 0;
   void showSortBottomSheet(BuildContext context) {
+    final profile = Provider.of<ProfileViewModel>(context,listen: false).profileData.data?.data;
+
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -2097,7 +2105,7 @@ class _HomeBottamScreenState extends State<HomeBottamScreen>
                       Provider.of<FilterViewModel>(context, listen: false).setFilterIndex(index);
                       print("Selected: $selectedOption");
                       Provider.of<FilterViewModel>(context, listen: false)
-                          .filterApi(context, lat, long, "", "", "", [], []);
+                          .filterApi(context, profile?.lat, profile?.long, "", "", "", [], []);
                     });
                   },
                   activeColor: MyColors.redBG,

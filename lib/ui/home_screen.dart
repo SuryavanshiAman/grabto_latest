@@ -28,6 +28,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../helper/location_provider.dart';
+import '../view_model/profile_view_model.dart';
 import 'account_setting.dart';
 import 'flicks_screen.dart';
 
@@ -70,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // TODO: implement initState
     super.initState();
     getUserDetails();
+    Provider.of<ProfileViewModel>(context, listen: false).profileApi(context);
     SharedPref.getGatewayStatus().then((gateway) {
       gatewayStatus = gateway;
       print("gatewayStatus status: " + gatewayStatus);
@@ -202,6 +204,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final address=Provider.of<Address>(context);
+    final profile = Provider.of<ProfileViewModel>(context).profileData.data?.data;
 print("dsd ${banners.length}");
     return Scaffold(
       key: _scaffoldKey,
@@ -573,8 +576,7 @@ print("dsd ${banners.length}");
       //   ),
       // ),
       //
-      bottomNavigationBar:
-      PopScope(
+      bottomNavigationBar: PopScope(
         canPop: false,
         onPopInvoked: (v) {
           _onWillPop();
@@ -582,12 +584,7 @@ print("dsd ${banners.length}");
         child:Container(
           decoration: BoxDecoration(
             color: Colors.black,
-            // borderRadius: const BorderRadius.only(
-            //   topLeft: Radius.circular(20),
-            //   topRight: Radius.circular(20),
-            // ),
           ),
-          // padding: const EdgeInsets.symmetric(vertical: 1),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(_image.length, (index) {
@@ -622,7 +619,7 @@ print("dsd ${banners.length}");
 
                         child:index==4?CircleAvatar(
                           radius: 10,
-                          backgroundImage: NetworkImage(userimage),
+                          backgroundImage: NetworkImage(profile?.image??""),
                         ):
                         Column(
                           children: [
@@ -651,72 +648,6 @@ print("dsd ${banners.length}");
             }),
           ),
         ),
-        // Container(
-        //   // color: MyColors.blackBG,
-        //   child: BottomNavigationBar(
-        //     backgroundColor: MyColors.blackBG,
-        //     items: const <BottomNavigationBarItem>[
-        //       BottomNavigationBarItem(
-        //         icon: Icon(
-        //           Icons.home_outlined,
-        //           color: MyColors.bottomNavigationUnselectedColor,
-        //         ),
-        //         activeIcon: Icon(
-        //           Icons.home,
-        //           color: MyColors.bottomNavigationSelectedColor,
-        //         ),
-        //         label: "Home",
-        //       ),
-        //       BottomNavigationBarItem(
-        //           icon: Icon(
-        //             Icons.category_outlined,
-        //             color: MyColors.bottomNavigationUnselectedColor,
-        //           ),
-        //           activeIcon: Icon(
-        //             Icons.category_rounded,
-        //             color: MyColors.bottomNavigationSelectedColor,
-        //           ),
-        //           label: "Categories"),
-        //       // BottomNavigationBarItem(
-        //       //   backgroundColor: MyColors.redBG,
-        //       //     icon: Icon(
-        //       //       Icons.folder,
-        //       //       color: MyColors.bottomNavigationUnselectedColor,
-        //       //     ),
-        //       //     activeIcon: Icon(
-        //       //       Icons.category_rounded,
-        //       //       color: MyColors.bottomNavigationSelectedColor,
-        //       //     ),
-        //       //     label: "PayBill"),
-        //       BottomNavigationBarItem(
-        //           icon: Icon(
-        //             Icons.favorite_border,
-        //             color: MyColors.bottomNavigationUnselectedColor,
-        //           ),
-        //           activeIcon: Icon(
-        //             Icons.favorite,
-        //             color: MyColors.bottomNavigationSelectedColor,
-        //           ),
-        //           label: "Bookmark"),
-        //       BottomNavigationBarItem(
-        //           icon: Icon(
-        //             Icons.person_outline,
-        //             color: MyColors.bottomNavigationUnselectedColor,
-        //           ),
-        //           activeIcon: Icon(
-        //             Icons.person,
-        //             color: MyColors.bottomNavigationSelectedColor,
-        //           ),
-        //           label: "Profile")
-        //     ],
-        //     currentIndex: _selectedIndex,
-        //     showUnselectedLabels: true,
-        //     unselectedItemColor: MyColors.bottomNavigationUnselectedColor,
-        //     selectedItemColor: MyColors.bottomNavigationSelectedColor,
-        //     elevation: 5,
-        //     onTap: _onItemTapped,
-        //   ),
-        // ),
       ),
     );
   }
@@ -963,49 +894,89 @@ print("dsd ${banners.length}");
           response.containsKey('res') &&
           response['res'] == 'success') {
         final data = response['data'];
-        // Ensure that the response data is in the expected format
         if (data != null && data is Map<String, dynamic>) {
           final user = UserModel.fromMap(data);
-          print(user.banners.length);
-          print("user.banners.length");
-          setState(() {
-            banners= user.banners;
-          });
-          print(banners.length);
-          if (user != null) {
-            setState(() {
-               SharedPref.userLogin({
-                SharedPref.KEY_ID: user.id,
-                SharedPref.REFFREE: user.reffree,
-                SharedPref.KEY_CURRENT_MONTH: user.current_month,
-                SharedPref.KEY_PREMIUM: user.premium,
-                SharedPref.KEY_STATUS: user.status,
-                SharedPref.KEY_NAME: user.name,
-                SharedPref.KEY_EMAIL: user.email,
-                SharedPref.KEY_MOBILE: user.mobile,
-                SharedPref.KEY_DOB: user.dob,
-                SharedPref.KEY_OTP: user.otp,
-                SharedPref.KEY_IMAGE: user.image,
-                SharedPref.KEY_HOME_LOCATION: user.home_location,
-                SharedPref.KEY_CURRENT_LOCATION: user.current_location,
-                SharedPref.ADDRESS: user.address,
-                SharedPref.KEY_LAT: user.lat,
-                SharedPref.KEY_LONG: user.long,
-                SharedPref.WALLET: user.wallet,
-                SharedPref.REFERRALLINK: user.referralLink,
-                SharedPref.KEY_CREATED_AT: user.created_at,
-                SharedPref.KEY_UPDATED_AT: user.updated_at,
-                SharedPref.KEY_BANNER: jsonEncode(user.banners),
-              });
-            });
 
-            Provider.of<UserProvider>(context, listen: false)
-                .updateUserDetails(user);
-          } else {
-            // Handle null user
-            showErrorMessage(context, message: 'User data is invalid');
-          }
-        } else {
+          setState(() async{
+            await SharedPref.userLogin({
+              SharedPref.KEY_ID: user.id,
+              SharedPref.REFFREE: user.reffree,
+              SharedPref.KEY_CURRENT_MONTH: user.current_month,
+              SharedPref.KEY_PREMIUM: user.premium,
+              SharedPref.KEY_STATUS: user.status,
+              SharedPref.KEY_NAME: user.name,
+              SharedPref.KEY_EMAIL: user.email,
+              SharedPref.KEY_MOBILE: user.mobile,
+              SharedPref.KEY_DOB: user.dob,
+              SharedPref.KEY_OTP: user.otp,
+              SharedPref.KEY_IMAGE: user.image,
+              SharedPref.KEY_HOME_LOCATION: user.home_location,
+              SharedPref.KEY_CURRENT_LOCATION: user.current_location,
+              SharedPref.ADDRESS: user.address,
+              SharedPref.KEY_LAT: user.lat,
+              SharedPref.KEY_LONG: user.long,
+              SharedPref.WALLET: user.wallet,
+              SharedPref.REFERRALLINK: user.referralLink,
+              SharedPref.KEY_CREATED_AT: user.created_at,
+              SharedPref.KEY_UPDATED_AT: user.updated_at,
+              SharedPref.KEY_FIRST_RECHARGE: user.firstReachage,
+              SharedPref.KEY_COVER_PHOTO: user.coverPhoto,
+              SharedPref.KEY_USER_NAME: user.userName,
+              SharedPref.KEY_BIO: user.bio,
+              SharedPref.KEY_POST: user.post,
+              SharedPref.KEY_FOLLOWER: user.follower,
+              SharedPref.KEY_FOLLOWING: user.following,
+              SharedPref.KEY_BANNER: jsonEncode(user.banners),
+            });
+          });
+
+          // 3. Update provider
+          Provider.of<UserProvider>(context, listen: false).fetchUserDetails();
+          Provider.of<UserProvider>(context, listen: false).updateUserDetails(user);
+        }
+        // if (data != null && data is Map<String, dynamic>) {
+        //   final user = UserModel.fromMap(data);
+        //
+        //   setState(() {
+        //
+        //      SharedPref.userLogin({
+        //       SharedPref.KEY_ID: user.id,
+        //       SharedPref.REFFREE: user.reffree,
+        //       SharedPref.KEY_CURRENT_MONTH: user.current_month,
+        //       SharedPref.KEY_PREMIUM: user.premium,
+        //       SharedPref.KEY_STATUS: user.status,
+        //       SharedPref.KEY_NAME: user.name,
+        //       SharedPref.KEY_EMAIL: user.email,
+        //       SharedPref.KEY_MOBILE: user.mobile,
+        //       SharedPref.KEY_DOB: user.dob,
+        //       SharedPref.KEY_OTP: user.otp,
+        //       SharedPref.KEY_IMAGE: user.image,
+        //       SharedPref.KEY_HOME_LOCATION: user.home_location,
+        //       SharedPref.KEY_CURRENT_LOCATION: user.current_location,
+        //       SharedPref.ADDRESS: user.address,
+        //       SharedPref.KEY_LAT: user.lat,
+        //       SharedPref.KEY_LONG: user.long,
+        //       SharedPref.WALLET: user.wallet,
+        //       SharedPref.REFERRALLINK: user.referralLink,
+        //       SharedPref.KEY_CREATED_AT: user.created_at,
+        //       SharedPref.KEY_UPDATED_AT: user.updated_at,
+        //       SharedPref.KEY_FIRST_RECHARGE: user.firstReachage,
+        //       SharedPref.KEY_COVER_PHOTO: user.coverPhoto,
+        //       SharedPref.KEY_USER_NAME: user.userName,
+        //       SharedPref.KEY_BIO: user.bio,
+        //       SharedPref.KEY_POST: user.post,
+        //       SharedPref.KEY_FOLLOWER: user.follower,
+        //       SharedPref.KEY_FOLLOWING: user.following,
+        //       SharedPref.KEY_BANNER: jsonEncode(user.banners),
+        //     });
+        //      banners= user.banners;
+        //   });
+        //   Provider.of<UserProvider>(context, listen: false)
+        //       .fetchUserDetails();
+        //   Provider.of<UserProvider>(context, listen: false)
+        //       .updateUserDetails(user);
+        //         }
+        else {
           // Handle invalid response data format
           showErrorMessage(context, message: 'Invalid response data format');
         }

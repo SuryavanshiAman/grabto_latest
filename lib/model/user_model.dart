@@ -79,6 +79,13 @@ class UserModel {
   final dynamic reason; // Added
   final dynamic created_at;
   final dynamic updated_at;
+  final dynamic firstReachage;
+  final dynamic coverPhoto;
+  final dynamic userName;
+  final dynamic bio;
+  final dynamic post;
+  final dynamic follower;
+  final dynamic following;
   final dynamic wallet;
   final dynamic referralLink;
   final List<BannerModel> banners;
@@ -103,6 +110,13 @@ class UserModel {
     required this.reason,
     required this.created_at,
     required this.updated_at,
+    required this.firstReachage,
+    required this.coverPhoto,
+    required this.userName,
+    required this.bio,
+    required this.post,
+    required this.follower,
+    required this.following,
     required this.wallet,
     required this.referralLink,
     required this.banners,
@@ -129,12 +143,22 @@ class UserModel {
       reason: map['reason'] ?? '',
       created_at: map['created_at'] ?? '',
       updated_at: map['updated_at'] ?? '',
+      firstReachage : map['first_reachage'],
+      coverPhoto : map['cover_photo'],
+      userName : map['user_name'],
+    bio : map['bio'],
+    post : map['post'],
+    follower : map['follower'],
+    following : map['following'],
       wallet: map['wallet'] ?? '',
       referralLink: map['refrral_link'] ?? '',
-      banners: map['banner'] != null
-          ? List<BannerModel>.from(
-          (map['banner'] as List).map((e) => BannerModel.fromMap(e)))
-          : [],
+      banners: (map['banner'] as List<dynamic>?)
+          ?.map((e) => BannerModel.fromMap(e))
+          .toList() ?? [],
+      // banners: map['banner'] != null
+      //     ? List<BannerModel>.from(
+      //     (map['banner'] as List).map((e) => BannerModel.fromMap(e)))
+      //     : [],
     );
   }
 
@@ -159,6 +183,13 @@ class UserModel {
       'reason': reason,
       'created_at': created_at,
       'updated_at': updated_at,
+      'first_reachage': firstReachage,
+      'cover_photo': coverPhoto,
+      'user_name': userName,
+      'bio': bio,
+      'post': post,
+      'follower': follower,
+      'following': following,
       'wallet': wallet,
       'refrral_link': referralLink,
       'banner': banners.map((e) => e.toMap()).toList(),
