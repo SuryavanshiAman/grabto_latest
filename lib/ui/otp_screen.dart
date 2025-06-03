@@ -219,7 +219,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         SizedBox(
                           height: 30,
                         ),
-                        Container(
+                       verifyLoading==false? Container(
                           width: widths,
                           // margin: const EdgeInsets.symmetric(
                           //   horizontal: 10,
@@ -240,7 +240,7 @@ class _OtpScreenState extends State<OtpScreen> {
                               TextStyle(fontSize: 15, color: Colors.white),
                             ),
                           ),
-                        ),
+                        ):Center(child: CircularProgressIndicator(color: MyColors.redBG,)),
                         Spacer(),
                         Center(
                           child: Image.asset(
@@ -303,6 +303,7 @@ showSuccessMessage(context, message: response['msg']);
       });
     }
   }
+  bool verifyLoading=false;
   Future<void> verify_otp(dynamic mobile, dynamic otp,dynamic type,dynamic name, dynamic dob,dynamic city,dynamic refCode) async {
     if (mobile.isEmpty) {
       showErrorMessage(context, message: 'Please fill mobile number');
@@ -314,7 +315,7 @@ showSuccessMessage(context, message: response['msg']);
 
     try {
       setState(() {
-        isLoading = true;
+        verifyLoading = true;
       });
       final body = {"mobile": mobile, "otp": otp};
       final response = await ApiServices.verify_otp(context, body);
@@ -335,7 +336,7 @@ showSuccessMessage(context, message: response['msg']);
       showErrorMessage(context, message: 'An  occurred: $e');
     } finally {
       setState(() {
-        isLoading = false;
+        verifyLoading = true;
       });
     }
   }
@@ -442,7 +443,7 @@ showSuccessMessage(context, message: response['msg']);
 
     try {
       setState(() {
-        isLoading = true;
+        verifyLoading = true;
       });
       final body = {"mobile": mobile};
       final response = await ApiServices.apiUserLogin(context, body);
@@ -545,6 +546,9 @@ showSuccessMessage(context, message: response['msg']);
         address.setAddress(longName2);
         confirmAddress(formattedAddress,lat,lng);
         print("CCCCCCCCCC:${address.area}");
+        setState(() {
+          verifyLoading=false;
+        });
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),

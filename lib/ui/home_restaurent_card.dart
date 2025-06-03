@@ -58,9 +58,6 @@ class _HomeScreenRestaurantCardState extends State<HomeScreenRestaurantCard> {
   @override
   Widget build(BuildContext context) {
     final imageList = widget.filter.image ?? [];
-    // List<dynamic> dishList = widget.filter.dish.split(',').where((e) => e.trim().isNotEmpty).map((e) => e.trim()).toList();
-    // List<dynamic> dishList = (widget.filter.dish.toString()).split(',').map((e) => e.trim())
-    //     .where((e) => e.isNotEmpty).toList();
     List<String> dishList = [];
 
     String? rawDish = widget.filter.dish?.toString();
@@ -148,6 +145,7 @@ class _HomeScreenRestaurantCardState extends State<HomeScreenRestaurantCard> {
                   top: 10,
                   left: 10,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       widget.filter.availableSeat != null
                           ? Container(
@@ -313,22 +311,6 @@ class _HomeScreenRestaurantCardState extends State<HomeScreenRestaurantCard> {
                         ),
                       ),
                       Spacer(),
-                      // Container(
-                      //   padding: EdgeInsets.symmetric(
-                      //       horizontal: 3, vertical: 1),
-                      //   decoration: BoxDecoration(
-                      //       border: Border.all(
-                      //           color: Colors.grey.withOpacity(0.3)),
-                      //       // color: Color(0xff00bd62),
-                      //       borderRadius: BorderRadius.circular(3)),
-                      //   child: StarRating(
-                      //     color: Colors.yellow,
-                      //     rating: double.parse(widget.filter.avgRating
-                      //         .toStringAsFixed(1)
-                      //         .toString()),
-                      //     size: 14,
-                      //   ),
-                      // ),
                     ],
                   ),
                   SizedBox(height: 4),
@@ -340,13 +322,6 @@ class _HomeScreenRestaurantCardState extends State<HomeScreenRestaurantCard> {
                   Divider(
                     color: MyColors.textColorTwo.withAlpha(20),
                   ),
-                  // widget.filter.dish != null
-                  //     ? Text(
-                  //   widget.filter.dish.toString(),
-                  //   style: TextStyle(
-                  //       color: MyColors.textColorTwo, fontSize: 14),
-                  // )
-                  //     : Container(),
                   dishList.isNotEmpty?SizedBox(
                       width: widths*0.8,
                       child: GridView.builder(
@@ -359,7 +334,6 @@ class _HomeScreenRestaurantCardState extends State<HomeScreenRestaurantCard> {
                           crossAxisSpacing: 5,
                           mainAxisSpacing: 5,
                           mainAxisExtent: 25,
-                          // childAspectRatio:1.9
                         ),
                         itemBuilder: (BuildContext context, int index) {
                           final data = dishList[index];
@@ -440,24 +414,6 @@ class _HomeScreenRestaurantCardState extends State<HomeScreenRestaurantCard> {
                                       ),
                                     ),
                                   ),
-
-                                // // Optional: show the last visible avatars before `+remaining`
-                                // if (avatars.length <= maxVisibleAvatars)
-                                //   Transform.translate(
-                                //     offset: Offset((avatars.length - 1) * -12.0, 0),
-                                //     child: Container(
-                                //       width: widths * 0.06,
-                                //       height: heights * 0.05,
-                                //       decoration: BoxDecoration(
-                                //         shape: BoxShape.circle,
-                                //         image: DecorationImage(
-                                //           image: AssetImage(avatars.last),
-                                //           fit: BoxFit.cover,
-                                //         ),
-                                //         border: Border.all(color: MyColors.whiteBG, width: 1),
-                                //       ),
-                                //     ),
-                                //   ),
                               ],
                             ),
                           ],

@@ -38,8 +38,11 @@ class Assets {
   static const String imagesAddCard = 'assets/images/add_card.png';
   static const String imagesArrowOutward = 'assets/images/arrow_outward.png';
   static const String imagesAssistantNavigation = 'assets/images/assistant_navigation.png';
+  static const String imagesAutoReadPlay = 'assets/images/auto_read_play.png';
   static const String imagesBookMark = 'assets/images/book_mark.png';
+  static const String imagesBookmarkStar = 'assets/images/bookmark_star.png';
   static const String imagesBreakfast = 'assets/images/breakfast.png';
+  static const String imagesBrowse = 'assets/images/browse.png';
   static const String imagesCard = 'assets/images/Card.png';
   static const String imagesChevronForward = 'assets/images/chevron_forward.png';
   static const String imagesCountry = 'assets/images/country.png';
@@ -51,6 +54,7 @@ class Assets {
   static const String imagesDrawerImg = 'assets/images/drawer_img.svg';
   static const String imagesExclusiveImg = 'assets/images/exclusive_img.png';
   static const String imagesFacebook = 'assets/images/facebook.png';
+  static const String imagesFamilyStar = 'assets/images/family_star.png';
   static const String imagesFood1 = 'assets/images/food1.png';
   static const String imagesFood2 = 'assets/images/food2.png';
   static const String imagesFood3 = 'assets/images/food3.png';
@@ -70,6 +74,8 @@ class Assets {
   static const String imagesHotel = 'assets/images/hotel.png';
   static const String imagesInsta = 'assets/images/insta.png';
   static const String imagesIntroScreen = 'assets/images/intro_screen.png';
+  static const String imagesLikeFill = 'assets/images/like_fill.png';
+  static const String imagesLikeOutLined = 'assets/images/like_out_lined.png';
   static const String imagesLinkdin = 'assets/images/linkdin.png';
   static const String imagesLocalCafe = 'assets/images/local_cafe.png';
   static const String imagesLoginImg = 'assets/images/login_img.png';
@@ -77,6 +83,7 @@ class Assets {
   static const String imagesMap = 'assets/images/map.png';
   static const String imagesMembership = 'assets/images/membership.png';
   static const String imagesMenuIcons = 'assets/images/menu_Icons.png';
+  static const String imagesMovedLocation = 'assets/images/moved_location.png';
   static const String imagesNearMe = 'assets/images/near_me.png';
   static const String imagesNoRestaurantImage = 'assets/images/no-restaurant-image.png';
   static const String imagesOffer2 = 'assets/images/offer_2.png';
@@ -87,6 +94,7 @@ class Assets {
   static const String imagesPlaceholder = 'assets/images/placeholder.png';
   static const String imagesPrimium = 'assets/images/primium.png';
   static const String imagesProfileBg = 'assets/images/profile_bg.png';
+  static const String imagesRateReview = 'assets/images/rate_review.png';
   static const String imagesSupport = 'assets/images/support.png';
   static const String imagesTest = 'assets/images/test.jpeg';
   static const String imagesTravelExplore = 'assets/images/travel_explore.png';
@@ -106,10 +114,12 @@ class Assets {
   static const String modelCityModel = 'lib/model/city_model.dart';
   static const String modelCouponModel = 'lib/model/coupon_model.dart';
   static const String modelDifferentLocationModel = 'lib/model/different_location_model.dart';
+  static const String modelExploreModel = 'lib/model/explore_model.dart';
   static const String modelFeaturesModel = 'lib/model/features_model.dart';
   static const String modelFilteredDataModel = 'lib/model/filtered_data_model.dart';
   static const String modelFlicksModel = 'lib/model/flicks_model.dart';
   static const String modelGalleryModel = 'lib/model/gallery_model.dart';
+  static const String modelGetAllUserHighlightModel = 'lib/model/get_all_user_highlight_model.dart';
   static const String modelGetFlickModel = 'lib/model/get_flick_model.dart';
   static const String modelGetHightlightModel = 'lib/model/get_hightlight_model.dart';
   static const String modelGetPostModel = 'lib/model/get_post_model.dart';
@@ -117,6 +127,7 @@ class Assets {
   static const String modelGetWalletModel = 'lib/model/get_wallet_model.dart';
   static const String modelGrabtoGrabModel = 'lib/model/grabto_grab_model.dart';
   static const String modelGreatOfferModel = 'lib/model/great_offer_model.dart';
+  static const String modelLikeModel = 'lib/model/like_model.dart';
   static const String modelLocalityModel = 'lib/model/locality_model.dart';
   static const String modelMembershipModel = 'lib/model/MembershipModel.dart';
   static const String modelMenuDataModel = 'lib/model/menu_data_model.dart';
@@ -152,6 +163,7 @@ class Assets {
   static const String pinputPinput = 'lib/widget/pinput/pinput.dart';
   static const String pinputPinputState = 'lib/widget/pinput/pinput_state.dart';
   static const String profileAddPostScreen = 'lib/ui/profile/add_post_screen.dart';
+  static const String profileAnotherUserProfilePage = 'lib/ui/profile/another_user_profile_page.dart';
   static const String profileBottomProfileScreen = 'lib/ui/profile/bottom_profile_screen.dart';
   static const String profileEditProfielScreen = 'lib/ui/profile/edit_profiel_Screen.dart';
   static const String profileFollowerFollowingScreen = 'lib/ui/profile/follower_following_screen.dart';
@@ -166,9 +178,12 @@ class Assets {
   static const String repoAddPostRepo = 'lib/repo/add_post_repo.dart';
   static const String repoAddReviewRepo = 'lib/repo/add_review_repo.dart';
   static const String repoDifferentLocationRepo = 'lib/repo/different_location_repo.dart';
+  static const String repoExploreRepo = 'lib/repo/explore_repo.dart';
   static const String repoFilterRepo = 'lib/repo/filter_repo.dart';
   static const String repoFlicksRepo = 'lib/repo/flicks_repo.dart';
   static const String repoFollowRepo = 'lib/repo/follow_repo.dart';
+  static const String repoGetAllHighlightRepo = 'lib/repo/get_all_highlight_repo.dart';
+  static const String repoGetAllUserHighlightRepo = 'lib/repo/get_all_user_highlight_repo.dart';
   static const String repoGetFlickRepo = 'lib/repo/get_flick_repo.dart';
   static const String repoGetHighlightRepo = 'lib/repo/get_highlight_repo.dart';
   static const String repoGetPostRepo = 'lib/repo/get_post_repo.dart';
@@ -192,6 +207,8 @@ class Assets {
   static const String repoUnsaveFlickRepo = 'lib/repo/unsave_flick_repo.dart';
   static const String repoUpdateCoverImage = 'lib/repo/update_cover_image.dart';
   static const String repoUpdateProfileRepo = 'lib/repo/update_profile_repo.dart';
+  static const String repoUserPostLikeRepo = 'lib/repo/user_post_like_repo.dart';
+  static const String repoUserPostUnLikeRepo = 'lib/repo/user_post_un_like_repo.dart';
   static const String repoVibeRepo = 'lib/repo/vibe_repo.dart';
   static const String responseApiResponse = 'lib/helper/response/api_response.dart';
   static const String responseStatus = 'lib/helper/response/status.dart';
@@ -243,6 +260,7 @@ class Assets {
   static const String uiBottomNavBar = 'lib/ui/bottom_nav_bar.dart';
   static const String uiBottomSortlistScreen = 'lib/ui/bottom_sortlist_screen.dart';
   static const String uiBuyPlanScreen = 'lib/ui/buy_plan_screen.dart';
+  static const String uiCommentBottomSheet = 'lib/ui/comment_bottom_sheet.dart';
   static const String uiConfirmBookingScreen = 'lib/ui/confirm_booking_screen.dart';
   static const String uiCouponDetailsScreen = 'lib/ui/coupon_details_screen.dart';
   static const String uiCouponFullviewScreen = 'lib/ui/coupon_fullview_screen.dart';
@@ -316,9 +334,11 @@ class Assets {
   static const String viewModelAddPostViewModel = 'lib/view_model/add_post_view_model.dart';
   static const String viewModelAddRivewViewModel = 'lib/view_model/add_rivew_view_model.dart';
   static const String viewModelDifferentLocationViewModel = 'lib/view_model/different_location_view_model.dart';
+  static const String viewModelExploreViewModel = 'lib/view_model/explore_view_model.dart';
   static const String viewModelFilterViewModel = 'lib/view_model/filter_view_model.dart';
   static const String viewModelFlicksViewModel = 'lib/view_model/flicks_view_model.dart';
   static const String viewModelFollowViewModel = 'lib/view_model/follow_view_model.dart';
+  static const String viewModelGetAllUserHighlightViewModel = 'lib/view_model/get_all_user_highlight_view_model.dart';
   static const String viewModelGetFlickViewModel = 'lib/view_model/get_flick_view_model.dart';
   static const String viewModelGetHighlightViewModel = 'lib/view_model/get_highlight_view_model.dart';
   static const String viewModelGetPostViewModel = 'lib/view_model/get_post_view_model.dart';
@@ -342,6 +362,8 @@ class Assets {
   static const String viewModelUnSaveFlickViewModel = 'lib/view_model/un_save_flick_view_model.dart';
   static const String viewModelUpdateCoverImageViewModel = 'lib/view_model/update_cover_image_view_model.dart';
   static const String viewModelUpdateProfileViewModel = 'lib/view_model/update_profile_view_model.dart';
+  static const String viewModelUserPostLikeViewModel = 'lib/view_model/user_post_like_view_model.dart';
+  static const String viewModelUserPostUnLikeViewModel = 'lib/view_model/user_post_un_like_view_model.dart';
   static const String viewModelVibeViewModel = 'lib/view_model/vibe_view_model.dart';
   static const String widgetAddRatingWidget = 'lib/widget/add_rating_widget.dart';
   static const String widgetAllCouponsWidget = 'lib/widget/all_coupons_widget.dart';

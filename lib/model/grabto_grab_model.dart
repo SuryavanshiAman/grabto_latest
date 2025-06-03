@@ -77,6 +77,7 @@ class Data {
   dynamic featureNames;
   dynamic discountPercentage;
   dynamic availableSeat;
+  dynamic title;
   dynamic avgRating;
   dynamic amount;
   List<BannerImage>? image;
@@ -131,6 +132,7 @@ class Data {
         this.featureNames,
         this.discountPercentage,
         this.availableSeat,
+        this.title,
         this.avgRating,
         this.amount,
         this.image});
@@ -185,6 +187,7 @@ class Data {
     featureNames = json['feature_names'];
     discountPercentage = json['discount_percentage'];
     availableSeat = json['available_seat'];
+    title = json['title'];
     avgRating = json['avg_rating'];
     amount = json['amount'];
     if (json['image'] != null) {
@@ -246,6 +249,7 @@ class Data {
     data['feature_names'] = this.featureNames;
     data['discount_percentage'] = this.discountPercentage;
     data['available_seat'] = this.availableSeat;
+    data['title'] = this.title;
     data['avg_rating'] = this.avgRating;
     data['amount'] = this.amount;
     if (this.image != null) {

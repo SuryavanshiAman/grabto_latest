@@ -40,6 +40,7 @@ class FilterViewModel with ChangeNotifier {
       "amenities": amenities ,
       "subcategory_id":restaurantCategories,
     };
+    print("filter-Stores=${data}");
     _filterRepo.filterApi(data).then((value) {
       if (value.res == "success") {
         setFilterList(ApiResponse.completed(value));

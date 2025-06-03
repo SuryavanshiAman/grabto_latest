@@ -18,12 +18,12 @@ class MyFollowingViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void>myFollowingApi(context,
+  Future<void>myFollowingApi(context,dynamic id
       ) async {
     setMyFollowingRList(ApiResponse.loading());
     UserModel n = await SharedPref.getUser();
 
-    _myFollowingRepo.myFollowingApi(n.id).then((value) {
+    _myFollowingRepo.myFollowingApi(id).then((value) {
       if (value.res == "success") {
         setMyFollowingRList(ApiResponse.completed(value));
       } else {

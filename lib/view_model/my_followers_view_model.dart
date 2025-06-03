@@ -19,12 +19,10 @@ class MyFollowersViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void>myFollowersApi(context,
-      ) async {
+  Future<void>myFollowersApi(context,dynamic id) async {
     setMyFollowersList(ApiResponse.loading());
-    UserModel n = await SharedPref.getUser();
 
-    _myFollowerRepo.myFollowerApi(n.id).then((value) {
+    _myFollowerRepo.myFollowerApi(id).then((value) {
       if (value.res == "success") {
         setMyFollowersList(ApiResponse.completed(value));
       } else {

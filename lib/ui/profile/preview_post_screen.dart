@@ -8,6 +8,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/model/store_model.dart';
 import 'package:grabto/services/api.dart';
+import 'package:grabto/utils/snackbar_helper.dart';
 import 'package:grabto/view_model/add_flick_view_model.dart';
 import 'package:grabto/view_model/add_post_view_model.dart';
 import 'package:grabto/view_model/add_rivew_view_model.dart';
@@ -120,6 +121,7 @@ class _PreviewPostScreenState extends State<PreviewPostScreen> {
           String base64String = 'data:$mimeType;base64,${base64Encode(fileBytes)}';
           base64List.add(base64String);
         } else {
+          showErrorMessage(context, message: "You can upload video less than 11 mb");
           print('Skipped large video: ${file.path}, size: $sizeInBytes bytes');
         }
       }

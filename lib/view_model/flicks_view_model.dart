@@ -19,24 +19,24 @@ class FlicksViewModel with ChangeNotifier {
     flickList = response;
     notifyListeners();
   }
+  int _selectedIndex=-1;
 
+  int get selectedIndex => _selectedIndex;
+
+  setSelectedIndex(int value) {
+    _selectedIndex = value;
+    notifyListeners();
+  }
   Future<void>flicksApi(context) async {
     setFlicksList(ApiResponse.loading());
     UserModel n = await SharedPref.getUser();
     _flickRepo.flicksApi(n.id).then((value) {
       if (value.res == "success") {
         setFlicksList(ApiResponse.completed(value));
-        print("🐬🐬🐬🐬");
-        // showErrorMessage(context, message:",mmmmmmm".toString()??"");
-
 
       } else {
         if (kDebugMode) {
-          setFlicksList(ApiResponse.completed(value));
-          print(value);
-          print('value:');
-          // showErrorMessage(context, message:"value.msg?".toString()??"");
-        }
+          setFlicksList(ApiResponse.completed(value));        }
       }
     }).onError((error, stackTrace) {
       setFlicksList(ApiResponse.error(error.toString()));
@@ -45,6 +45,4 @@ class FlicksViewModel with ChangeNotifier {
       }
     });
   }
-
-
 }

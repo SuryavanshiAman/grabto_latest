@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:grabto/helper/user_provider.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/theme/theme.dart';
+import 'package:grabto/view_model/profile_view_model.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -25,9 +26,9 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    return  Consumer<UserProvider>(
-      builder: (context, userProvider, child) {
-        final user = userProvider.user;
+    return  Consumer<ProfileViewModel>(
+      builder: (context, userData, child) {
+        final user = userData.profileData.data?.data;
         return Scaffold(
           backgroundColor: MyColors.whiteBG,
           appBar: AppBar(
@@ -158,7 +159,8 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                 /// Invite Button
                 InkWell(
                   onTap: (){
-                    Share.share(user?.referralLink??"");
+                    print(user?.refrralLink??"");
+                    Share.share(user?.refrralLink??"");
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 4),
@@ -325,7 +327,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
                             visualDensity: VisualDensity(vertical: -4,horizontal: -4),
                             icon: Icon(Icons.share_outlined, color: Colors.red),
                             onPressed: () {
-                              Share.share(user?.referralLink??"");
+                              Share.share(user?.refrralLink??"");
                             },
                           ),
                         ),
@@ -435,7 +437,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
               child: InkWell(
                 onTap: (){
                   // openWhatsAppApp();
-                  openWhatsAppAppWithMessage("Use this * ${user?.referralLink??""} *  referral link and get exciting rewards ");
+                  openWhatsAppAppWithMessage("Use this * ${user?.refrralLink??""} *  referral link and get exciting rewards ");
                 },
                 child: Container(
                   alignment: Alignment.center,
@@ -476,7 +478,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
   }
   final List<_StepInfo> steps = [
     _StepInfo(icon: Icons.link, text: 'Share referral code or link with friends.'),
-    _StepInfo(icon: Icons.inventory_2_outlined, text: 'When they place their first order, you both earn awards.'),
+    _StepInfo(icon: Icons.inventory_2_outlined, text: 'When they place their first payment, you both earn awards.'),
     _StepInfo(icon: Icons.wallet_giftcard_outlined, text: 'Redeem your coupons at checkout to claim your awards'),
   ];
 }

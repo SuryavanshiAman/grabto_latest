@@ -35,7 +35,7 @@ class AddReviewViewModel with ChangeNotifier {
     _addReviewRepo.addReviewApi(data).then((value) {
       if (value['res'] == "success") {
         Provider.of<GetPostViewModel>(context, listen: false)
-            .getPostApi(context);
+            .getPostApi(context,n.id);
         Navigator.pop(context);
       } else {
         showErrorMessage(context, message: value['message']);

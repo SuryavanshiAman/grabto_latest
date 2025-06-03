@@ -17,12 +17,12 @@ class MySavedFlickViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void>mySaveFlickApi(context,
+  Future<void>mySaveFlickApi(context,dynamic id
       ) async {
     setSavedFlickList(ApiResponse.loading());
     UserModel n = await SharedPref.getUser();
     Map data={
-      "user_id": n.id,
+      "user_id": id.toString(),
     };
     _mySavedFlickRepo.mySaveFlickApi(data).then((value) {
       if (value.res == "success") {

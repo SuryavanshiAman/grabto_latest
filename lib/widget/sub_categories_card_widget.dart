@@ -183,11 +183,13 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   Widget build(BuildContext context) {
     return _controller.value.isInitialized
-        ? AspectRatio(
-      aspectRatio: _controller.value.aspectRatio,
-      child:
-      VideoPlayer(_controller),
-    )
+        ? Center(
+          child: AspectRatio(
+                aspectRatio: _controller.value.aspectRatio,
+                child:
+                Center(child: VideoPlayer(_controller)),
+              ),
+        )
         : Center(child: CircularProgressIndicator(color: MyColors.redBG));
   }
 }

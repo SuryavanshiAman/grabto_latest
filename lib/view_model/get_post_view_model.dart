@@ -16,12 +16,11 @@ class GetPostViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void>getPostApi(context,
-      ) async {
+  Future<void>getPostApi(context,id) async {
     setPostList(ApiResponse.loading());
     UserModel n = await SharedPref.getUser();
     Map data={
-      "user_id": n.id,
+      "user_id": id.toString(),
     };
     _getPostRepo.getPostApi(data).then((value) {
       if (value.res == "success") {

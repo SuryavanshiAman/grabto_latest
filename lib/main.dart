@@ -3,11 +3,8 @@ import 'dart:io';
 import 'package:app_links/app_links.dart';
 import 'package:grabto/generated/assets.dart';
 import 'package:grabto/helper/user_provider.dart';
-import 'package:grabto/test.dart';
 import 'package:grabto/theme/theme.dart';
 import 'package:grabto/ui/coupon_fullview_screen.dart';
-import 'package:grabto/ui/profile/edit_profiel_Screen.dart';
-import 'package:grabto/ui/profile/preview_post_screen.dart';
 import 'package:grabto/ui/signup_screen.dart';
 import 'package:grabto/ui/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +13,11 @@ import 'package:grabto/view_model/add_heighlight_view_model.dart';
 import 'package:grabto/view_model/add_post_view_model.dart';
 import 'package:grabto/view_model/add_rivew_view_model.dart';
 import 'package:grabto/view_model/different_location_view_model.dart';
+import 'package:grabto/view_model/explore_view_model.dart';
 import 'package:grabto/view_model/filter_view_model.dart';
 import 'package:grabto/view_model/flicks_view_model.dart';
 import 'package:grabto/view_model/follow_view_model.dart';
+import 'package:grabto/view_model/get_all_user_highlight_view_model.dart';
 import 'package:grabto/view_model/get_flick_view_model.dart';
 import 'package:grabto/view_model/get_highlight_view_model.dart';
 import 'package:grabto/view_model/get_post_view_model.dart';
@@ -42,6 +41,8 @@ import 'package:grabto/view_model/un_like_view_model.dart';
 import 'package:grabto/view_model/un_save_flick_view_model.dart';
 import 'package:grabto/view_model/update_cover_image_view_model.dart';
 import 'package:grabto/view_model/update_profile_view_model.dart';
+import 'package:grabto/view_model/user_post_like_view_model.dart';
+import 'package:grabto/view_model/user_post_un_like_view_model.dart';
 import 'package:grabto/view_model/vibe_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
@@ -148,7 +149,6 @@ class _MyAppState extends State<MyApp> {
   Future<void> initDeepLinks() async {
     _appLinks = AppLinks();
 
-    // ✅ Use getInitialLink() instead of getInitialAppLink()
     try {
       final Uri? initialUri = await _appLinks.getInitialLink();
       handleIncomingLink(initialUri?.toString());
@@ -251,14 +251,7 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-  // Future<void> startImmediateUpdate() async {
-  //   try {
-  //     await InAppUpdate.performImmediateUpdate();
-  //   } catch (e) {
-  //     showErrorMessage(context,message: '$e');
-  //     print("Error performing update: $e");
-  //   }
-  // }
+
   @override
   Widget build(BuildContext context) {
     heights=MediaQuery.of(context).size.height;
@@ -299,6 +292,10 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => UnFollowViewModel()),
         ChangeNotifierProvider(create: (_) => LikeViewModel()),
         ChangeNotifierProvider(create: (_) => UnLikeViewModel()),
+        ChangeNotifierProvider(create: (_) => ExploreViewModel()),
+        ChangeNotifierProvider(create: (_) => UserPostLikeViewModel()),
+        ChangeNotifierProvider(create: (_) => UserPostUnLikeViewModel()),
+        ChangeNotifierProvider(create: (_) => GetAllUserHighlightViewModel()),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,
@@ -312,7 +309,6 @@ class _MyAppState extends State<MyApp> {
         home: SplashScreen(
           token: widget.token,
         ),
-        // home:EditProfileScreen(),
       ),
     );
   }

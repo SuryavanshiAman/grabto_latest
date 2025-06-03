@@ -18,12 +18,12 @@ class GetHighlightViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void>getHighlightApi(context,
+  Future<void>getHighlightApi(context,dynamic id
       ) async {
     setHighlightList(ApiResponse.loading());
     UserModel n = await SharedPref.getUser();
     Map data={
-      "user_id": n.id,
+      "user_id": id.toString(),
     };
     _getHighlightRepo.getHighlightApi(data).then((value) {
       if (value.res == "success") {

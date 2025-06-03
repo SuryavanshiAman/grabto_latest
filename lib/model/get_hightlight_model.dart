@@ -11,15 +11,15 @@ class GetHighlightModel {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(Data.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['res'] = this.res;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['res'] = res;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -45,12 +45,12 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['user_id'] = this.userId;
-    data['image'] = this.image;
-    data['status'] = this.status;
-    data['date'] = this.date;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = id;
+    data['user_id'] = userId;
+    data['image'] = image;
+    data['status'] = status;
+    data['date'] = date;
     return data;
   }
 }

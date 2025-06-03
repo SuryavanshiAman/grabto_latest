@@ -10,8 +10,8 @@ class FlicksModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['res'] = this.res;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['res'] = res;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -20,19 +20,19 @@ class FlicksModel {
 }
 
 class Data {
-  int? currentPage;
+  dynamic  currentPage;
   List<FlicksData>? data;
-  String? firstPageUrl;
-  int? from;
-  int? lastPage;
-  String? lastPageUrl;
+  dynamic  firstPageUrl;
+  dynamic  from;
+  dynamic  lastPage;
+  dynamic  lastPageUrl;
   List<Links>? links;
-  Null? nextPageUrl;
-  String? path;
-  int? perPage;
-  Null? prevPageUrl;
-  int? to;
-  int? total;
+  dynamic  nextPageUrl;
+  dynamic  path;
+  dynamic  perPage;
+  dynamic  prevPageUrl;
+  dynamic  to;
+  dynamic  total;
 
   Data(
       {this.currentPage,
@@ -76,70 +76,79 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['current_page'] = this.currentPage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['current_page'] = currentPage;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
-    data['first_page_url'] = this.firstPageUrl;
-    data['from'] = this.from;
-    data['last_page'] = this.lastPage;
-    data['last_page_url'] = this.lastPageUrl;
-    if (this.links != null) {
-      data['links'] = this.links!.map((v) => v.toJson()).toList();
+    data['first_page_url'] = firstPageUrl;
+    data['from'] = from;
+    data['last_page'] = lastPage;
+    data['last_page_url'] = lastPageUrl;
+    if (links != null) {
+      data['links'] = links!.map((v) => v.toJson()).toList();
     }
-    data['next_page_url'] = this.nextPageUrl;
-    data['path'] = this.path;
-    data['per_page'] = this.perPage;
-    data['prev_page_url'] = this.prevPageUrl;
-    data['to'] = this.to;
-    data['total'] = this.total;
+    data['next_page_url'] = nextPageUrl;
+    data['path'] = path;
+    data['per_page'] = perPage;
+    data['prev_page_url'] = prevPageUrl;
+    data['to'] = to;
+    data['total'] = total;
     return data;
   }
 }
 
 class FlicksData {
-  int? id;
-  int? userId;
-  int? storeId;
-  String? videoLink;
-  String? caption;
-  String? turnOfComment;
-  String? hideFireCount;
-  String? hideShareCountPage;
-  String? status;
-  String? date;
-  String? userName;
-  String? profileImage;
-  String? storeName;
-  String? image;
-  String? address;
-  String? mapLink;
-  int? likesCount;
-  int? favoritesCount;
-  int? commentsCount;
-  int? sharesCount;
-  int? isLiked;
-  int? isFavorited;
-  int? isCommented;
-  int? isShared;
-  int? isFollowingCreator;
-  int? followerCount;
-  // List<Null>? comments;
+  dynamic  id;
+  dynamic  userId;
+  dynamic  storeId;
+  dynamic  videoLink;
+  dynamic  thumbnailLink;
+  dynamic  caption;
+  dynamic  turnOfComment;
+  dynamic  hideFireCount;
+  dynamic  hideShareCountPage;
+  dynamic  status;
+  dynamic  date;
+  dynamic  name;
+  dynamic  userName;
+  dynamic  coverPhoto;
+  dynamic  profileImage;
+  dynamic  bio;
+  dynamic  storeName;
+  dynamic  image;
+  dynamic  address;
+  dynamic  mapLink;
+  dynamic  likesCount;
+  dynamic  favoritesCount;
+  dynamic  commentsCount;
+  dynamic  sharesCount;
+  dynamic  isLiked;
+  dynamic  isFavorited;
+  dynamic  isCommented;
+  dynamic  isShared;
+  dynamic  isFollowingCreator;
+  dynamic  followerCount;
+  dynamic  followingCount;
+  dynamic  userPostCount;
 
   FlicksData(
       {this.id,
         this.userId,
         this.storeId,
         this.videoLink,
+        this.thumbnailLink,
         this.caption,
         this.turnOfComment,
         this.hideFireCount,
         this.hideShareCountPage,
         this.status,
         this.date,
+        this.name,
         this.userName,
+        this.coverPhoto,
         this.profileImage,
+        this.bio,
         this.storeName,
         this.image,
         this.address,
@@ -154,23 +163,27 @@ class FlicksData {
         this.isShared,
         this.isFollowingCreator,
         this.followerCount,
-        // this.comments
-      });
-
+        this.followingCount,
+        this.userPostCount,
+        });
 
   FlicksData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userId = json['user_id'];
     storeId = json['store_id'];
     videoLink = json['video_link'];
+    thumbnailLink = json['thumbnail_link'];
     caption = json['caption'];
     turnOfComment = json['turn_of_comment'];
     hideFireCount = json['hide_fire_count'];
     hideShareCountPage = json['hide_share_count_page'];
     status = json['status'];
     date = json['date'];
+    name = json['name'];
     userName = json['user_name'];
+    coverPhoto = json['cover_photo'];
     profileImage = json['profile_image'];
+    bio = json['bio'];
     storeName = json['store_name'];
     image = json['image'];
     address = json['address'];
@@ -185,48 +198,53 @@ class FlicksData {
     isShared = json['is_shared'];
     isFollowingCreator = json['is_following_creator'];
     followerCount = json['follower_count'];
-    // if (json['comments'] != null) {
-    //   comments = <Null>[];
-    //   json['comments'].forEach((v) {
-    //     comments!.add(new Null.fromJson(v));
-    //   });
-    // }
+    followingCount = json['following_count'];
+    userPostCount = json['user_post_count'];
+
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['user_id'] = this.userId;
-    data['store_id'] = this.storeId;
-    data['video_link'] = this.videoLink;
-    data['caption'] = this.caption;
-    data['turn_of_comment'] = this.turnOfComment;
-    data['hide_fire_count'] = this.hideFireCount;
-    data['hide_share_count_page'] = this.hideShareCountPage;
-    data['status'] = this.status;
-    data['date'] = this.date;
-    data['user_name'] = this.userName;
-    data['profile_image'] = this.profileImage;
-    data['likes_count'] = this.likesCount;
-    data['favorites_count'] = this.favoritesCount;
-    data['comments_count'] = this.commentsCount;
-    data['shares_count'] = this.sharesCount;
-    data['is_liked'] = this.isLiked;
-    data['is_favorited'] = this.isFavorited;
-    data['is_commented'] = this.isCommented;
-    data['is_shared'] = this.isShared;
-    data['is_following_creator'] = this.isFollowingCreator;
-    data['follower_count'] = this.followerCount;
-    // if (this.comments != null) {
-    //   data['comments'] = this.comments!.map((v) => v.toJson()).toList();
-    // }
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['user_id'] = userId;
+    data['store_id'] = storeId;
+    data['video_link'] = videoLink;
+    data['thumbnail_link'] = thumbnailLink;
+    data['caption'] = caption;
+    data['turn_of_comment'] = turnOfComment;
+    data['hide_fire_count'] = hideFireCount;
+    data['hide_share_count_page'] = hideShareCountPage;
+    data['status'] = status;
+    data['date'] = date;
+    data['name'] = name;
+    data['user_name'] = userName;
+    data['cover_photo'] = coverPhoto;
+    data['profile_image'] = profileImage;
+    data['bio'] = bio;
+    data['store_name'] = storeName;
+    data['image'] = image;
+    data['address'] = address;
+    data['map_link'] = mapLink;
+    data['likes_count'] = likesCount;
+    data['favorites_count'] = favoritesCount;
+    data['comments_count'] = commentsCount;
+    data['shares_count'] = sharesCount;
+    data['is_liked'] = isLiked;
+    data['is_favorited'] = isFavorited;
+    data['is_commented'] = isCommented;
+    data['is_shared'] = isShared;
+    data['is_following_creator'] = isFollowingCreator;
+    data['follower_count'] = followerCount;
+    data['following_count'] = followingCount;
+    data['user_post_count'] = userPostCount;
+
     return data;
   }
 }
 
 class Links {
-  String? url;
-  String? label;
+  dynamic  url;
+  dynamic  label;
   bool? active;
 
   Links({this.url, this.label, this.active});
@@ -238,10 +256,10 @@ class Links {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['url'] = this.url;
-    data['label'] = this.label;
-    data['active'] = this.active;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['url'] = url;
+    data['label'] = label;
+    data['active'] = active;
     return data;
   }
 }

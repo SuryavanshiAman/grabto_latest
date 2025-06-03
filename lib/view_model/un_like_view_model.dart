@@ -12,7 +12,9 @@ class UnLikeViewModel with ChangeNotifier {
 
   Future<void>unLikeApi(
       context,
-      dynamic reelId
+      dynamic reelId,
+      int index,
+      FlicksViewModel flicksViewModel,
       ) async {
     UserModel n = await SharedPref.getUser();
     Map data={
@@ -22,8 +24,13 @@ class UnLikeViewModel with ChangeNotifier {
     print(data);
     _unLikeRepo.unLikeApi(data).then((value) {
       if (value['res'] == "success") {
-        Provider.of<FlicksViewModel>(context, listen: false).flicksApi(context);
-      } else {
+        var currentList = flicksViewModel.flickList.data?.data?.data;
+        if (currentList != null && index < currentList.length) {
+          final item = currentList[index];
+          item.isLiked = 0;
+          item.likesCount = (item.likesCount ?? 1) - 1;
+          flicksViewModel.notifyListeners(); // 🔄 Refresh UI
+        }      } else {
         showErrorMessage(context, message: value['message']);
         if (kDebugMode) {
           print('value:');

@@ -17,12 +17,11 @@ class GetFlickViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void>getFlickApi(context,
-      ) async {
+  Future<void>getFlickApi(context,dynamic id) async {
     setFlickList(ApiResponse.loading());
     UserModel n = await SharedPref.getUser();
     Map data={
-      "user_id": n.id,
+      "user_id": id.toString(),
     };
     _getFlickRepo.getFlickApi(data).then((value) {
       if (value.res == "success") {

@@ -15,11 +15,11 @@ class GetReviewViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void>getReviewApi(context) async {
+  Future<void>getReviewApi(context,dynamic id) async {
     setReviewList(ApiResponse.loading());
     UserModel n = await SharedPref.getUser();
     Map data={
-      "user_id":n.id.toString(),
+      "user_id":id.toString(),
     };
     print(data);
     _getReviewRepo.getReviewApi(data).then((value) {

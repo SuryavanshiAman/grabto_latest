@@ -190,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     "assets/images/home_app_logo.png",
     "assets/images/menu_Icons.png",
     "assets/images/add_card.png",
-    "assets/images/travel_explore.png",
+    "assets/images/auto_read_play.png",
     "assets/images/home_app_logo.png",
   ];
 
@@ -623,8 +623,8 @@ print("dsd ${banners.length}");
                         ):
                         Column(
                           children: [
-                            index!=2?   Image(image: AssetImage(_image[index],),color:_selectedIndex==index?  MyColors.redBG:MyColors.whiteBG):
-                            Image(image: AssetImage(_image[index],),color:MyColors.whiteBG),
+                            index!=2?   Image(image: AssetImage(_image[index],),color:_selectedIndex==index?  MyColors.redBG:MyColors.whiteBG,height:heights*0.024,):
+                            Image(image: AssetImage(_image[index],),color:MyColors.whiteBG,height:heights*0.024,),
 
               index==2?Text(
               _labels[index],

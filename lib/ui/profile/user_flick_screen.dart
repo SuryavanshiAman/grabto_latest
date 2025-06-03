@@ -22,7 +22,7 @@ class _UserFlickScreenState extends State<UserFlickScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<GetFlickViewModel>(context, listen: false).getFlickApi(context);
+    // Provider.of<GetFlickViewModel>(context, listen: false).getFlickApi(context);
   }
 
   @override

@@ -17,6 +17,7 @@ class ProfileRepo {
   Future<ProfileModel> profileApi(dynamic data) async {
     try {
       print("QQQQ$data");
+      print("🎉🎉🎉");
       dynamic response =
       await _apiServices.getPostApiResponse('$BASE_URL/user_details',data );
       return ProfileModel.fromJson(response);

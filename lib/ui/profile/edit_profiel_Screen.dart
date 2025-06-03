@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:grabto/helper/image_selection.dart';
 import 'package:grabto/helper/shared_pref.dart';
 import 'package:grabto/helper/user_provider.dart';
 import 'package:grabto/main.dart';
@@ -20,11 +18,12 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import '../../theme/theme.dart';
 import '../../view_model/update_cover_image_view_model.dart';
 
 class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key});
+
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
@@ -49,23 +48,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   DateTime? _selectedDate;
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(), // Initial date when the picker opens
-      firstDate: DateTime(1900), // Earliest selectable date
-      lastDate: DateTime.now(), // Latest selectable date
-    );
-
-    if (picked != null && picked != _selectedDate) {
-      //setState(() {
-      _selectedDate = picked;
-      print("date: $_selectedDate");
-      _dobController.text =
-          "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}";
-      //});
-    }
-  }
 
   void _showCityDialog() async {
     final CityModel? selectedCity = await showDialog<CityModel>(
@@ -201,7 +183,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _dobController = TextEditingController();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_){
       initializeProfileData();
@@ -212,9 +193,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> initializeProfileData() async {
     await Provider.of<ProfileViewModel>(context, listen: false).profileApi(context);
-    await Future.delayed(Duration(seconds: 2)); // Small buffer for safety
+    await Future.delayed(Duration(seconds: 2));
     profileData();
-    getUserDetails();
     fetchCity();
   }
 
@@ -239,361 +219,323 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final profile = Provider.of<ProfileViewModel>(context).profileData.data?.data;
     final updateProfile = Provider.of<UpdateProfileViewModel>(context);
 
-    return WillPopScope(
-        onWillPop: () async {
-          // Pass back the updated user details when pressing the back button
-          // Navigator.pop(context, {
-          //   'name': nameController.text,
-          //   'email': emailController.text,
-          //   'location': locationController.text,
-          //   'dob': _dobController.text,
-          //   // Add other user details as needed
-          // });
-          return true;
-        },
-        child: Scaffold(
-          backgroundColor: MyColors.backgroundBg,
-          appBar: AppBar(
-            backgroundColor: MyColors.backgroundBg,
-            leading: InkWell(
-                onTap: () {
-                  Navigator.pop(context, {
-                    'name': nameController.text,
-                    'email': emailController.text,
-                    'location': locationController.text,
-                    'dob': _dobController.text,
-                    // Add other user details as needed
-                  });
-                },
-                child: Icon(Icons.arrow_back_ios)),
-            centerTitle: true,
-            title: Text(
-              "Edit Profile",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ),
-          body: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                color: MyColors.backgroundBg,
-                child: GestureDetector(
-                  onTap: () {
-                    FocusScope.of(context).unfocus();
-                    // print("aman");
-                  },
-                  child: ListView(
-                    children: [
+    return Scaffold(
+      backgroundColor: MyColors.backgroundBg,
+      appBar: AppBar(
+        backgroundColor: MyColors.backgroundBg,
+        leading: InkWell(
+            onTap: () {
+              Navigator.pop(context, {
+                'name': nameController.text,
+                'email': emailController.text,
+                'location': locationController.text,
+                'dob': _dobController.text,
+                // Add other user details as needed
+              });
+            },
+            child: Icon(Icons.arrow_back_ios)),
+        centerTitle: true,
+        title: Text(
+          "Edit Profile",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            color: MyColors.backgroundBg,
+            child: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+                // print("aman");
+              },
+              child: ListView(
+                children: [
 
-                      (profile?.coverPhoto != null &&
-                              profile!.coverPhoto!.isNotEmpty)
-                          ? CachedNetworkImage(
-                              height: heights * 0.3,
-                              imageUrl: profile.coverPhoto ?? "",
-                              fit: BoxFit.fill,
-                              placeholder: (context, url) => Image.asset(
-                                'assets/images/vertical_placeholder.jpg',
-                                // Path to your placeholder image asset
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: double.infinity,
-                              ),
-                              errorWidget: (context, url, error) => Center(
-                                  child: Image.asset(
-                                      "assets/images/vertical_placeholder.jpg")),
-                            )
-                          : coverImageFile != null
-                              ? Image.file(
-                                  coverImageFile!,
-                                  fit: BoxFit.cover,
-                                  height: heights * 0.3,
-                                )
-                              : Image(
-                                  image: AssetImage(
-                                      "assets/images/placeholder.png"),
-                                  height: heights * 0.3,
-                                  fit: BoxFit.fill,
-                                ),
-                      Center(
-                        child: InkWell(
-                          onTap: () {
-                            _openCoverPicker(context);                          },
-                          child: Container(
-                            padding:
-                            EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                            margin:  EdgeInsets.symmetric(vertical: 15),
+                  (profile?.coverPhoto != null &&
+                      profile!.coverPhoto!.isNotEmpty)
+                      ? CachedNetworkImage(
+                    height: heights * 0.3,
+                    imageUrl: profile.coverPhoto ?? "",
+                    fit: BoxFit.fill,
+                    placeholder: (context, url) => Image.asset(
+                      'assets/images/vertical_placeholder.jpg',
+                      // Path to your placeholder image asset
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
+                    errorWidget: (context, url, error) => Center(
+                        child: Image.asset(
+                            "assets/images/vertical_placeholder.jpg")),
+                  )
+                      : coverImageFile != null
+                      ? Image.file(
+                    coverImageFile!,
+                    fit: BoxFit.cover,
+                    height: heights * 0.3,
+                  )
+                      : Image(
+                    image: AssetImage(
+                        "assets/images/placeholder.png"),
+                    height: heights * 0.3,
+                    fit: BoxFit.fill,
+                  ),
+                  Center(
+                    child: InkWell(
+                      onTap: () {
+                        _openCoverPicker(context);                          },
+                      child: Container(
+                        padding:
+                        EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                        margin:  EdgeInsets.symmetric(vertical: 15),
 
-                            decoration: BoxDecoration(
-                              // color: MyColors.redBG,
-                                borderRadius: BorderRadius.circular(5),
-                                color: MyColors.redBG,
-                                // border: Border.all(
-                                //     color: MyColors.grey.withAlpha(100))
-                            ),
-                            child: Text(
-                              "Edit Cover Photo",
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  color: MyColors.whiteBG,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                          ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: MyColors.redBG,
+                        ),
+                        child: Text(
+                          "Edit Cover Photo",
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: MyColors.whiteBG,
+                              fontWeight: FontWeight.w500),
                         ),
                       ),
-                      Center(
-                        child: Stack(
-                          children: [
-                            ProfileImageWidget(
-                              imageFile: _imageFile,
-                              // Pass the selected image file
-                              userImage:
-                                  userImage, // Pass the URL of the default user image
-                            ),
-                            Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: InkWell(
-                                  onTap: () {
-                                    //showErrorMessage(context, message: "Click");
-                                    // Call the method to open the image picker modal bottom sheet
-                                    _openImagePicker(context);
-                                  },
-                                  child: Container(
-                                    height: 40,
-                                    width: 40,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        width: 4,
-                                        color: Theme.of(context)
-                                            .scaffoldBackgroundColor,
-                                      ),
-                                      color: MyColors.primaryColor,
-                                    ),
-                                    child: Icon(
-                                      Icons.edit,
-                                      color: Colors.white,
-                                    ),
+                    ),
+                  ),
+                  Center(
+                    child: Stack(
+                      children: [
+                        ProfileImageWidget(
+                          imageFile: _imageFile,
+                          // Pass the selected image file
+                          userImage:
+                          userImage, // Pass the URL of the default user image
+                        ),
+                        Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: InkWell(
+                              onTap: () {
+                                //showErrorMessage(context, message: "Click");
+                                // Call the method to open the image picker modal bottom sheet
+                                _openImagePicker(context);
+                              },
+                              child: Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    width: 4,
+                                    color: Theme.of(context)
+                                        .scaffoldBackgroundColor,
                                   ),
-                                )),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 35,
-                      ),
+                                  color: MyColors.primaryColor,
+                                ),
+                                child: Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            )),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 35,
+                  ),
 
-                      buildTextField(
-                        labelText: "Full Name",
-                        placeholder: "Enter Your Name",
-                        isPasswordTextField: false,
-                        isReadOnly: false,
-                        controller: nameController,
+                  buildTextField(
+                    labelText: "Full Name",
+                    placeholder: "Enter Your Name",
+                    isPasswordTextField: false,
+                    isReadOnly: false,
+                    controller: nameController,
+                  ),
+                  buildTextField(
+                    labelText: "E-mail",
+                    placeholder: "Enter Your Email",
+                    isPasswordTextField: false,
+                    isReadOnly: false,
+                    controller: emailController,
+                  ),
+                  buildTextField(
+                    labelText: "DOB",
+                    placeholder: "Enter Your DOB",
+                    isPasswordTextField: false,
+                    isReadOnly: true,
+                    controller: _dobController,
+                    // initialValue: profile?.dob??"",
+                    suffixIcon: Container(
+                      color: MyColors.blackBG,
+                      child: FilterDateFormat(
+                        onDateSelected: (DateTime selectedDate) {
+                          setState(() {
+                            _selectedDate = selectedDate;
+                            _dobController.text = DateFormat('dd-MM-yyyy')
+                                .format(selectedDate);
+                          });
+                        },
                       ),
-                      buildTextField(
-                        labelText: "E-mail",
-                        placeholder: "Enter Your Email",
-                        isPasswordTextField: false,
-                        isReadOnly: false,
-                        controller: emailController,
-                      ),
-                      buildTextField(
-                        labelText: "DOB",
-                        placeholder: "Enter Your DOB",
-                        isPasswordTextField: false,
-                        isReadOnly: true,
-                        controller: _dobController,
-                        // initialValue: profile?.dob??"",
-                        suffixIcon: Container(
-                          color: MyColors.blackBG,
-                          child: FilterDateFormat(
-                            onDateSelected: (DateTime selectedDate) {
-                              setState(() {
-                                _selectedDate = selectedDate;
-                                _dobController.text = DateFormat('dd-MM-yyyy')
-                                    .format(selectedDate);
-                              });
-                            },
+                    ),
+                  ),
+                  buildTextField(
+                    labelText: "Bio",
+                    placeholder: "Tell us about yourself",
+                    isPasswordTextField: false,
+                    maxLines: 2,
+                    isReadOnly: false,
+                    controller: bioController,
+                    // initialValue:profile?.bio??"",
+                  ),
+                  buildTextField(
+                      labelText: "Location",
+                      placeholder: "Enter Your City",
+                      isPasswordTextField: false,
+                      isReadOnly: true,
+                      controller: locationController,
+                      onTap: () {
+                        _showCityDialog();
+                      }),
+                  SizedBox(
+                    height: 35,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          side: MaterialStateProperty.all<BorderSide>(
+                            BorderSide(
+                                color: MyColors
+                                    .primaryColor), // Change the color here
                           ),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              MyColors.primaryColor),
                         ),
+                        onPressed: () {
+                          Navigator.pop(context, {
+                            'name': nameController.text,
+                            'email': emailController.text,
+                            'location': locationController.text,
+                            'dob': _dobController.text,
+                            // Add other user details as needed
+                          });
+                        },
+                        child: Text("Cancel",
+                            style: TextStyle(
+                                fontSize: 14,
+                                letterSpacing: 2.2,
+                                color: Colors.white)),
                       ),
-                      buildTextField(
-                        labelText: "Bio",
-                        placeholder: "Tell us about yourself",
-                        isPasswordTextField: false,
-                        maxLines: 2,
-                        isReadOnly: false,
-                        controller: bioController,
-                        // initialValue:profile?.bio??"",
-                      ),
-                      buildTextField(
-                          labelText: "Location",
-                          placeholder: "Enter Your City",
-                          isPasswordTextField: false,
-                          isReadOnly: true,
-                          controller: locationController,
-                          // initialValue:
-                          // profile?.homeLocation??"",
-                          onTap: () {
-                            _showCityDialog();
-                          }),
-                      SizedBox(
-                        height: 35,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          ElevatedButton(
-                            style: ButtonStyle(
-                              side: MaterialStateProperty.all<BorderSide>(
-                                BorderSide(
-                                    color: MyColors
-                                        .primaryColor), // Change the color here
-                              ),
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  MyColors.primaryColor),
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context, {
-                                'name': nameController.text,
-                                'email': emailController.text,
-                                'location': locationController.text,
-                                'dob': _dobController.text,
-                                // Add other user details as needed
-                              });
-                            },
-                            child: Text("Cancel",
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    letterSpacing: 2.2,
-                                    color: Colors.white)),
+                      ElevatedButton(
+                        onPressed: () {
+                          // final user_Id = userId;
+                          // final name = nameController.text;
+                          // final email = emailController.text;
+                          // final city_id = cityId;
+                          // final cityName = locationController.text;
+                          // final dob = _dobController.text;
+                          // // final dob = "";
+                          //
+                          // update_profile('$user_Id', name, email, city_id,
+                          //     cityName, dob);
+                        },
+                        style: ButtonStyle(
+                          side: MaterialStateProperty.all<BorderSide>(
+                            BorderSide(
+                                color: MyColors
+                                    .primaryColor), // Change the color here
                           ),
-                          ElevatedButton(
-                            onPressed: () {
-                              // final user_Id = userId;
-                              // final name = nameController.text;
-                              // final email = emailController.text;
-                              // final city_id = cityId;
-                              // final cityName = locationController.text;
-                              // final dob = _dobController.text;
-                              // // final dob = "";
-                              //
-                              // update_profile('$user_Id', name, email, city_id,
-                              //     cityName, dob);
-                            },
-                            style: ButtonStyle(
-                              side: MaterialStateProperty.all<BorderSide>(
-                                BorderSide(
-                                    color: MyColors
-                                        .primaryColor), // Change the color here
-                              ),
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  MyColors.primaryColor),
-                            ),
-                            child: Text(
-                              "Save",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  letterSpacing: 2.2,
-                                  color: Colors.white),
-                            ),
-                          )
-                        ],
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              MyColors.primaryColor),
+                        ),
+                        child: Text(
+                          "Save",
+                          style: TextStyle(
+                              fontSize: 14,
+                              letterSpacing: 2.2,
+                              color: Colors.white),
+                        ),
                       )
                     ],
-                  ),
-                ),
+                  )
+                ],
               ),
-              // Show a loading indicator if _isLoading is true
-              if (isLoading)
-                Container(
-                  color: Colors.black.withOpacity(0.5),
-                  // Adjust opacity as needed
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        MyColors.primary,
-                      ),
-                      // Change the color
-                      strokeWidth: 4,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          bottomSheet:  Container(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            color: Colors.black,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                InkWell(
-                  onTap: () {
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 32),
-                    decoration: BoxDecoration(
-                      color: MyColors.whiteBG,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      "Cancel",
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: MyColors.textColor,
-                          fontFamily: 'wix',
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    final user_Id = userId;
-                    final name = nameController.text;
-                    final email = emailController.text;
-                    final city_id = cityId;
-                    final cityName = locationController.text;
-                    final dob = _dobController.text;
-                    final bio = bioController.text;
-                    // final dob = "";
-                    updateProfile.updateProfileApi(context, dob, name, email, cityName, bio);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 33),
-                    decoration: BoxDecoration(
-                      color: MyColors.redBG,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      "Update",
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: MyColors.whiteBG,
-                          fontFamily: 'wix',
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ),
-              ],
             ),
           ),
-        ));
-  }
-
-  Future<void> getUserDetails() async {
-    // SharedPref sharedPref=new SharedPref();
-    // userName = (await SharedPref.getUser()).name;
-    UserModel n = await SharedPref.getUser();
-    print("getUserDetails: " + n.name);
-    setState(() {
-      userId = n.id;
-      userName = n.name;
-      userEmail = n.email;
-      userImage = n.image;
-      userLocation = n.current_location;
-      cityId = n.home_location;
-      userDob = n.dob;
-    });
+          if (isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              // Adjust opacity as needed
+              child: Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    MyColors.primary,
+                  ),
+                  strokeWidth: 4,
+                ),
+              ),
+            ),
+        ],
+      ),
+      bottomSheet:  Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        color: Colors.black,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            InkWell(
+              onTap: () {
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 32),
+                decoration: BoxDecoration(
+                  color: MyColors.whiteBG,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: MyColors.textColor,
+                      fontFamily: 'wix',
+                      fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                final name = nameController.text;
+                final email = emailController.text;
+                final cityName = locationController.text;
+                final dob = _dobController.text;
+                final bio = bioController.text;
+                updateProfile.updateProfileApi(context, dob, name, email, cityName, bio);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 33),
+                decoration: BoxDecoration(
+                  color: MyColors.redBG,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Text(
+                  "Update",
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: MyColors.whiteBG,
+                      fontFamily: 'wix',
+                      fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> update_profile_image(String user_id, File? imageFile) async {
@@ -643,99 +585,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
             Provider.of<UserProvider>(context, listen: false)
                 .updateUserDetails(user);
-
-            getUserDetails();
-          } else {
-            // Handle null user
-            showErrorMessage(context, message: 'User data is invalid');
-          }
-        } else {
-          // Handle invalid response data format
-          showErrorMessage(context, message: 'Invalid response data format');
-        }
-      } else if (response != null) {
-        String msg = response['msg'];
-
-        // Handle unsuccessful response or missing 'res' field
-        showErrorMessage(context, message: msg);
-      }
-    } catch (e) {
-      //print('verify_otp error: $e');
-      // Handle error
-      //showErrorMessage(context, message: 'An error occurred: $e');
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  Future<void> update_profile(String user_id, String name, String email,
-      String city_id, String cityName, String dob,dynamic bio) async {
-    if (name.isEmpty) {
-      showErrorMessage(context, message: 'Please fill name');
-      return;
-    } else if (email.isEmpty) {
-      showErrorMessage(context, message: 'Please fill email');
-      return;
-    }
-    // else if (dob.isEmpty) {
-    //   showErrorMessage(context, message: 'Please fill dob');
-    //   return;
-    // }
-    else if (cityName.isEmpty) {
-      showErrorMessage(context, message: 'Please fill location');
-      return;
-    }
-
-    try {
-      setState(() {
-        isLoading = true;
-      });
-      final body = {
-        "user_id": user_id,
-        "name": name,
-        "email": email,
-        "home_location": city_id,
-        "current_location": city_id,
-        "dob": dob,
-        "bio":bio
-      };
-      final response = await ApiServices.updateProfile(context, body);
-
-      // Check if the response is null or doesn't contain the expected data
-      if (response != null &&
-          response.containsKey('res') &&
-          response['res'] == 'success') {
-        final data = response['data'];
-        // Ensure that the response data is in the expected format
-        if (data != null && data is Map<String, dynamic>) {
-          //print('verify_otp data: $data');
-          final user = UserModel.fromMap(data);
-          showSuccessMessage(context, message: response['msg'].toString());
-          if (user != null) {
-            //print('verify_otp data: 1');
-
-            await SharedPref.userLogin({
-              SharedPref.KEY_ID: user.id,
-              SharedPref.KEY_CURRENT_MONTH: user.current_month,
-              SharedPref.KEY_PREMIUM: user.premium,
-              SharedPref.KEY_STATUS: user.status,
-              SharedPref.KEY_NAME: user.name,
-              SharedPref.KEY_EMAIL: user.email,
-              SharedPref.KEY_MOBILE: user.mobile,
-              SharedPref.KEY_DOB: user.dob,
-              SharedPref.KEY_OTP: user.otp,
-              SharedPref.KEY_IMAGE: user.image,
-              SharedPref.KEY_HOME_LOCATION: user.home_location,
-              SharedPref.KEY_CURRENT_LOCATION: user.current_location,
-              SharedPref.KEY_LAT: user.lat,
-              SharedPref.KEY_LONG: user.long,
-              SharedPref.KEY_CREATED_AT: user.created_at,
-              SharedPref.KEY_UPDATED_AT: user.updated_at,
-            });
-
-            getUserDetails();
           } else {
             // Handle null user
             showErrorMessage(context, message: 'User data is invalid');
@@ -797,11 +646,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     String? initialValue,
     Function()? onTap, // Optional onTap parameter
   }) {
-    // Set initial value if provided
-    // if (initialValue != null && initialValue.isNotEmpty) {
-    //   controller.text = initialValue;
-    // }
-
     return Padding(
       padding: EdgeInsets.only(left: 16, top: 25, right: 16),
       child: TextField(
@@ -896,28 +740,6 @@ class ProfileImageWidget extends StatelessWidget {
                 errorWidget: (context, url, error) =>
                     Center(child: Icon(Icons.error)),
               ),
-        // Image.network(
-        //         userImage.isNotEmpty ? userImage : image,
-        //         loadingBuilder: (BuildContext context, Widget child,
-        //             ImageChunkEvent? loadingProgress) {
-        //           if (loadingProgress == null) {
-        //             return child;
-        //           } else {
-        //             return Center(
-        //               child: CircularProgressIndicator(
-        //                 value: loadingProgress.expectedTotalBytes != null
-        //                     ? loadingProgress.cumulativeBytesLoaded /
-        //                         (loadingProgress.expectedTotalBytes ?? 1)
-        //                     : null,
-        //               ),
-        //             );
-        //           }
-        //         },
-        //         errorBuilder: (BuildContext context, Object error,
-        //             StackTrace? stackTrace) {
-        //           return Icon(Icons.person); // Placeholder icon for error case
-        //         },
-        //       ),
       ),
     );
   }

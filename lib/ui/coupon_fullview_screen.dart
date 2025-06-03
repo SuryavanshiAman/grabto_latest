@@ -1307,8 +1307,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                             const SizedBox(
                               height: 8,
                             ),
-                            flick.data?.data?.length != 0?
-                            Container(
+                            if (flick.data?.data?.length != 0) Container(
                               margin: const EdgeInsets.only(
                                   top: 15, left: 15, right: 15, bottom: 10),
                               child: Row(
@@ -1333,9 +1332,8 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                   ),
                                 ],
                               ),
-                            ):Container(),
-                            flick.data?.data?.length != 0
-                                ? SizedBox(
+                            ) else Container(),
+                            if (flick.data?.data?.length != 0) SizedBox(
                                     height: heights * 0.38,
                                     width: widths,
                                     child: ListView.builder(
@@ -1387,8 +1385,7 @@ class _CouponFullViewScreenState extends State<CouponFullViewScreen>
                                         );
                                       },
                                     ),
-                                  )
-                                : Container(),
+                                  ) else Container(),
                             SizedBox(
                               height: heights * 0.02,
                             ),
@@ -4245,7 +4242,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                         options: CarouselOptions(
                           height: heights * 0.22,
                           enlargeCenterPage: true,
-                          autoPlay: true,
+                          autoPlay: false,
                           reverse: true,
                           disableCenter: true,
                           aspectRatio: 1 / 9,
@@ -4782,7 +4779,7 @@ class _RestaurantsNearByState extends State<RestaurantsNearBy> {
                   options: CarouselOptions(
                     height: heights * 0.22,
                     enlargeCenterPage: true,
-                    autoPlay: true,
+                    autoPlay: false,
                     reverse: true,
                     disableCenter: true,
                     aspectRatio: 1 / 9,
@@ -4792,62 +4789,6 @@ class _RestaurantsNearByState extends State<RestaurantsNearBy> {
                     viewportFraction: 1,
                   ),
                 ),
-                // Positioned(
-                //   bottom: 10,
-                //   left: 2,
-                //   right: 0,
-                //   child: Text(
-                //     "Flat ${widget.filter.discountPercentage.toString()}% off  ",
-                //     style: TextStyle(
-                //         color: MyColors.whiteBG, fontWeight: FontWeight.w600),
-                //   ),
-                // ),
-                // Positioned(
-                //   top: 10,
-                //   left: 10,
-                //   child: Row(
-                //     children: [
-                //       Container(
-                //         padding: const EdgeInsets.fromLTRB(6, 4, 8, 4),
-                //         decoration: BoxDecoration(
-                //           color: Colors.green,
-                //           borderRadius: BorderRadius.circular(5),
-                //         ),
-                //         child: Text(
-                //           "${widget.filter.avgRating.toStringAsFixed(1)}/5",
-                //           style: const TextStyle(
-                //             color: Colors.white,
-                //             fontWeight: FontWeight.bold,
-                //             fontSize: 10,
-                //           ),
-                //         ),
-                //       ),
-                //       SizedBox(
-                //         width: widths * 0.08,
-                //       ),
-                //       CircleAvatar(
-                //         radius: 12,
-                //         backgroundColor: MyColors.whiteBG,
-                //         child: InkWell(
-                //           onTap: () {
-                //             fetchStoresFullView(widget.filter.id.toString());
-                //             wishlist("${widget.filter.id.toString()}");
-                //           },
-                //           child: Icon(
-                //             wishlist_status == 'true'
-                //                 ? Icons.favorite
-                //                 : Icons.favorite_border,
-                //             size: 16,
-                //             color: wishlist_status == 'true'
-                //                 ? Colors.red
-                //                 : Colors.black,
-                //           ),
-                //         ),
-                //
-                //       )
-                //     ],
-                //   ),
-                // ),
                 Positioned(
                   top: 10,
                   left: 10,
@@ -4916,20 +4857,7 @@ class _RestaurantsNearByState extends State<RestaurantsNearBy> {
                                 : Colors.black,
                           ),
                         ),
-                        // InkWell(
-                        //   onTap: (){
-                        //     setState(() {
-                        //       selectedIndex=widget.index;
-                        //     });
-                        //   },
-                        //   child: Icon(
-                        //     selectedIndex!=widget.index? Icons.favorite_border:Icons.favorite,
-                        //     color: selectedIndex!=widget.index? MyColors.blackBG:MyColors.redBG,
-                        //     size: 16,
-                        //   ),
-                        // )
                       )
-                      // Icon(Icons.favorite_border, color: Colors.white),
                     ],
                   ),
                 ),
@@ -5319,7 +5247,7 @@ class _RecommendRestaurantsState extends State<RecommendRestaurants> {
                   options: CarouselOptions(
                     height: heights * 0.22,
                     enlargeCenterPage: true,
-                    autoPlay: true,
+                    autoPlay: false,
                     reverse: true,
                     disableCenter: true,
                     aspectRatio: 1 / 9,

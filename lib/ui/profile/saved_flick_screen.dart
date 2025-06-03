@@ -4,6 +4,7 @@ import 'package:grabto/helper/user_provider.dart';
 import 'package:grabto/main.dart';
 import 'package:grabto/model/my_save_flick_model.dart';
 import 'package:grabto/theme/theme.dart';
+import 'package:grabto/view_model/flicks_view_model.dart';
 import 'package:grabto/view_model/my_saved_flick_view_model.dart';
 import 'package:provider/provider.dart';
 import '../../view_model/save_flick_view_model.dart';
@@ -21,7 +22,7 @@ class _SaveFlickScreenState extends State<SaveFlickScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<MySavedFlickViewModel>(context, listen: false).mySaveFlickApi(context);
+    // Provider.of<MySavedFlickViewModel>(context, listen: false).mySaveFlickApi(context);
   }
 
   @override
@@ -211,14 +212,23 @@ class _FoodPostCardState extends State<FoodPostCard> {
                 SizedBox(height: 16),
                 InkWell(
                   onTap: (){
-                    setState(() {
-                      saveReel=!saveReel;
-                      saveReel==false?unSave.unSaveFlickApi(context,  widget.saveflick?.id ?? "") :save.saveFlickApi(context, widget.saveflick?.id ?? "");
-                    });
+                    final flicksViewModel = Provider.of<FlicksViewModel>(context, listen: false);
+                    flicksViewModel.setSelectedIndex(widget.index);
+                    if (widget.saveflick?.isFavorited == 1) {
+                      unSave.unSaveFlickApi(
+                          context, widget.saveflick?.id ?? "",widget.index,flicksViewModel);
+                    } else {
+                      save.saveFlickApi(
+                          context, widget.saveflick?.id ?? "",widget.index,flicksViewModel);}
+
 
                   },
                   child: IconWithLabel(
-                      icon:saveReel==false || widget.saveflick?.isFavorited==0? Icons.bookmark_border: Icons.bookmark, label: '${widget.saveflick?.likesCount ?? ""}'),
+                      icon: widget.saveflick?.isFavorited==0
+                          ? Icons.bookmark_border
+                          : Icons.bookmark,
+                      color:widget.saveflick?.isFavorited==1?MyColors.redBG:MyColors.whiteBG ,
+                      label: '${widget.saveflick?.likesCount ?? ""}'),
                 ),
                 SizedBox(height: 16),
                 IconWithLabel(icon: Icons.share, label: '${widget.saveflick?.sharesCount??"0"}'),
@@ -308,14 +318,15 @@ class _FoodPostCardState extends State<FoodPostCard> {
 class IconWithLabel extends StatelessWidget {
   final IconData icon;
   final String label;
+  Color? color;
 
-  const IconWithLabel({super.key, required this.icon, required this.label});
+   IconWithLabel({super.key, required this.icon, required this.label,this.color});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(icon, color: Colors.white, size: 22),
+        Icon(icon, color: color, size: 22),
         SizedBox(height: 4),
         Text(label, style: TextStyle(color: Colors.white, fontSize: 12)),
       ],

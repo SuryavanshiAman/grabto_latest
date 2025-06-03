@@ -1,19 +1,22 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:grabto/model/flicks_model.dart';
+import 'package:grabto/ui/profile/another_user_profile_page.dart';
 import 'package:grabto/view_model/follow_view_model.dart';
 import 'package:grabto/view_model/like_view_model.dart';
 import 'package:grabto/view_model/un_follow_view_model.dart';
 import 'package:grabto/view_model/un_like_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import '../generated/assets.dart';
 import '../main.dart';
 import '../theme/theme.dart';
+import '../view_model/explore_view_model.dart';
 import '../view_model/flicks_view_model.dart';
 import '../view_model/save_flick_view_model.dart';
 import '../view_model/un_save_flick_view_model.dart';
 import '../widget/sub_categories_card_widget.dart';
+import 'coupon_fullview_screen.dart';
 
 class FlicksScreen extends StatefulWidget {
   const FlicksScreen({super.key});
@@ -23,6 +26,8 @@ class FlicksScreen extends StatefulWidget {
 }
 
 class _FlicksScreenState extends State<FlicksScreen> {
+  FlicksViewModel flicksViewModel = FlicksViewModel();
+
   @override
   void initState() {
     super.initState();
@@ -35,12 +40,20 @@ class _FlicksScreenState extends State<FlicksScreen> {
         Provider.of<FlicksViewModel>(context).flickList.data?.data?.data;
     return Scaffold(
       backgroundColor: Colors.black,
-      body: PageView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: data?.length ?? 0,
-        itemBuilder: (context, index) {
-          final flicks = data?[index];
-          return FoodPostCard(index: index, flicksData: flicks);
+      body: Consumer<FlicksViewModel>(
+        builder: (context, resultValue, _) {
+          final beta = resultValue.flickList.data?.data?.data;
+          return PageView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: beta?.length ?? 0,
+            itemBuilder: (context, index) {
+              final flicks = beta?[index];
+              return FoodPostCard(
+                index: index,
+                flicksData: flicks,
+              );
+            },
+          );
         },
       ),
     );
@@ -51,7 +64,11 @@ class FoodPostCard extends StatefulWidget {
   final int index;
   final FlicksData? flicksData;
 
-  const FoodPostCard({super.key, required this.index, this.flicksData});
+  const FoodPostCard({
+    super.key,
+    required this.index,
+    this.flicksData,
+  });
 
   @override
   State<FoodPostCard> createState() => _FoodPostCardState();
@@ -59,10 +76,16 @@ class FoodPostCard extends StatefulWidget {
 
 class _FoodPostCardState extends State<FoodPostCard> {
   bool saveReel = false;
-  bool like = false;
+  bool isLiked = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final data = Provider.of<FlicksViewModel>(context);
     final save = Provider.of<SaveFlickViewModel>(context);
     final unSave = Provider.of<UnSaveFlickViewModel>(context);
     final likeReel = Provider.of<LikeViewModel>(context);
@@ -80,7 +103,6 @@ class _FoodPostCardState extends State<FoodPostCard> {
           Positioned(
               top: 40,
               left: 16,
-              // right: 10,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,44 +146,45 @@ class _FoodPostCardState extends State<FoodPostCard> {
                     child: Container(
                       width: MediaQuery.of(context).size.width,
                       padding: const EdgeInsets.all(8),
-                      // color: Colors.red,
-                      // Adjust according to your requirement
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: widths * 0.6,
-                                child: Text(
-                                  widget.flicksData?.storeName ?? "",
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: 'wix',
-                                      fontWeight: FontWeight.w600,
-                                      color: MyColors.whiteBG),
+                          InkWell(
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                return CouponFullViewScreen(widget.flicksData?.storeId.toString()??"");
+                              }));
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: widths * 0.6,
+                                  child: Text(
+                                    widget.flicksData?.storeName ?? "",
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontFamily: 'wix',
+                                        fontWeight: FontWeight.w600,
+                                        color: MyColors.whiteBG),
+                                  ),
                                 ),
-                              ),
-                              SizedBox(
-                                width: widths * 0.6,
-                                child: Text(
-                                  widget.flicksData?.address ?? "",
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      // Adjust according to your requirement
-                                      fontFamily: 'wix',
-                                      fontWeight: FontWeight.w600,
-                                      color: MyColors.whiteBG),
+                                SizedBox(
+                                  width: widths * 0.6,
+                                  child: Text(
+                                    widget.flicksData?.address ?? "",
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        fontFamily: 'wix',
+                                        fontWeight: FontWeight.w600,
+                                        color: MyColors.whiteBG),
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                          // SizedBox(
-                          //   width: widths * 0.05,
-                          // ),
                           GestureDetector(
                             onTap: () async {
                               final url =
@@ -206,95 +229,132 @@ class _FoodPostCardState extends State<FoodPostCard> {
                       ),
                     ),
                   ),
-
-                  // Icon(Icons.na)
                 ],
               )),
-
-          // Right-side icons
           Positioned(
             right: 16,
-            bottom: 160,
+            bottom: 100,
             child: Column(
               children: [
-                InkWell(
+                GestureDetector(
                   onTap: () {
-                    setState(() {
-                      like = !like;
-                      like == false
-                          ? unLikeReel.unLikeApi(
-                          context, widget.flicksData?.id ?? "")
-                          : likeReel.likeApi(
-                          context, widget.flicksData?.id ?? "");
-                    });
+                    final flicksViewModel =
+                        Provider.of<FlicksViewModel>(context, listen: false);
+                    flicksViewModel.setSelectedIndex(widget.index);
+
+                    if (widget.flicksData?.isLiked == 0) {
+                      likeReel.likeApi(context, widget.flicksData?.id ?? "",
+                          widget.index, flicksViewModel);
+                    } else {
+                      unLikeReel.unLikeApi(context, widget.flicksData?.id ?? "",
+                          widget.index, flicksViewModel);
+                    }
                   },
                   child: IconWithLabel(
-                      icon:widget.flicksData?.isLiked==0? Icons.local_fire_department_outlined:Icons.local_fire_department,
-                      label: '${widget.flicksData?.likesCount ?? "0"}'),
+                    // image: widget.flicksData?.likesCount == 1
+                    //     ? Icons.local_fire_department
+                    //     : Icons.local_fire_department_outlined,
+                    image:widget.flicksData?.likesCount == 1?Assets.imagesLikeFill:Assets.imagesLikeOutLined,
+                    color: widget.flicksData?.likesCount == 1
+                        ? MyColors.redBG
+                        : MyColors.whiteBG,
+                    label: '${widget.flicksData?.likesCount ?? "0"}',
+                  ),
                 ),
                 SizedBox(height: 16),
                 IconWithLabel(
                     icon: Icons.message_outlined,
+                    color: MyColors.whiteBG,
                     label: '${widget.flicksData?.commentsCount ?? "0"}'),
                 SizedBox(height: 16),
-                InkWell(
+                GestureDetector(
                   onTap: () {
-                    setState(() {
-                      saveReel = !saveReel;
-                      saveReel == false
-                          ? unSave.unSaveFlickApi(
-                              context, widget.flicksData?.id ?? "")
-                          : save.saveFlickApi(
-                              context, widget.flicksData?.id ?? "");
-                    });
+                    final flicksViewModel = Provider.of<FlicksViewModel>(context, listen: false);
+                    flicksViewModel.setSelectedIndex(widget.index);
+                    if (widget.flicksData?.isFavorited == 1) {
+                      unSave.unSaveFlickApi(
+                          context,
+                          widget.flicksData?.id ?? "",
+                          widget.index,
+                          flicksViewModel);
+                    } else {
+                      save.saveFlickApi(context, widget.flicksData?.id ?? "",
+                          widget.index, flicksViewModel);
+                    }
                   },
                   child: IconWithLabel(
-                      icon: saveReel == false
+                      icon: widget.flicksData?.isFavorited == 0
                           ? Icons.bookmark_border
                           : Icons.bookmark,
-                      label: '${widget.flicksData?.likesCount ?? ""}'),
+                      color: widget.flicksData?.isFavorited == 1
+                          ? MyColors.redBG
+                          : MyColors.whiteBG,
+                      label: '${widget.flicksData?.favoritesCount ?? ""}'),
                 ),
                 SizedBox(height: 16),
                 IconWithLabel(
-                    icon: Icons.share,
-                    label: '${widget.flicksData?.sharesCount ?? ""}'),
+                  icon: Icons.share,
+                  label: '${widget.flicksData?.sharesCount ?? ""}',
+                  color: MyColors.whiteBG,
+                ),
               ],
             ),
           ),
-
-          // Bottom user info
           Positioned(
             left: 16,
             right: 16,
             bottom: 50,
             child: Row(
               children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage(
-                    widget.flicksData?.profileImage ?? "",
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AnotherUserProfileScreen(
+                                id: widget.flicksData?.userId.toString()??"")));
+                  },
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      widget.flicksData?.profileImage ?? "",
+                    ),
                   ),
                 ),
                 SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(widget.flicksData?.userName ?? "",
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold)),
-                    Text('${widget.flicksData?.followerCount } Follower',
-                        style: TextStyle(color: Colors.white70, fontSize: 12)),
-                  ],
-                ),
-                // Spacer(),
-                SizedBox(width: 10),
-                InkWell(
+                GestureDetector(
                   onTap: () {
-                    setState(() {
-                      widget.flicksData?.isFollowingCreator == 0
-                          ? follow.followApi(context, widget.flicksData?.userId)
-                          : unFollow.unFollowApi(
-                              context, widget.flicksData?.userId);
-                    });
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AnotherUserProfileScreen(
+                                id: widget.flicksData?.userId.toString()??"")));
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(widget.flicksData?.userName ?? "",
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold)),
+                      Text('${widget.flicksData?.followerCount} Follower',
+                          style: TextStyle(color: Colors.white70, fontSize: 12)),
+                    ],
+                  ),
+                ),
+                SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    final exploreViewModel =
+                        Provider.of<ExploreViewModel>(context, listen: false);
+                    final flicksViewModel =
+                        Provider.of<FlicksViewModel>(context, listen: false);
+                    flicksViewModel.setSelectedIndex(widget.index);
+                    if (widget.flicksData?.isFollowingCreator == 0) {
+                      follow.followApi(context, widget.flicksData?.userId,
+                          widget.index, exploreViewModel, flicksViewModel);
+                    } else {
+                      unFollow.unFollowApi(context, widget.flicksData?.userId,
+                          widget.index, exploreViewModel, flicksViewModel);
+                    }
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
@@ -302,7 +362,6 @@ class _FoodPostCardState extends State<FoodPostCard> {
                     decoration: BoxDecoration(
                       color: MyColors.blackBG.withAlpha(80),
                       borderRadius: BorderRadius.circular(5),
-                      // border: Border.all(color: MyColors.b.withAlpha(100))
                     ),
                     child: Text(
                       widget.flicksData?.isFollowingCreator == 0
@@ -315,23 +374,9 @@ class _FoodPostCardState extends State<FoodPostCard> {
                     ),
                   ),
                 ),
-                // ElevatedButton(
-                //   onPressed: () {},
-                //   child: Text('Follow'),
-                //   style: ElevatedButton.styleFrom(
-                //     backgroundColor: Colors.white,
-                //     foregroundColor: Colors.black,
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(20),
-                //     ),
-                //     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                //   ),
-                // ),
               ],
             ),
           ),
-
-          // Bottom caption
           Positioned(
             left: 16,
             right: 16,
@@ -350,16 +395,24 @@ class _FoodPostCardState extends State<FoodPostCard> {
 }
 
 class IconWithLabel extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
+  final String? image;
   final String label;
+  Color? color;
 
-  const IconWithLabel({super.key, required this.icon, required this.label});
+  IconWithLabel(
+      {super.key,  this.icon, required this.label, this.color, this.image});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(icon, color: Colors.white, size: 22),
+        image!=null ?Image(image: AssetImage(image??""),height: heights*0.045,):Container(),
+       icon!=null? Icon(
+          icon,
+          color: color,
+          size: 28,
+        ):Container(),
         SizedBox(height: 4),
         Text(label, style: TextStyle(color: Colors.white, fontSize: 12)),
       ],

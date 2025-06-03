@@ -21,7 +21,7 @@ class AddHighlightViewModel with ChangeNotifier {
     print(data);
     _addHighlightRepo.addHighlightApi(data).then((value) {
       if (value['res'] == "success") {
-        Provider.of<GetPostViewModel>(context,listen: false).getPostApi(context);
+        Provider.of<GetPostViewModel>(context,listen: false).getPostApi(context,n.id);
         Navigator.pop(context);
       } else {
         showErrorMessage(context, message: value['message']);
