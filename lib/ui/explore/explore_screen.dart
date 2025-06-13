@@ -39,8 +39,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<ExploreViewModel>(context, listen: false).exploreApi(context);
-    Provider.of<GetAllUserHighlightViewModel>(context, listen: false).getHighlightApi(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ExploreViewModel>(context, listen: false).exploreApi(context);
+      Provider.of<GetAllUserHighlightViewModel>(context, listen: false).getHighlightApi(context);
+    });
+
   }
   final List<IconData> iconList = [
     Icons.dns_outlined,
@@ -49,44 +52,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
  int selectedCategory=0;
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> highlights = [
-      {
-        'image':
-            'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', // profile
-        'type': 'add',
-        'label': 'Add Highlight',
-      },
-      {
-        'image':
-            'https://images.unsplash.com/photo-1551218808-94e220e084d2', // sandwich
-        'profile': 'https://randomuser.me/api/portraits/women/44.jpg', // avatar
-        'label': 'Michelle Dam',
-      },
-      {
-        'image':
-            'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe', // salad
-        'profile': 'https://randomuser.me/api/portraits/men/32.jpg',
-        'label': 'Podmark',
-      },
-      {
-        'image':
-            'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe', // salad
-        'profile': 'https://randomuser.me/api/portraits/men/32.jpg',
-        'label': 'Podmark',
-      },
-      {
-        'image':
-            'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe', // salad
-        'profile': 'https://randomuser.me/api/portraits/men/32.jpg',
-        'label': 'Podmark',
-      },
-      {
-        'image':
-            'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe', // salad
-        'profile': 'https://randomuser.me/api/portraits/men/32.jpg',
-        'label': 'Podmark',
-      },
-    ];
     final exploreData = Provider.of<ExploreViewModel>(context)
         .exploreList
         .data
